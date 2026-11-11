@@ -1,7 +1,7 @@
 {
-  "version": "0.3.1",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.1/FilesBolt-Setup-0.3.1.exe",
-  "size": 53490904,
-  "sha256": "21d583aad4639a63e3d55b473781167aefd3e4fc4939e290d249f3b5815add9d",
-  "notes": "Redeem coupon codes from the account menu.\nDelete your account (password + emailed code).\nAccount status now updates by itself."
+  "version": "0.3.2",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.2/FilesBolt-Setup-0.3.2.exe",
+  "size": 53635120,
+  "sha256": "c5bb476c9268ada92127c06cce5f76dcb7fc74c0c22f20ae92bff01faad9dd6f",
+  "notes": "Fixes updates and sign-in failing on some PCs with a certificate error.\nRedeem coupon codes and delete your account from the account menu."
 }
