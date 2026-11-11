@@ -100,7 +100,7 @@
 <section class="race" aria-labelledby="race-h">
   <div class="wrap">
     <h2 id="race-h">Why send private files to a stranger's website?</h2>
-    <p class="sub">Online PDF sites make you upload your files to a company you've never heard of, wait while they work on them, then download them again. FilesBolt does the same job on your own PC in a few clicks.</p>
+    <p class="sub">Online PDF sites make you upload your files to a company you've never heard of, wait while they work on them, then download them again. FilesBolt does the same job on your own PC in a few clicks and a few seconds.</p>
     <div class="lanes">
       <div class="lane web" data-lane="web">
         <div class="lane-top"><h3>A typical online PDF site</h3><span class="clock" aria-hidden="true">0:00</span></div>
@@ -118,7 +118,7 @@
           <li><div class="step-name"><span>Right-click, then FilesBolt</span><em>click</em></div><div class="track"><div class="fill"></div></div></li>
           <li><div class="step-name"><span>Choose Merge, Compress or Convert</span><em>click</em></div><div class="track"><div class="fill"></div></div></li>
         </ol>
-        <p class="lane-foot"><span class="dot" aria-hidden="true">✓</span><span>Done in about a second. Nothing left your PC.</span></p>
+        <p class="lane-foot"><span class="dot" aria-hidden="true">✓</span><span>Done in about 6 seconds. Nothing left your PC.</span></p>
       </div>
     </div>
     <p class="race-note">Animation is sped up. Online upload and download times depend on your files and your internet connection.</p>
@@ -386,7 +386,7 @@
   (function () {
     var lanes = {
       web: { el: document.querySelector('[data-lane="web"]'), steps: [3.2, 1.8, 2.6], real: 186 }, // seconds shown sped up
-      fb:  { el: document.querySelector('[data-lane="fb"]'),  steps: [0.35, 0.35, 0.35], real: 1 }
+      fb:  { el: document.querySelector('[data-lane="fb"]'),  steps: [0.7, 0.7, 0.8], real: 6 }
     };
     var CYCLE = 10.5;
     function paint(t) {
