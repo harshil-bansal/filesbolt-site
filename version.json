@@ -1,7 +1,7 @@
 {
-  "version": "0.3.0",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.0/FilesBolt-Setup-0.3.0.exe",
-  "size": 53478532,
-  "sha256": "4b938739e0a9c51e66fcaa840f330597b246ff4133a44c11a24718e93a8f4ea9",
-  "notes": "New: FilesBolt accounts. Create a free account with your email to get 30 days with every tool. After that, the free plan includes 10 jobs a month. Your files still never leave your PC."
+  "version": "0.3.1",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.1/FilesBolt-Setup-0.3.1.exe",
+  "size": 53490904,
+  "sha256": "21d583aad4639a63e3d55b473781167aefd3e4fc4939e290d249f3b5815add9d",
+  "notes": "Redeem coupon codes from the account menu.\nDelete your account (password + emailed code).\nAccount status now updates by itself."
 }
