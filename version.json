@@ -1,7 +1,7 @@
 {
-  "version": "0.2.4",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.2.4/FilesBolt-Setup-0.2.4.exe",
-  "size": 53446318,
-  "sha256": "ddccd5cd568cf731543895497a035a9d2dd7c27f0d3e9829092ea77e90a18062",
-  "notes": "New: FilesBolt can now update itself. When a new version is out, you'll get a one-click Update now. You can also check in Settings > Updates."
+  "version": "0.3.0",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.0/FilesBolt-Setup-0.3.0.exe",
+  "size": 53478532,
+  "sha256": "4b938739e0a9c51e66fcaa840f330597b246ff4133a44c11a24718e93a8f4ea9",
+  "notes": "New: FilesBolt accounts. Create a free account with your email to get 30 days with every tool. After that, the free plan includes 10 jobs a month. Your files still never leave your PC."
 }
