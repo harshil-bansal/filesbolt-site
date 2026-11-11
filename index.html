@@ -76,11 +76,20 @@
           <div class="mi">Edit and sign</div>
         </div>
 
+        <div class="editor hide" hidden>
+          <div class="ed-bar"><img src="img/logo.svg" alt="" width="16" height="16"><b>SU43 Rate Confirmation.pdf</b><span class="ed-save">Save</span></div>
+          <div class="ed-page">
+            <i class="h"></i><i></i><i></i><i class="s"></i><i></i><i class="s"></i>
+            <div class="ed-line"></div>
+            <svg class="ed-sign" viewBox="0 0 120 44"><path d="M4 30c8-14 14-22 18-20s-6 26-2 26 10-20 16-20-2 16 2 16 8-12 12-12 0 10 4 10 10-8 16-12c4-2 8 0 14-2s12-6 20-8"/></svg>
+          </div>
+        </div>
+
         <div class="toast">
           <img src="img/logo.svg" alt="" width="28" height="28">
           <div>
             <strong>Merged 3 files in 0.42 s</strong>
-            <span>Saved as Merged_2026-11-11.pdf</span>
+            <span>Saved as Merged_2026-11-11_1442.pdf</span>
           </div>
         </div>
       </div>
@@ -281,15 +290,97 @@
 
   var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Hero: replay the right-click demo every few seconds
-  var demo = document.querySelector(".demo");
-  function playDemo() {
-    demo.classList.remove("play", "out");
-    void demo.offsetWidth;            // restart the CSS animations
-    demo.classList.add("play");
-    setTimeout(function () { demo.classList.add("out"); }, 6800);
-  }
-  if (!still) { playDemo(); setInterval(playDemo, 7400); }
+  // Hero: walk through each FilesBolt action in turn; each one adds its result to the folder. Loops.
+  (function () {
+    var demo = document.querySelector(".demo");
+    if (still || !demo) return;
+    var desk = demo.querySelector(".desk"), list = demo.querySelector(".files");
+    var m1 = demo.querySelector(".m1"), m2 = demo.querySelector(".m2"), fb = demo.querySelector(".mi.fb");
+    var items = m2.querySelectorAll(".mi"), toast = demo.querySelector(".toast"), editor = demo.querySelector(".editor");
+    var tTitle = toast.querySelector("strong"), tSub = toast.querySelector("span");
+    var rows = list.querySelectorAll(".frow:not(.head)");
+    demo.classList.add("js");
+    [m1, m2, toast].forEach(function (el) { el.classList.add("hide"); });
+    editor.hidden = false;
+
+    var scenes = [
+      { sel: [0, 1, 2], item: 0, add: [["pdf", "Merged_2026-11-11_1442.pdf", "PDF"]],
+        title: "Merged 3 files in 0.42 s", sub: "Saved as Merged_2026-11-11_1442.pdf" },
+      { sel: [0], item: 1, add: [["pdf", "Signed BOL - Load 1042_compressed.pdf", "PDF"]],
+        title: "Compressed: 4.8 MB to 1.1 MB", sub: "Saved next to the original" },
+      { sel: [1, 2], item: 2, add: [["pdf", "Delivery photo.pdf", "PDF"], ["pdf", "IMG_2041.pdf", "PDF"]],
+        title: "Converted 2 photos to PDF", sub: "Saved in the same folder" },
+      { sel: [2], item: 3, add: [["img", "IMG_2041.jpg", "JPG"]],
+        title: "Converted IMG_2041.HEIC to JPG", sub: "Opens on any phone or PC" },
+      { sel: [4], item: 4, edit: true, add: [["pdf", "SU43 Rate Confirmation_edited.pdf", "PDF"]],
+        title: "Signed and saved", sub: "SU43 Rate Confirmation_edited.pdf" }
+    ];
+    var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+    function place(rowIndex) {
+      var d = desk.getBoundingClientRect(), r = rows[rowIndex].getBoundingClientRect();
+      var top = Math.round(r.top - d.top + r.height / 2 + 4);
+      m1.style.top = top + "px";
+      var f = fb.getBoundingClientRect(), m = m1.getBoundingClientRect();
+      m2.style.top = (top + (f.top - m.top) - 4) + "px";
+    }
+    function addRow(spec) {
+      var div = document.createElement("div");
+      div.className = "frow new";
+      div.innerHTML = '<i class="ficon ' + spec[0] + '"></i><span></span><span class="t"></span>';
+      div.children[1].textContent = spec[1];
+      var tag = document.createElement("em"); tag.className = "tag"; tag.textContent = "New";
+      div.children[1].appendChild(tag);
+      div.children[2].textContent = spec[2];
+      list.appendChild(div);
+      return div;
+    }
+    async function run(s) {
+      var added = list.querySelectorAll(".frow.new");
+      added.forEach(function (r) { r.classList.add("gone"); });
+      rows.forEach(function (r) { r.classList.remove("on"); });
+      await wait(450);
+      added.forEach(function (r) { r.remove(); });
+      for (var i = 0; i < s.sel.length; i++) { await wait(240); rows[s.sel[i]].classList.add("on"); }
+      await wait(450);
+      place(s.sel[s.sel.length - 1]);
+      m1.classList.remove("hide");
+      await wait(650);
+      fb.classList.add("on");
+      m2.classList.remove("hide");
+      await wait(550);
+      items[s.item].classList.add("on", "pick");
+      await wait(600);
+      m1.classList.add("hide"); m2.classList.add("hide");
+      fb.classList.remove("on"); items[s.item].classList.remove("on", "pick");
+      if (s.edit) {
+        await wait(250);
+        editor.classList.remove("hide");
+        await wait(350);
+        editor.classList.add("draw");
+        await wait(1600);
+        var save = editor.querySelector(".ed-save");
+        save.classList.add("press"); await wait(160); save.classList.remove("press");
+        await wait(250);
+        editor.classList.add("hide");
+        await wait(300);
+        editor.classList.remove("draw");
+      } else {
+        await wait(250);
+      }
+      rows.forEach(function (r) { r.classList.remove("on"); });
+      s.add.forEach(addRow);
+      tTitle.textContent = s.title; tSub.textContent = s.sub;
+      toast.classList.remove("hide");
+      await wait(2300);
+      toast.classList.add("hide");
+    }
+    (async function loop() {
+      for (var n = 0; ; n = (n + 1) % scenes.length) {
+        while (document.hidden) await wait(500);
+        await run(scenes[n]);
+      }
+    })();
+  })();
 
   // Online site vs FilesBolt: run both lanes side by side, on a loop
   (function () {
