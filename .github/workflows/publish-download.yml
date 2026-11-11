@@ -1,0 +1,38 @@
+# Publishes the Windows installer as a GitHub Release.
+# Push FilesBolt-Setup-<version>.exe to the "incoming" branch; this workflow makes the
+# release (with a stable FilesBolt-Setup.exe name for the website button) and removes the branch.
+name: Publish download
+on:
+  push:
+    branches: [incoming]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: incoming
+      - name: Find installer
+        id: f
+        run: |
+          f=$(ls FilesBolt-Setup-*.exe | head -1)
+          v=${f#FilesBolt-Setup-}; v=${v%.exe}
+          cp "$f" FilesBolt-Setup.exe
+          echo "file=$f" >> $GITHUB_OUTPUT
+          echo "ver=$v" >> $GITHUB_OUTPUT
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.f.outputs.ver }}
+          target_commitish: main
+          name: FilesBolt ${{ steps.f.outputs.ver }} beta
+          body: |
+            FilesBolt for Windows 10 and 11. Download **FilesBolt-Setup.exe** and run it.
+          make_latest: true
+          files: |
+            ${{ steps.f.outputs.file }}
+            FilesBolt-Setup.exe
+      - name: Remove the incoming branch
+        run: git push origin --delete incoming
