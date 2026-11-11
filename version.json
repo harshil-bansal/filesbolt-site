@@ -1,0 +1,7 @@
+{
+  "version": "0.2.4",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.2.4/FilesBolt-Setup-0.2.4.exe",
+  "size": 53446318,
+  "sha256": "ddccd5cd568cf731543895497a035a9d2dd7c27f0d3e9829092ea77e90a18062",
+  "notes": "New: FilesBolt can now update itself. When a new version is out, you'll get a one-click Update now. You can also check in Settings > Updates."
+}
