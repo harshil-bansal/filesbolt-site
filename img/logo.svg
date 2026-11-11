@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <title>FilesBolt</title>
+  <rect x="40" y="40" width="944" height="944" rx="216" fill="#121417"/>
+  <path d="M286 236 H560 L676 352 V690 L582 818 H316 Q286 818 286 788 V266 Q286 236 316 236 Z" fill="#FFFFFF"/>
+  <path d="M560 236 V322 Q560 352 590 352 H676 Z" fill="#D9DCE1"/>
+  <rect x="352" y="440" width="200" height="34" rx="17" fill="#C4C8CE"/>
+  <rect x="352" y="516" width="160" height="34" rx="17" fill="#C4C8CE"/>
+  <rect x="352" y="592" width="120" height="34" rx="17" fill="#C4C8CE"/>
+  <path d="M700 414 L548 676 H652 L606 870 L800 586 H690 L748 414 Z" fill="#FFB800" stroke="#121417" stroke-width="26" stroke-linejoin="round"/>
+</svg>
