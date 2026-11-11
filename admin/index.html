@@ -219,6 +219,25 @@ td.acts button.danger { color: var(--bad); }
   </div>
 
   <section class="panel below">
+    <h2>Devices on an account</h2>
+    <p class="lead" style="margin-bottom:0">Each account can be signed in on one PC at a time, and on up to 3 different PCs in total.
+      If a customer has replaced their PCs, reset their devices here so they can sign in on new ones.</p>
+    <form class="row" id="devForm" style="margin-top:12px; max-width:560px">
+      <input type="email" id="devEmail" placeholder="name@example.com" aria-label="Account email" required>
+      <button class="btn shrink" id="devBtn">Show devices</button>
+    </form>
+    <div class="msg" id="devMsg" role="status"></div>
+    <div id="devOut" hidden style="margin-top:14px">
+      <div class="tablewrap"><table>
+        <thead><tr><th>Platform</th><th>Computer name</th><th>First used</th><th>Last used</th><th>Status</th></tr></thead>
+        <tbody id="devRows"></tbody>
+      </table></div>
+      <div class="actions"><button type="button" class="btn" id="devReset">Reset devices</button></div>
+      <p class="help" style="margin:8px 0 0">Reset removes every PC except the one signed in now, so the customer can add new PCs again.</p>
+    </div>
+  </section>
+
+  <section class="panel below">
     <h2>Restore a deleted account's email</h2>
     <p class="lead" style="margin-bottom:0">When someone deletes their account, that email can't sign up again. Restore it here after they contact support.</p>
     <form class="row" id="restoreForm" style="margin-top:12px; max-width:560px">
@@ -470,6 +489,44 @@ function showMade() {
 }
 $("#copyMade").onclick = async () => { await navigator.clipboard.writeText(lastMade.join("\n")); $("#copyMade").textContent = "Copied"; setTimeout(() => $("#copyMade").textContent = "Copy all", 1200); };
 $("#csvMade").onclick = () => csv(coupons.filter(c => lastMade.includes(c.code)), "filesbolt-new-codes.csv");
+
+/* ---------- devices ---------- */
+const PLAT = { windows: "Windows", mac: "Mac", android: "Android", ios: "iPhone" };
+let devEmail = "";
+async function showDevices() {
+  const m = $("#devMsg");
+  const r = await rpc("admin_devices", { e: devEmail });
+  if (!r.found) { $("#devOut").hidden = true; m.className = "msg bad"; m.textContent = "No account with that email."; return; }
+  const list = r.devices || [];
+  const used = list.filter(d => d.platform === "windows").length;
+  m.className = "msg"; m.textContent = `${r.email}: ${used} of ${r.limit} Windows PCs used.`;
+  $("#devRows").innerHTML = list.length ? list.map(d => `<tr>
+      <td class="nw">${esc(PLAT[d.platform] || d.platform)}</td>
+      <td>${esc(d.name || "Unnamed PC")} <span class="help">#${esc(d.id)}</span></td>
+      <td class="nw">${esc(fmt(d.first_seen))}</td><td class="nw">${esc(fmt(d.last_seen))}</td>
+      <td><span class="state ${d.active ? "live" : "paused"}">${d.active ? "Signed in" : "Signed out"}</span></td></tr>`).join("")
+    : `<tr><td colspan="5" class="empty">This account hasn't signed in on any PC yet.</td></tr>`;
+  $("#devOut").hidden = false;
+}
+$("#devForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const b = $("#devBtn"); b.disabled = true;
+  devEmail = $("#devEmail").value.trim();
+  try { await showDevices(); } catch (err) { $("#devMsg").className = "msg bad"; $("#devMsg").textContent = err.message; }
+  b.disabled = false;
+});
+$("#devReset").onclick = async () => {
+  const b = $("#devReset");
+  if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Click again to reset"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Reset devices"; }, 4000); return; }
+  b.disabled = true;
+  try {
+    const r = await rpc("admin_reset_devices", { e: devEmail });
+    await showDevices();
+    $("#devMsg").className = "msg ok";
+    $("#devMsg").textContent = `Reset done. Removed ${r.removed} old PC${r.removed === 1 ? "" : "s"}. ${devEmail} can now sign in on new PCs.`;
+  } catch (err) { $("#devMsg").className = "msg bad"; $("#devMsg").textContent = err.message; }
+  b.disabled = false; b.dataset.armed = ""; b.textContent = "Reset devices";
+};
 
 /* ---------- restore ---------- */
 $("#restoreForm").addEventListener("submit", async e => {
