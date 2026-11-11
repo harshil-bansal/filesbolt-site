@@ -1,7 +1,7 @@
 {
-  "version": "0.3.2",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.2/FilesBolt-Setup-0.3.2.exe",
-  "size": 53635120,
-  "sha256": "c5bb476c9268ada92127c06cce5f76dcb7fc74c0c22f20ae92bff01faad9dd6f",
-  "notes": "Fixes updates and sign-in failing on some PCs with a certificate error.\nRedeem coupon codes and delete your account from the account menu."
+  "version": "0.3.3",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.3/FilesBolt-Setup-0.3.3.exe",
+  "size": 53641256,
+  "sha256": "3cae641f5baf3a1531769c1c6cd03790dd2cb7de93ce6e60c68b11dae819a06d",
+  "notes": "Your account now works on one PC at a time. Signing in on another PC signs out the old one.\nEach account can be used on up to 3 PCs. Need more? Write to support@filesbolt.com."
 }
