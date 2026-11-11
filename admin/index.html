@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>FilesBolt admin</title>
+<link rel="icon" href="../img/favicon-32.png">
+<style>
+@font-face { font-family: "Onest"; src: url("../fonts/onest-regular.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Onest"; src: url("../fonts/onest-semibold.woff2") format("woff2"); font-weight: 600; }
+@font-face { font-family: "Onest"; src: url("../fonts/onest-bold.woff2") format("woff2"); font-weight: 700; }
+:root {
+  --ink: #121417; --text: #2B3038; --muted: #5D6470; --rule: #D9DCE1; --mist: #F2F3F5;
+  --paper: #FFFFFF; --amber: #FFB800; --amber-deep: #E5A500; --select: #CCE4F7;
+  --ok: #1E7F4F; --bad: #C62F37;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.5 "Onest", "Segoe UI", system-ui, sans-serif; color: var(--text); background: var(--mist); }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; border-radius: 4px; }
+[hidden] { display: none !important; }
+
+header { background: var(--ink); color: #fff; }
+.bar { max-width: 1320px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; gap: 12px; }
+.bar img { width: 28px; height: 28px; }
+.bar b { font-size: 17px; }
+.bar .who { margin-left: auto; color: #B9BEC6; font-size: 14px; }
+.bar button { background: none; border: 1px solid #3A3F47; color: #fff; border-radius: 6px; padding: 4px 12px; cursor: pointer; }
+
+main { max-width: 1320px; margin: 0 auto; padding: 24px; }
+h1 { font-size: 26px; margin: 0 0 4px; color: var(--ink); }
+h2 { font-size: 18px; margin: 0 0 14px; color: var(--ink); }
+.lead { color: var(--muted); margin: 0 0 20px; }
+
+.panel { background: var(--paper); border: 1px solid var(--rule); border-radius: 10px; padding: 22px; }
+.grid > * { min-width: 0; }
+.grid { display: grid; grid-template-columns: 390px 1fr; gap: 20px; align-items: start; }
+@media (max-width: 960px) { .grid { grid-template-columns: 1fr; } }
+
+.stats { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 0 0 20px; color: var(--muted); font-size: 14px; }
+.stats strong { color: var(--ink); font-size: 20px; font-weight: 700; margin-right: 6px; }
+
+label, .lbl { display: block; font-weight: 600; font-size: 14px; color: var(--ink); margin: 14px 0 6px; }
+.help { font-weight: 400; color: var(--muted); font-size: 13px; }
+input[type=text], input[type=number], input[type=date], input[type=email], input[type=password], textarea {
+  width: 100%; border: 1px solid var(--rule); border-radius: 7px; padding: 8px 10px; background: #fff;
+}
+input:focus, textarea:focus { border-color: var(--ink); outline: none; box-shadow: 0 0 0 3px rgba(18,20,23,.08); }
+textarea { resize: vertical; min-height: 54px; }
+.row { display: flex; gap: 8px; align-items: center; }
+.row > * { flex: 1; }
+.row > .shrink { flex: 0 0 auto; }
+#code { text-transform: uppercase; letter-spacing: .04em; font-weight: 600; }
+
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; padding: 3px; background: var(--mist); }
+.seg button { border: 0; background: none; padding: 5px 14px; border-radius: 6px; cursor: pointer; color: var(--muted); }
+.seg button[aria-pressed=true] { background: #fff; color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+
+.choice { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--rule); border-radius: 8px; margin-top: 6px; cursor: pointer; }
+.choice:has(input:checked) { border-color: var(--ink); background: #FAFAFB; }
+.choice input[type=radio] { accent-color: var(--ink); margin: 0; }
+.choice .grow { flex: 1; white-space: nowrap; }
+.choice input[type=number] { width: 84px; flex: 0 0 auto; }
+.choice input[type=date] { width: 160px; flex: 0 0 auto; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0 30px; }
+.chips button { white-space: nowrap; }
+.chips button { border: 1px solid var(--rule); background: #fff; border-radius: 999px; padding: 2px 10px; font-size: 13px; cursor: pointer; }
+.chips button:hover { border-color: var(--ink); }
+
+.btn { border: 1px solid var(--rule); background: #fff; border-radius: 7px; padding: 8px 14px; cursor: pointer; font-weight: 600; }
+.btn:hover { border-color: var(--ink); }
+.btn.primary { background: var(--amber); border-color: var(--amber); color: var(--ink); }
+.btn.primary:hover { background: var(--amber-deep); border-color: var(--amber-deep); }
+.btn:disabled { opacity: .55; cursor: default; }
+.actions { display: flex; gap: 8px; margin-top: 20px; }
+.msg { margin-top: 12px; font-size: 14px; }
+.msg.bad { color: var(--bad); }
+.msg.ok { color: var(--ok); }
+
+.made { margin-top: 14px; background: var(--mist); border-radius: 8px; padding: 12px; }
+.made pre { margin: 8px 0 0; max-height: 180px; overflow: auto; font: 13px/1.6 Consolas, monospace; }
+
+.tools { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+.tools input { max-width: 260px; }
+.tools .count { color: var(--muted); font-size: 14px; margin-left: auto; }
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-weight: 600; color: var(--muted); font-size: 13px; padding: 6px 10px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+td { padding: 10px; border-bottom: 1px solid var(--mist); vertical-align: top; }
+tr:hover td { background: #FAFAFB; }
+td.code button { all: unset; cursor: copy; font-weight: 700; }
+td.code button:hover { text-decoration: underline; }
+td.code { font-weight: 700; color: var(--ink); white-space: nowrap; letter-spacing: .03em; }
+td.code .note { font-weight: 400; color: var(--muted); font-size: 13px; letter-spacing: 0; white-space: normal; max-width: 220px; }
+td.nw { white-space: nowrap; }
+td.acts { white-space: nowrap; text-align: right; }
+td.acts button { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+td.acts button:hover { color: var(--ink); background: var(--mist); }
+td.acts button.danger { color: var(--bad); }
+.state { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+.state.live { background: #E3F4EA; color: var(--ok); }
+.state.paused { background: var(--mist); color: var(--muted); }
+.state.ended { background: #FBE7E8; color: var(--bad); }
+.state.soon { background: #FFF4D1; color: #8A6400; }
+.empty { color: var(--muted); padding: 28px 10px; text-align: center; }
+
+.signin { max-width: 380px; margin: 60px auto; }
+.below { margin-top: 20px; }
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <img src="../img/logo.svg" alt="">
+  <b>FilesBolt admin</b>
+  <span class="who" id="who"></span>
+  <button id="signout" hidden>Sign out</button>
+</div></header>
+
+<!-- Sign in -->
+<main id="signinView" hidden>
+  <form class="panel signin" id="signinForm">
+    <h1>Sign in</h1>
+    <p class="lead">Use your FilesBolt admin account.</p>
+    <label for="em">Email</label>
+    <input type="email" id="em" autocomplete="username" required>
+    <label for="pw">Password</label>
+    <input type="password" id="pw" autocomplete="current-password" required>
+    <div class="actions"><button class="btn primary" id="signinBtn">Sign in</button></div>
+    <div class="msg bad" id="signinMsg"></div>
+  </form>
+</main>
+
+<!-- Admin -->
+<main id="adminView" hidden>
+  <h1>Coupon codes</h1>
+  <div class="stats" id="stats"></div>
+
+  <div class="grid">
+    <form class="panel" id="form" autocomplete="off">
+      <div class="row" style="justify-content:space-between">
+        <h2 id="formTitle" style="margin:0">New code</h2>
+        <div class="seg shrink" role="group" aria-label="How many codes">
+          <button type="button" data-mode="one" aria-pressed="true">One code</button>
+          <button type="button" data-mode="bulk" aria-pressed="false">Many codes</button>
+        </div>
+      </div>
+
+      <div data-for="one">
+        <label for="code">Code <span class="help">— what customers type</span></label>
+        <div class="row">
+          <input type="text" id="code" maxlength="40" placeholder="LAUNCH60">
+          <button type="button" class="btn shrink" id="gen">Generate</button>
+        </div>
+      </div>
+      <div data-for="bulk" hidden>
+        <div class="row">
+          <div><label for="prefix">Prefix <span class="help">(optional)</span></label>
+            <input type="text" id="prefix" maxlength="12" placeholder="GIFT"></div>
+          <div class="shrink" style="width:110px"><label for="howMany">How many</label>
+            <input type="number" id="howMany" min="1" max="500" value="10"></div>
+        </div>
+        <p class="help" style="margin:6px 0 0">Each code works once, e.g. GIFT-7KQ2-MX9A.</p>
+      </div>
+
+      <span class="lbl">Gives</span>
+      <label class="choice"><input type="radio" name="kind" value="days" checked>
+        <span class="grow">Unlimited for</span><input type="number" id="days" min="1" value="30"> days</label>
+      <div class="chips">
+        <button type="button" data-days="30">30 days</button>
+        <button type="button" data-days="60">60 days</button>
+        <button type="button" data-days="90">90 days</button>
+        <button type="button" data-days="365">1 year</button>
+      </div>
+      <label class="choice"><input type="radio" name="kind" value="until">
+        <span class="grow">Unlimited until</span><input type="date" id="until"></label>
+      <label class="choice"><input type="radio" name="kind" value="lifetime">
+        <span class="grow">Lifetime, never ends</span></label>
+
+      <div data-for="one">
+        <label for="maxUses">Total uses <span class="help">— blank for no limit</span></label>
+        <input type="number" id="maxUses" min="1" placeholder="No limit">
+      </div>
+
+      <div class="row" style="align-items:end">
+        <div><label for="starts">First day <span class="help">(optional)</span></label><input type="date" id="starts"></div>
+        <div><label for="expires">Last day <span class="help">(optional)</span></label><input type="date" id="expires"></div>
+      </div>
+
+      <label for="note">Note <span class="help">— only you see this</span></label>
+      <textarea id="note" maxlength="300" placeholder="e.g. Launch email, November"></textarea>
+
+      <div class="actions">
+        <button class="btn primary" id="save">Create code</button>
+        <button type="button" class="btn" id="cancelEdit" hidden>Cancel</button>
+      </div>
+      <div class="msg" id="formMsg" role="status"></div>
+      <div class="made" id="made" hidden>
+        <div class="row"><b id="madeTitle"></b>
+          <button type="button" class="btn shrink" id="copyMade">Copy all</button>
+          <button type="button" class="btn shrink" id="csvMade">Download CSV</button></div>
+        <pre id="madeList"></pre>
+      </div>
+    </form>
+
+    <section class="panel">
+      <div class="tools">
+        <input type="text" id="search" placeholder="Search codes and notes" aria-label="Search codes and notes">
+        <button type="button" class="btn" id="csvAll">Download CSV</button>
+        <span class="count" id="count"></span>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Code <span class="help">(click to copy)</span></th><th>Gives</th><th>Used</th><th>Valid</th><th>Status</th><th></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel below">
+    <h2>Restore a deleted account's email</h2>
+    <p class="lead" style="margin-bottom:0">When someone deletes their account, that email can't sign up again. Restore it here after they contact support.</p>
+    <form class="row" id="restoreForm" style="margin-top:12px; max-width:560px">
+      <input type="email" id="restoreEmail" placeholder="name@example.com" aria-label="Email to restore" required>
+      <button class="btn shrink" id="restoreBtn">Restore email</button>
+    </form>
+    <div class="msg" id="restoreMsg" role="status"></div>
+  </section>
+</main>
+
+<script>
+const U = "https://aovtkaljtayxuxuzureh.supabase.co";
+const K = "sb_publishable_qK3cBBkyFVLg7FKiLfiYFQ_Q7Ss2Sf9";
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+let coupons = [], mode = "one", editing = null, lastMade = [];
+
+/* ---------- session (kept only for this browser tab) ---------- */
+const S = {
+  get() { try { return JSON.parse(sessionStorage.getItem("fb_admin") || "null"); } catch { return null; } },
+  set(v) { try { v ? sessionStorage.setItem("fb_admin", JSON.stringify(v)) : sessionStorage.removeItem("fb_admin"); } catch {} },
+};
+async function call(path, body, auth = true) {
+  const h = { apikey: K, "Content-Type": "application/json" };
+  if (auth) h.Authorization = "Bearer " + await token();
+  const r = await fetch(U + path, { method: "POST", headers: h, body: JSON.stringify(body || {}) });
+  const t = await r.text();
+  let j = null; try { j = t ? JSON.parse(t) : null; } catch {}
+  if (!r.ok) {
+    const m = (j && (j.message || j.msg || j.error_description)) || ("Error " + r.status);
+    throw new Error(m === "not_admin" ? "This account isn't an admin." :
+                    m === "Invalid login credentials" ? "That email and password don't match." : m);
+  }
+  return j;
+}
+async function token() {
+  let s = S.get();
+  if (!s) throw new Error("Please sign in again.");
+  if (Date.now() / 1000 > s.expires_at - 60) {
+    const n = await call("/auth/v1/token?grant_type=refresh_token", { refresh_token: s.refresh_token }, false)
+      .catch(() => { S.set(null); show(); throw new Error("Please sign in again."); });
+    s = { access_token: n.access_token, refresh_token: n.refresh_token, expires_at: n.expires_at, email: s.email };
+    S.set(s);
+  }
+  return s.access_token;
+}
+const rpc = (name, body) => call("/rest/v1/rpc/" + name, body);
+
+/* ---------- views ---------- */
+async function show() {
+  const s = S.get();
+  $("#signinView").hidden = !!s;
+  $("#adminView").hidden = !s;
+  $("#signout").hidden = !s;
+  $("#who").textContent = s ? s.email : "";
+  if (s) { await Promise.all([load(), stats()]); }
+  else $("#em").focus();
+}
+$("#signinForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const b = $("#signinBtn"); b.disabled = true; $("#signinMsg").textContent = "";
+  try {
+    const r = await call("/auth/v1/token?grant_type=password", { email: $("#em").value.trim(), password: $("#pw").value }, false);
+    S.set({ access_token: r.access_token, refresh_token: r.refresh_token, expires_at: r.expires_at, email: r.user.email });
+    await rpc("admin_is_admin");
+    $("#pw").value = "";
+    show();
+  } catch (err) { S.set(null); $("#signinMsg").textContent = err.message; }
+  b.disabled = false;
+});
+$("#signout").onclick = async () => {
+  try { await call("/auth/v1/logout", {}); } catch {}
+  S.set(null); show();
+};
+
+/* ---------- data ---------- */
+async function stats() {
+  try {
+    const s = await rpc("admin_stats");
+    $("#stats").innerHTML = [
+      [s.accounts, "accounts"], [s.on_trial, "on free trial"], [s.paid_or_coupon, "unlimited (coupon or paid)"],
+      [s.redemptions, "codes redeemed"], [s.deleted, "deleted accounts"]]
+      .map(([n, l]) => `<span><strong>${n}</strong>${l}</span>`).join("");
+  } catch (e) { $("#stats").textContent = e.message; }
+}
+async function load() {
+  try { coupons = await rpc("admin_list_coupons") || []; render(); }
+  catch (e) { $("#rows").innerHTML = `<tr><td colspan="6" class="empty">${esc(e.message)}</td></tr>`; }
+}
+
+/* ---------- helpers ---------- */
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = iso => iso ? new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "";
+const dayStart = d => d ? new Date(d + "T00:00:00").toISOString() : null;
+const dayEnd = d => d ? new Date(d + "T23:59:59").toISOString() : null;
+const toDateInput = iso => { if (!iso) return ""; const d = new Date(iso); return new Date(d - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
+function gives(c) {
+  if (c.grant_until) return "Until " + fmt(c.grant_until);
+  if (c.days == null) return "Lifetime";
+  if (c.days === 365) return "1 year";
+  return c.days + " days";
+}
+function status(c) {
+  const now = new Date();
+  if (!c.active) return ["paused", "Paused"];
+  if (c.expires_at && new Date(c.expires_at) < now) return ["ended", "Expired"];
+  if (c.max_uses != null && c.uses >= c.max_uses) return ["ended", "Used up"];
+  if (c.starts_at && new Date(c.starts_at) > now) return ["soon", "Starts " + fmt(c.starts_at)];
+  return ["live", "Active"];
+}
+function valid(c) {
+  if (!c.starts_at && !c.expires_at) return "Any time";
+  if (!c.expires_at) return "From " + fmt(c.starts_at);
+  if (!c.starts_at) return "Until " + fmt(c.expires_at);
+  return fmt(c.starts_at) + " – " + fmt(c.expires_at);
+}
+function csv(list, name) {
+  const head = ["code", "gives", "uses", "max_uses", "starts", "last_day", "status", "note"];
+  const lines = [head.join(",")].concat(list.map(c => [c.code, gives(c), c.uses ?? 0, c.max_uses ?? "", fmt(c.starts_at), fmt(c.expires_at), status(c)[1], c.note || ""]
+    .map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")));
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([lines.join("\r\n")], { type: "text/csv" }));
+  a.download = name; a.click(); URL.revokeObjectURL(a.href);
+}
+
+/* ---------- table ---------- */
+function render() {
+  const q = $("#search").value.trim().toLowerCase();
+  const list = coupons.filter(c => !q || c.code.toLowerCase().includes(q) || (c.note || "").toLowerCase().includes(q));
+  $("#count").textContent = `${list.length} of ${coupons.length} codes`;
+  if (!coupons.length) { $("#rows").innerHTML = `<tr><td colspan="6" class="empty">No codes yet. Create your first one on the left.</td></tr>`; return; }
+  if (!list.length) { $("#rows").innerHTML = `<tr><td colspan="6" class="empty">No codes match “${esc(q)}”.</td></tr>`; return; }
+  $("#rows").innerHTML = list.map(c => {
+    const [cls, txt] = status(c);
+    return `<tr data-code="${esc(c.code)}">
+      <td class="code"><button data-act="copy" title="Copy code">${esc(c.code)}</button>${c.note ? `<div class="note">${esc(c.note)}</div>` : ""}</td>
+      <td class="nw">${esc(gives(c))}</td>
+      <td class="nw">${c.uses ?? 0}${c.max_uses != null ? " / " + c.max_uses : ""}</td>
+      <td class="nw">${esc(valid(c))}</td>
+      <td><span class="state ${cls}">${esc(txt)}</span></td>
+      <td class="acts">
+        <button data-act="edit">Edit</button>
+        <button data-act="toggle">${c.active ? "Pause" : "Resume"}</button>
+        <button data-act="delete" class="danger">Delete</button>
+      </td></tr>`;
+  }).join("");
+}
+$("#search").addEventListener("input", render);
+$("#csvAll").onclick = () => csv(coupons, "filesbolt-codes.csv");
+$("#rows").addEventListener("click", async e => {
+  const b = e.target.closest("button"); if (!b) return;
+  const code = b.closest("tr").dataset.code, c = coupons.find(x => x.code === code);
+  const act = b.dataset.act;
+  if (act === "copy") { await navigator.clipboard.writeText(code); b.textContent = "Copied"; setTimeout(() => b.textContent = code, 1000); return; }
+  if (act === "edit") return startEdit(c);
+  if (act === "delete" && b.dataset.armed !== "1") {
+    b.dataset.armed = "1"; b.textContent = c.uses ? `Delete? (used ${c.uses}×)` : "Delete?";
+    setTimeout(() => { if (b.isConnected) { b.dataset.armed = ""; b.textContent = "Delete"; } }, 4000);
+    return;
+  }
+  b.disabled = true;
+  try {
+    if (act === "toggle") await rpc("admin_set_active", { code, active: !c.active });
+    if (act === "delete") await rpc("admin_delete_coupon", { code });
+    await load(); stats();
+  } catch (err) { alertRow(b, err.message); }
+});
+function alertRow(b, m) { b.disabled = false; b.textContent = m; }
+
+/* ---------- form ---------- */
+function setMode(m) {
+  mode = m;
+  $$(".seg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === m)));
+  $$("[data-for]").forEach(el => el.hidden = el.dataset.for !== m);
+  $("#save").textContent = editing ? "Save changes" : m === "bulk" ? "Create codes" : "Create code";
+}
+$$(".seg button").forEach(b => b.onclick = () => { if (!editing) setMode(b.dataset.mode); });
+$$(".chips button").forEach(b => b.onclick = () => { $("#days").value = b.dataset.days; document.querySelector("input[name=kind][value=days]").checked = true; });
+$("#days").addEventListener("focus", () => document.querySelector("input[name=kind][value=days]").checked = true);
+$("#until").addEventListener("focus", () => document.querySelector("input[name=kind][value=until]").checked = true);
+$("#gen").onclick = () => {
+  const A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", r = crypto.getRandomValues(new Uint8Array(8));
+  const s = [...r].map(x => A[x % A.length]).join("");
+  $("#code").value = s.slice(0, 4) + "-" + s.slice(4);
+};
+
+function startEdit(c) {
+  editing = c.code; setMode("one");
+  $("#formTitle").textContent = "Edit " + c.code;
+  $("#code").value = c.code; $("#code").disabled = true; $("#gen").disabled = true;
+  const kind = c.grant_until ? "until" : c.days == null ? "lifetime" : "days";
+  document.querySelector(`input[name=kind][value=${kind}]`).checked = true;
+  $("#days").value = c.days ?? 30; $("#until").value = toDateInput(c.grant_until);
+  $("#maxUses").value = c.max_uses ?? ""; $("#starts").value = toDateInput(c.starts_at); $("#expires").value = toDateInput(c.expires_at);
+  $("#note").value = c.note || "";
+  $("#cancelEdit").hidden = false; $("#save").textContent = "Save changes";
+  msg(c.uses ? `Already used ${c.uses}×. Changes apply to future uses only.` : "");
+  $("#form").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function resetForm() {
+  editing = null; $("#form").reset(); $("#code").disabled = false; $("#gen").disabled = false;
+  $("#formTitle").textContent = "New code"; $("#cancelEdit").hidden = true; setMode(mode);
+}
+$("#cancelEdit").onclick = () => { resetForm(); msg(""); };
+function msg(t, kind = "") { const m = $("#formMsg"); m.textContent = t; m.className = "msg " + kind; }
+
+$("#form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const kind = document.querySelector("input[name=kind]:checked").value;
+  const days = parseInt($("#days").value, 10);
+  const p = {
+    kind,
+    days: kind === "days" ? days : null,
+    grant_until: kind === "until" ? dayEnd($("#until").value) : null,
+    starts_at: dayStart($("#starts").value),
+    expires_at: dayEnd($("#expires").value),
+    note: $("#note").value.trim() || null,
+  };
+  if (kind === "days" && !(days >= 1)) return msg("Enter how many days (1 or more).", "bad");
+  if (kind === "until" && !p.grant_until) return msg("Choose the date access ends.", "bad");
+  if (kind === "until" && new Date(p.grant_until) < new Date()) return msg("That end date has already passed.", "bad");
+  if (p.starts_at && p.expires_at && p.expires_at < p.starts_at) return msg("The last day to use comes before the start date.", "bad");
+  const b = $("#save"); b.disabled = true; msg("Saving…");
+  try {
+    if (mode === "bulk" && !editing) {
+      const n = parseInt($("#howMany").value, 10);
+      if (!(n >= 1 && n <= 500)) throw new Error("Make between 1 and 500 codes at a time.");
+      lastMade = await rpc("admin_bulk_coupons", { prefix: $("#prefix").value.trim(), how_many: n, ...p });
+      msg(`Created ${lastMade.length} codes.`, "ok");
+    } else {
+      const code = (editing || $("#code").value).trim().toUpperCase();
+      if (!code) throw new Error("Enter a code name, or use Generate.");
+      if (!editing && coupons.some(c => c.code === code.replace(/[^A-Z0-9_-]/g, ""))) throw new Error(`${code} already exists. Pick another name, or edit that code.`);
+      const mu = $("#maxUses").value.trim();
+      const cur = coupons.find(c => c.code === editing);
+      const r = await rpc("admin_save_coupon", { code, ...p, max_uses: mu ? parseInt(mu, 10) : null, active: cur ? cur.active : true });
+      lastMade = editing ? [] : [r.code];
+      msg(editing ? `Saved ${r.code}.` : `Created ${r.code}.`, "ok");
+    }
+    showMade(); resetForm(); await load(); stats();
+  } catch (err) { msg(err.message, "bad"); }
+  b.disabled = false;
+});
+function showMade() {
+  $("#made").hidden = !lastMade.length;
+  if (!lastMade.length) return;
+  $("#madeTitle").textContent = lastMade.length === 1 ? "New code" : `${lastMade.length} new codes`;
+  $("#madeList").textContent = lastMade.join("\n");
+}
+$("#copyMade").onclick = async () => { await navigator.clipboard.writeText(lastMade.join("\n")); $("#copyMade").textContent = "Copied"; setTimeout(() => $("#copyMade").textContent = "Copy all", 1200); };
+$("#csvMade").onclick = () => csv(coupons.filter(c => lastMade.includes(c.code)), "filesbolt-new-codes.csv");
+
+/* ---------- restore ---------- */
+$("#restoreForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const m = $("#restoreMsg"), b = $("#restoreBtn"); b.disabled = true;
+  try {
+    const r = await rpc("admin_restore_email", { e: $("#restoreEmail").value.trim() });
+    const ok = String(r).startsWith("restored");
+    m.className = "msg " + (ok ? "ok" : "bad");
+    m.textContent = ok ? `Done. ${$("#restoreEmail").value.trim()} can sign up again.` : "That email isn't on the deleted list.";
+    if (ok) { $("#restoreEmail").value = ""; stats(); }
+  } catch (err) { m.className = "msg bad"; m.textContent = err.message; }
+  b.disabled = false;
+});
+
+show();
+</script>
+</body>
+</html>

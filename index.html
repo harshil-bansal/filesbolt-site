@@ -88,6 +88,34 @@
   </div>
 </section>
 
+<section class="race" aria-labelledby="race-h">
+  <div class="wrap">
+    <h2 id="race-h">Why send private files to a stranger's website?</h2>
+    <p class="sub">Online PDF sites make you upload your files to a company you've never heard of, wait while they work on them, then download them again. FilesBolt does the same job on your own PC in a few clicks.</p>
+    <div class="lanes">
+      <div class="lane web" data-lane="web">
+        <div class="lane-top"><h3>A typical online PDF site</h3><span class="clock" aria-hidden="true">0:00</span></div>
+        <ol class="steps">
+          <li><div class="step-name"><span>Upload your files to their server</span><em>minutes</em></div><div class="track"><div class="fill"></div></div></li>
+          <li><div class="step-name"><span>Wait while they merge or compress</span><em>wait</em></div><div class="track"><div class="fill"></div></div></li>
+          <li><div class="step-name"><span>Download the result</span><em>minutes</em></div><div class="track"><div class="fill"></div></div></li>
+        </ol>
+        <p class="lane-foot"><span class="dot" aria-hidden="true">!</span><span>A copy of your files now sits on someone else's server.</span></p>
+      </div>
+      <div class="lane fb" data-lane="fb">
+        <div class="lane-top"><h3>FilesBolt</h3><span class="clock" aria-hidden="true">0:00</span></div>
+        <ol class="steps">
+          <li><div class="step-name"><span>Select your files</span><em>click</em></div><div class="track"><div class="fill"></div></div></li>
+          <li><div class="step-name"><span>Right-click, then FilesBolt</span><em>click</em></div><div class="track"><div class="fill"></div></div></li>
+          <li><div class="step-name"><span>Choose Merge, Compress or Convert</span><em>click</em></div><div class="track"><div class="fill"></div></div></li>
+        </ol>
+        <p class="lane-foot"><span class="dot" aria-hidden="true">✓</span><span>Done in about a second. Nothing left your PC.</span></p>
+      </div>
+    </div>
+    <p class="race-note">Animation is sped up. Online upload and download times depend on your files and your internet connection.</p>
+  </div>
+</section>
+
 <section id="tools" class="tools">
   <div class="wrap">
     <h2>Every everyday file job, in one place</h2>
@@ -178,7 +206,7 @@
     <div class="dl-copy">
       <h2>FilesBolt for Windows</h2>
       <dl class="dl-meta">
-        <div><dt>Version</dt><dd data-ver>0.3.0 beta</dd></div>
+        <div><dt>Version</dt><dd data-ver>0.3.0</dd></div>
         <div><dt>Works on</dt><dd>Windows 10 and 11</dd></div>
         <div><dt>Size</dt><dd data-size>51 MB</dd></div>
         <div><dt>Price</dt><dd>30 days free, then 10 jobs a month free</dd></div>
@@ -251,11 +279,50 @@
     });
   });
 
-  // Hero: play the right-click demo once
+  var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Hero: replay the right-click demo every few seconds
   var demo = document.querySelector(".demo");
-  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  function playDemo() {
+    demo.classList.remove("play", "out");
+    void demo.offsetWidth;            // restart the CSS animations
     demo.classList.add("play");
+    setTimeout(function () { demo.classList.add("out"); }, 6800);
   }
+  if (!still) { playDemo(); setInterval(playDemo, 7400); }
+
+  // Online site vs FilesBolt: run both lanes side by side, on a loop
+  (function () {
+    var lanes = {
+      web: { el: document.querySelector('[data-lane="web"]'), steps: [3.2, 1.8, 2.6], real: 186 }, // seconds shown sped up
+      fb:  { el: document.querySelector('[data-lane="fb"]'),  steps: [0.35, 0.35, 0.35], real: 1 }
+    };
+    var CYCLE = 10.5;
+    function paint(t) {
+      ["web", "fb"].forEach(function (k) {
+        var L = lanes[k], fills = L.el.querySelectorAll(".fill"), total = 0, start = 0;
+        L.steps.forEach(function (d) { total += d; });
+        L.steps.forEach(function (d, i) {
+          var p = Math.max(0, Math.min(1, (t - start) / d));
+          fills[i].style.width = (p * 100) + "%";
+          start += d;
+        });
+        var secs = Math.round(Math.min(t, total) / total * L.real);
+        L.el.querySelector(".clock").textContent = Math.floor(secs / 60) + ":" + ("0" + secs % 60).slice(-2);
+        L.el.querySelector(".lane-foot").style.opacity = t >= total ? 1 : 0.25;
+      });
+    }
+    if (still) { paint(99); return; }
+    var t0 = null, visible = false;
+    new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(document.querySelector(".race"));
+    function frame(now) {
+      if (t0 === null) t0 = now;
+      if (!visible || document.hidden) { t0 = now - 0; }   // start again when it comes into view
+      paint(((now - t0) / 1000) % CYCLE);
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
 </script>
 </body>
 </html>

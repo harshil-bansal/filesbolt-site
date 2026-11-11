@@ -39,7 +39,7 @@ jobs:
         with:
           tag_name: v${{ steps.f.outputs.ver }}
           target_commitish: main
-          name: FilesBolt ${{ steps.f.outputs.ver }} beta
+          name: FilesBolt ${{ steps.f.outputs.ver }}
           body: |
             FilesBolt for Windows 10 and 11. Download **FilesBolt-Setup.exe** and run it.
 
@@ -69,7 +69,7 @@ jobs:
           }
           open("version.json", "w").write(json.dumps(info, indent=2) + "\n")
           s = open("index.html").read()
-          s = re.sub(r"<dd data-ver>[^<]*</dd>", f"<dd data-ver>{v} beta</dd>", s)
+          s = re.sub(r"<dd data-ver>[^<]*</dd>", f"<dd data-ver>{v}</dd>", s)
           s = re.sub(r"<dd data-size>[^<]*</dd>", f"<dd data-size>{round(size / 1048576)} MB</dd>", s)
           open("index.html", "w").write(s)
           PY
