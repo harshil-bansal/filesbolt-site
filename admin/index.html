@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src https://aovtkaljtayxuxuzureh.supabase.co https://api.github.com; object-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>FilesBolt admin</title>
@@ -153,6 +155,15 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
       <button type="button" class="btn" id="forgotBtn">Forgot password?</button></div>
     <div class="msg bad" id="signinMsg"></div>
   </form>
+  <form class="panel signin" id="mfaForm" hidden>
+    <h1>Two-step sign-in</h1>
+    <p class="lead">Open your authenticator app and enter the 6-digit code for FilesBolt.</p>
+    <label for="mfaCode">Code</label>
+    <input type="text" id="mfaCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required>
+    <div class="actions"><button class="btn primary" id="mfaBtn">Verify</button>
+      <button type="button" class="btn" id="mfaBack">Back</button></div>
+    <div class="msg bad" id="mfaMsg"></div>
+  </form>
   <form class="panel signin" id="resetForm" hidden>
     <h1>Reset password</h1>
     <p class="lead" id="resetLead">We emailed you a 6-digit code. Enter it and choose a new password.</p>
@@ -170,8 +181,29 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
 <main id="adminView" hidden>
   <nav class="jump" aria-label="Sections">
     <a href="#sec-coupons">Coupons</a><a href="#sec-accounts">Accounts</a><a href="#sec-plans">Plans</a><a href="#sec-errors">Error reports</a>
-    <a href="#sec-devices">Devices</a><a href="#sec-restore">Deleted emails</a><a href="#sec-admins" id="jumpAdmins" hidden>Admins</a>
+    <a href="#sec-devices">Devices</a><a href="#sec-restore">Deleted emails</a><a href="#sec-activity">Activity</a><a href="#sec-admins" id="jumpAdmins" hidden>Admins</a>
   </nav>
+  <section class="panel" id="mfaSetup" hidden style="margin-bottom:20px;border-color:var(--amber)">
+    <h2>Turn on two-step sign-in</h2>
+    <p class="lead" style="margin-bottom:12px">Protect this page with a code from an authenticator app on your phone (Google Authenticator,
+      Microsoft Authenticator or similar). Then even someone who learns your password can't get in.</p>
+    <button type="button" class="btn primary" id="mfaStart">Set up</button>
+    <form id="mfaSetupForm" autocomplete="off">
+      <div id="mfaStep2" hidden>
+        <div class="row" style="align-items:flex-start;gap:24px;flex-wrap:wrap">
+          <img id="mfaQr" alt="QR code for your authenticator app" class="shrink" style="width:180px;height:180px;background:#fff;border:1px solid var(--rule);border-radius:8px;padding:6px">
+          <div>
+            <p style="margin:0 0 8px"><b>1.</b> In your authenticator app, add an account and scan this QR code.</p>
+            <p class="help" style="margin:0 0 14px">Can't scan? Type this key instead: <code id="mfaSecret" style="font-size:13px"></code></p>
+            <p style="margin:0 0 8px"><b>2.</b> Enter the 6-digit code the app shows.</p>
+            <div class="row" style="max-width:320px"><input type="text" id="mfaSetupCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="6-digit code">
+              <button class="btn primary shrink" id="mfaConfirm">Turn on</button></div>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div class="msg" id="mfaSetupMsg" role="status"></div>
+  </section>
   <div class="stats" id="stats"></div>
   <h1 id="sec-coupons">Coupon codes</h1>
 
@@ -324,6 +356,18 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     <div class="msg" id="restoreMsg" role="status"></div>
   </section>
 
+  <section class="panel below" id="sec-activity">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">Activity log</h2>
+      <button type="button" class="btn shrink" id="actReload">Refresh</button>
+    </div>
+    <p class="lead" style="margin:6px 0 0">Every change made from this page: who did it, when, and what changed.</p>
+    <div class="tablewrap" style="margin-top:12px"><table>
+      <thead><tr><th>When</th><th>Admin</th><th>What</th><th>Details</th></tr></thead>
+      <tbody id="actRows"></tbody>
+    </table></div>
+  </section>
+
   <section class="panel below" id="sec-admins" hidden>
     <h2>Admins</h2>
     <p class="lead" style="margin-bottom:0">Admins can use everything on this page except this section. Only you, the super admin, can add or remove admins.
@@ -360,6 +404,7 @@ async function call(path, body, auth = true) {
   let j = null; try { j = t ? JSON.parse(t) : null; } catch {}
   if (!r.ok) {
     const m = (j && (j.message || j.msg || j.error_description)) || ("Error " + r.status);
+    if (m === "mfa_required") { S.set(null); show(); throw new Error("Please sign in again with your authenticator code."); }
     throw new Error(m === "not_admin" ? "This account isn't an admin." :
                     m === "Invalid login credentials" ? "That email and password don't match." : m);
   }
@@ -378,6 +423,85 @@ async function token() {
 }
 const rpc = (name, body) => call("/rest/v1/rpc/" + name, body);
 
+/* ---------- two-step sign-in (authenticator app, Supabase MFA) ---------- */
+async function authed(method, path, tok, body) {
+  const r = await fetch(U + path, { method, headers: { apikey: K, "Content-Type": "application/json", Authorization: "Bearer " + tok },
+    body: body ? JSON.stringify(body) : undefined });
+  const t = await r.text(); let j = null; try { j = t ? JSON.parse(t) : null; } catch {}
+  if (!r.ok) throw new Error((j && (j.msg || j.message || j.error_description)) || ("Error " + r.status));
+  return j;
+}
+const sess = (r, email) => ({ access_token: r.access_token, refresh_token: r.refresh_token,
+  expires_at: r.expires_at || Math.floor(Date.now() / 1000) + (r.expires_in || 3600), email: email || (r.user && r.user.email) });
+let pendingMfa = null;
+async function finishSignIn(r) {
+  const u = await authed("GET", "/auth/v1/user", r.access_token);
+  const f = (u.factors || []).find(x => x.factor_type === "totp" && x.status === "verified");
+  if (f) {
+    pendingMfa = { r, factor: f.id, email: u.email };
+    $("#signinForm").hidden = true; $("#resetForm").hidden = true; $("#mfaForm").hidden = false;
+    $("#mfaMsg").textContent = ""; $("#mfaCode").value = ""; $("#mfaCode").focus();
+    return;
+  }
+  S.set(sess(r, u.email));
+  if (await rpc("admin_is_admin") !== true) { S.set(null); throw new Error("This account isn't an admin."); }
+  show();
+}
+async function mfaVerify(tok, factor, code) {
+  const ch = await authed("POST", `/auth/v1/factors/${factor}/challenge`, tok, {});
+  return authed("POST", `/auth/v1/factors/${factor}/verify`, tok, { challenge_id: ch.id, code });
+}
+$("#mfaForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const b = $("#mfaBtn"), m = $("#mfaMsg"); b.disabled = true; m.textContent = "";
+  try {
+    const v = await mfaVerify(pendingMfa.r.access_token, pendingMfa.factor, $("#mfaCode").value.trim());
+    S.set(sess(v, pendingMfa.email)); pendingMfa = null;
+    if (await rpc("admin_is_admin") !== true) { S.set(null); throw new Error("This account isn't an admin."); }
+    $("#mfaForm").hidden = true; $("#signinForm").hidden = false;
+    show();
+  } catch (err) { m.textContent = /invalid|expired|code/i.test(err.message) ? "That code isn't right. Check the time on your phone and try the newest code." : err.message; }
+  b.disabled = false;
+});
+$("#mfaBack").onclick = () => { pendingMfa = null; $("#mfaForm").hidden = true; $("#signinForm").hidden = false; };
+
+// Set up (shown inside the admin page when two-step isn't on yet)
+let enrolling = null;
+async function securityBanner() {
+  try {
+    const sec = await rpc("admin_security");
+    $("#mfaSetup").hidden = sec.mfa_on;
+  } catch { $("#mfaSetup").hidden = true; }
+}
+$("#mfaStart").onclick = async () => {
+  const m = $("#mfaSetupMsg"), b = $("#mfaStart"); b.disabled = true; m.textContent = "";
+  try {
+    const tok = await token();
+    const u = await authed("GET", "/auth/v1/user", tok);
+    for (const f of (u.factors || []).filter(x => x.status !== "verified")) {
+      try { await authed("DELETE", `/auth/v1/factors/${f.id}`, tok); } catch {}
+    }
+    const en = await authed("POST", "/auth/v1/factors", tok, { factor_type: "totp", friendly_name: "FilesBolt admin " + new Date().toISOString().slice(0, 10) });
+    enrolling = en.id;
+    $("#mfaQr").src = en.totp.qr_code;
+    $("#mfaSecret").textContent = en.totp.secret.replace(/(.{4})/g, "$1 ").trim();
+    $("#mfaStep2").hidden = false; b.hidden = true; $("#mfaSetupCode").focus();
+  } catch (err) { m.className = "msg bad"; m.textContent = err.message; }
+  b.disabled = false;
+};
+$("#mfaSetupForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const m = $("#mfaSetupMsg"), b = $("#mfaConfirm"); b.disabled = true; m.textContent = "";
+  try {
+    const v = await mfaVerify(await token(), enrolling, $("#mfaSetupCode").value.trim());
+    S.set(sess(v, S.get().email));
+    m.className = "msg ok"; m.textContent = "Two-step sign-in is on. From now on, signing in here also needs a code from your app.";
+    $("#mfaStep2").hidden = true;
+    setTimeout(securityBanner, 4000);
+  } catch (err) { m.className = "msg bad"; m.textContent = /invalid|expired|code/i.test(err.message) ? "That code isn't right. Try the newest code in the app." : err.message; }
+  b.disabled = false;
+});
+
 /* ---------- views ---------- */
 async function show() {
   const s = S.get();
@@ -385,7 +509,7 @@ async function show() {
   $("#adminView").hidden = !s;
   $("#signout").hidden = !s;
   $("#who").textContent = s ? s.email : "";
-  if (s) { await whoAmI(); await Promise.all([load(), stats(), errors(), accounts(), loadPlans()]); }
+  if (s) { await whoAmI(); await Promise.all([load(), stats(), errors(), accounts(), loadPlans(), activity(), securityBanner()]); }
   else $("#em").focus();
 }
 $("#signinForm").addEventListener("submit", async e => {
@@ -393,10 +517,8 @@ $("#signinForm").addEventListener("submit", async e => {
   const b = $("#signinBtn"); b.disabled = true; $("#signinMsg").textContent = "";
   try {
     const r = await call("/auth/v1/token?grant_type=password", { email: $("#em").value.trim(), password: $("#pw").value }, false);
-    S.set({ access_token: r.access_token, refresh_token: r.refresh_token, expires_at: r.expires_at, email: r.user.email });
-    if (await rpc("admin_is_admin") !== true) throw new Error("This account isn't an admin.");
     $("#pw").value = "";
-    show();
+    await finishSignIn(r);
   } catch (err) { S.set(null); $("#signinMsg").textContent = err.message; }
   b.disabled = false;
 });
@@ -423,11 +545,9 @@ $("#resetForm").addEventListener("submit", async e => {
     const res = await fetch(U + "/auth/v1/user", { method: "PUT", headers: { apikey: K, "Content-Type": "application/json",
       Authorization: "Bearer " + r.access_token }, body: JSON.stringify({ password: $("#rpw").value }) });
     if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.msg || j.message || "Couldn't save the new password."); }
-    S.set({ access_token: r.access_token, refresh_token: r.refresh_token, expires_at: r.expires_at, email: r.user.email });
-    if (await rpc("admin_is_admin") !== true) throw new Error("Password saved, but this account isn't an admin.");
     $("#rpw").value = ""; $("#rcode").value = "";
     $("#resetForm").hidden = true; $("#signinForm").hidden = false;
-    show();
+    await finishSignIn(r);
   } catch (err) { m.textContent = /token|expired|invalid/i.test(err.message) ? "That code is wrong or has expired." : err.message; }
   b.disabled = false;
 });
@@ -690,6 +810,9 @@ $("#accRows").addEventListener("click", e => {
         : `<div class="line"><input type="text" data-f="reason" placeholder="Reason (only admins see it)" style="flex:1"></div>
            <button class="btn" data-act="disable">Deactivate</button>
            <p class="note">Signs them out everywhere. They can't sign in or run jobs until you reactivate.</p>`}
+      ${sup ? `<div style="margin-top:14px"><div class="line"><input type="email" data-f="newemail" placeholder="New email" style="flex:1"></div>
+        <button class="btn" data-act="email">Change email</button>
+        <p class="note">Signs them out. They sign in again with the new email. Their plan and name stay.</p></div>` : ""}
       ${sup ? `<div style="margin-top:14px"><label class="line" style="margin:0 0 6px;font-weight:400;font-size:13.5px">
         <input type="checkbox" data-f="block"> Block this email from signing up again</label>
         <button class="btn danger" data-act="delete">Delete account</button>
@@ -706,8 +829,9 @@ $("#accRows").addEventListener("click", e => {
   row.addEventListener("click", async ev => {
     const btn = ev.target.closest("button[data-act]"); if (!btn) return;
     const act = btn.dataset.act;
-    if ((act === "delete" || act === "disable") && btn.dataset.armed !== "1") {
-      btn.dataset.armed = "1"; const old = btn.textContent; btn.textContent = act === "delete" ? "Click again to delete for good" : "Click again to deactivate";
+    if ((act === "delete" || act === "disable" || act === "email") && btn.dataset.armed !== "1") {
+      if (act === "email" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f("newemail").value.trim())) { say("Enter a valid new email.", false); return; }
+      btn.dataset.armed = "1"; const old = btn.textContent; btn.textContent = act === "delete" ? "Click again to delete for good" : act === "email" ? "Click again to change" : "Click again to deactivate";
       setTimeout(() => { if (btn.isConnected) { btn.dataset.armed = ""; btn.textContent = old; } }, 4000); return;
     }
     btn.disabled = true;
@@ -733,11 +857,15 @@ $("#accRows").addEventListener("click", e => {
       } else if (act === "enable") {
         await rpc("admin_set_disabled", { e: a.email, off: false });
         say("Reactivated.", true);
+      } else if (act === "email") {
+        const ne = f("newemail").value.trim();
+        await rpc("admin_change_email", { e: a.email, new_email: ne });
+        say(`Email changed to ${ne}.`, true);
       } else if (act === "delete") {
         await rpc("admin_delete_account", { e: a.email, block_email: f("block").checked });
         say("Deleted.", true);
       }
-      await Promise.all([accounts(), stats(), loadPlans()]);
+      await Promise.all([accounts(), stats(), loadPlans(), activity()]);
     } catch (err) { say(err.message, false); btn.disabled = false; }
   });
 });
@@ -814,6 +942,34 @@ $("#admRows").addEventListener("click", async e => {
   try { renderAdmins(await rpc("admin_remove_admin", { e: b.dataset.email }) || []); $("#admMsg").className = "msg ok"; $("#admMsg").textContent = `Removed ${b.dataset.email}.`; }
   catch (err) { $("#admMsg").className = "msg bad"; $("#admMsg").textContent = err.message; }
 });
+
+/* ---------- activity log ---------- */
+const ACT = {
+  "coupons.insert": "Created coupon", "coupons.update": "Changed coupon", "coupons.delete": "Deleted coupon",
+  "plans.insert": "Added plan", "plans.update": "Changed plan", "plans.delete": "Deleted plan",
+  "admins.insert": "Added admin", "admins.update": "Changed admin", "admins.delete": "Removed admin",
+  "deleted_accounts.insert": "Blocked an email", "deleted_accounts.delete": "Restored an email",
+  "profiles.update": "Changed account", "profiles.delete": "Deleted account", "account_devices.delete": "Reset a device"
+};
+function actDetail(a) {
+  const d = a.detail || {};
+  if (a.action.endsWith(".update")) return Object.entries(d).map(([k, v]) =>
+    `${k.replace(/_/g, " ")}: ${v[0] === null ? "none" : JSON.stringify(v[0])} → ${v[1] === null ? "none" : JSON.stringify(v[1])}`).join("; ");
+  const keys = ["plan", "days", "grant_until", "max_uses", "jobs_limit", "role", "name", "note"];
+  return keys.filter(k => d[k] !== undefined && d[k] !== null).map(k => `${k.replace(/_/g, " ")}: ${d[k]}`).join("; ");
+}
+async function activity() {
+  try {
+    const list = await rpc("admin_activity", { how_many: 200 }) || [];
+    $("#actRows").innerHTML = list.length ? list.map(a => `<tr>
+      <td class="nw">${esc(new Date(a.at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }))}</td>
+      <td>${esc(a.admin_email || "")}</td>
+      <td><b>${esc(ACT[a.action] || a.action)}</b><span class="sub">${esc(a.target || "")}</span></td>
+      <td class="note" style="color:var(--muted);font-size:13px">${esc(actDetail(a))}</td></tr>`).join("")
+      : '<tr><td colspan="4" class="empty">Nothing yet. Changes made here will show up in this list.</td></tr>';
+  } catch (err) { $("#actRows").innerHTML = `<tr><td colspan="4" class="empty">${esc(err.message)}</td></tr>`; }
+}
+$("#actReload").onclick = activity;
 
 /* ---------- error reports ---------- */
 async function errors() {
