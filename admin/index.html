@@ -111,6 +111,17 @@ td.acts button.danger { color: var(--bad); }
 .jump a:hover { color: var(--ink); border-bottom-color: var(--amber); }
 section[id], h1[id] { scroll-margin-top: 16px; }
 td .sub { display: block; color: var(--muted); font-size: 12.5px; }
+tr.off td { color: var(--muted); }
+tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
+.mgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+@media (max-width: 1100px) { .mgrid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 700px) { .mgrid { grid-template-columns: 1fr; } }
+.mbox h3 { font-size: 14px; margin: 0 0 8px; color: var(--ink); }
+.mbox select, .mbox input { font: inherit; border: 1px solid var(--rule); border-radius: 7px; padding: 7px 9px; background: #fff; }
+.mbox .line { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.mbox .note { font-size: 12.5px; color: var(--muted); margin: 6px 0 0; }
+.btn.danger { color: var(--bad); border-color: #F0C5C8; }
+.btn.danger:hover { border-color: var(--bad); }
 .err { border-top: 1px solid var(--mist); padding: 10px 0; }
 .err summary { cursor: pointer; display: flex; gap: 12px; align-items: baseline; list-style: none; }
 .err summary::-webkit-details-marker { display: none; }
@@ -158,7 +169,7 @@ td .sub { display: block; color: var(--muted); font-size: 12.5px; }
 <!-- Admin -->
 <main id="adminView" hidden>
   <nav class="jump" aria-label="Sections">
-    <a href="#sec-coupons">Coupons</a><a href="#sec-accounts">Accounts</a><a href="#sec-errors">Error reports</a>
+    <a href="#sec-coupons">Coupons</a><a href="#sec-accounts">Accounts</a><a href="#sec-plans">Plans</a><a href="#sec-errors">Error reports</a>
     <a href="#sec-devices">Devices</a><a href="#sec-restore">Deleted emails</a><a href="#sec-admins" id="jumpAdmins" hidden>Admins</a>
   </nav>
   <div class="stats" id="stats"></div>
@@ -249,13 +260,29 @@ td .sub { display: block; color: var(--muted); font-size: 12.5px; }
   <section class="panel below" id="sec-accounts">
     <div class="row" style="justify-content:space-between">
       <h2 style="margin:0">Accounts</h2>
-      <input type="text" id="accSearch" class="shrink" style="width:260px" placeholder="Search by email" aria-label="Search accounts by email">
+      <input type="text" id="accSearch" class="shrink" style="width:260px" placeholder="Search by name or email" aria-label="Search accounts by name or email">
     </div>
     <p class="lead" style="margin:6px 0 0" id="accSummary"></p>
     <div class="tablewrap" style="margin-top:12px"><table>
-      <thead><tr><th>Email</th><th>Plan</th><th>Jobs this month</th><th>Last active</th><th>PCs</th><th>Joined</th></tr></thead>
+      <thead><tr><th>Name and email</th><th>Plan</th><th>Jobs this month</th><th>Last active</th><th>PCs</th><th>Joined</th><th></th></tr></thead>
       <tbody id="accRows"></tbody>
     </table></div>
+  </section>
+
+  <section class="panel below" id="sec-plans">
+    <h2>Plans</h2>
+    <p class="lead" style="margin-bottom:0">The plans you can give to accounts. The job limit is per month; leave it empty for unlimited.
+      Paid checkout will use these plans later. Only the super admin can add or change plans.</p>
+    <div class="tablewrap" style="margin-top:12px"><table>
+      <thead><tr><th>Plan</th><th>Jobs a month</th><th>Accounts on it</th><th>Status</th><th></th></tr></thead>
+      <tbody id="planRows"></tbody>
+    </table></div>
+    <form class="row" id="planForm" style="margin-top:14px; max-width:720px" hidden>
+      <input type="text" id="planName" placeholder="Plan name, e.g. Pro monthly" aria-label="Plan name" maxlength="40" required>
+      <input type="number" id="planLimit" class="shrink" style="width:170px" min="1" placeholder="Unlimited" aria-label="Jobs a month (empty for unlimited)">
+      <button class="btn shrink" id="planBtn">Add plan</button>
+    </form>
+    <div class="msg" id="planMsg" role="status"></div>
   </section>
 
   <section class="panel below" id="sec-errors">
@@ -358,7 +385,7 @@ async function show() {
   $("#adminView").hidden = !s;
   $("#signout").hidden = !s;
   $("#who").textContent = s ? s.email : "";
-  if (s) { await Promise.all([load(), stats(), errors(), accounts(), whoAmI()]); }
+  if (s) { await whoAmI(); await Promise.all([load(), stats(), errors(), accounts(), loadPlans()]); }
   else $("#em").focus();
 }
 $("#signinForm").addEventListener("submit", async e => {
@@ -424,7 +451,7 @@ async function stats() {
     const [s, dl] = await Promise.all([rpc("admin_stats"), downloads()]);
     $("#stats").innerHTML = [
       [dl, "downloads"],
-      [s.accounts, "accounts"], [s.on_trial, "on free trial"], [s.paid_or_coupon, "unlimited (coupon or paid)"],
+      [s.accounts, "accounts"], [s.on_trial, "on free trial"], [s.paid_or_coupon, "on a plan or coupon"],
       [s.redemptions, "codes redeemed"], [s.deleted, "deleted accounts"]]
       .map(([n, l]) => `<span><strong>${n}</strong>${l}</span>`).join("");
   } catch (e) { $("#stats").textContent = e.message; }
@@ -598,11 +625,12 @@ $("#csvMade").onclick = () => csv(coupons.filter(c => lastMade.includes(c.code))
 
 /* ---------- accounts ---------- */
 const PLAN_TXT = { trial: "Free trial", free: "Free", pro: "Unlimited" };
-let accTimer = null;
+let accTimer = null, accList = [], plans = [];
 async function accounts() {
   const q = $("#accSearch").value.trim();
   try {
     const list = await rpc("admin_accounts", { search: q || null, how_many: 500 }) || [];
+    accList = list;
     const now = Date.now();
     const active7 = list.filter(a => a.last_seen && now - new Date(a.last_seen) < 7 * 864e5).length;
     $("#accSummary").textContent = q ? `${list.length} account${list.length === 1 ? "" : "s"} match “${q}”.`
@@ -612,17 +640,146 @@ async function accounts() {
       if (a.plan === "trial") sub = "ends " + fmt(a.trial_ends_at);
       else if (a.plan === "pro") sub = a.plan_ends_at ? "until " + fmt(a.plan_ends_at) : "lifetime";
       else if (a.plan === "free") sub = "trial ended " + fmt(a.trial_ends_at);
-      return `<tr>
-        <td><b>${esc(a.email)}</b>${a.signed_in_on ? `<span class="sub">signed in on ${esc(a.signed_in_on)}</span>` : ""}</td>
+      if (a.plan_name) plan = a.plan_name;
+      return `<tr class="${a.disabled ? "off" : ""}" data-email="${esc(a.email)}">
+        <td><b>${esc(a.name || "No name yet")}</b><span class="sub" style="color:var(--text)">${esc(a.email)}</span>${a.admin_role ? ` <span class="state paused">${a.admin_role === "super" ? "Super admin" : "Admin"}</span>` : ""}
+          ${a.disabled ? `<span class="sub" style="color:var(--bad)">Deactivated ${esc(fmt(a.disabled_at))}${a.disabled_reason ? ": " + esc(a.disabled_reason) : ""}</span>`
+                       : a.signed_in_on ? `<span class="sub">signed in on ${esc(a.signed_in_on)}</span>` : ""}</td>
         <td class="nw">${esc(plan)}<span class="sub">${esc(sub)}</span></td>
-        <td>${a.plan === "free" ? `${a.jobs_month} of 10` : a.jobs_month}</td>
+        <td>${a.jobs_limit != null ? `${a.jobs_month} of ${a.jobs_limit}` : a.jobs_month}</td>
         <td class="nw">${a.last_seen ? esc(fmt(a.last_seen)) : '<span class="help">never</span>'}</td>
         <td>${a.pcs}</td>
-        <td class="nw">${esc(fmt(a.created_at))}</td></tr>`;
-    }).join("") : `<tr><td colspan="6" class="empty">${q ? "No accounts match." : "No accounts yet."}</td></tr>`;
+        <td class="nw">${esc(fmt(a.created_at))}</td>
+        <td class="acts"><button data-manage>Manage</button></td></tr>`;
+    }).join("") : `<tr><td colspan="7" class="empty">${q ? "No accounts match." : "No accounts yet."}</td></tr>`;
   } catch (err) { $("#accSummary").textContent = err.message; }
 }
 $("#accSearch").addEventListener("input", () => { clearTimeout(accTimer); accTimer = setTimeout(accounts, 300); });
+
+/* ---------- manage one account ---------- */
+$("#accRows").addEventListener("click", e => {
+  const b = e.target.closest("button[data-manage]"); if (!b) return;
+  const tr = b.closest("tr"), open = tr.nextElementSibling && tr.nextElementSibling.classList.contains("manage");
+  document.querySelectorAll("#accRows tr.manage").forEach(x => x.remove());
+  document.querySelectorAll("#accRows button[data-manage]").forEach(x => x.textContent = "Manage");
+  if (open) return;
+  b.textContent = "Close";
+  const a = accList.find(x => x.email === tr.dataset.email);
+  const sup = me && me.role === "super";
+  const opts = plans.filter(p => p.active && p.code !== "free")
+    .map(p => `<option value="${esc(p.code)}">${esc(p.name)}${p.jobs_limit == null ? "" : ` (${p.jobs_limit} jobs/month)`}</option>`).join("");
+  const row = document.createElement("tr"); row.className = "manage";
+  row.innerHTML = `<td colspan="7"><div class="mgrid">
+    <div class="mbox"><h3>Name</h3>
+      <div class="line"><input type="text" data-f="name" maxlength="80" value="${esc(a.name || "")}" placeholder="Full name" style="flex:1"></div>
+      <button class="btn" data-act="name">Save name</button></div>
+    <div class="mbox"><h3>Plan</h3>
+      <div class="line"><select data-f="plan">${opts}<option value="free">Free (10 jobs a month)</option></select></div>
+      <div class="line" data-f="dur"><select data-f="kind"><option value="days">for</option><option value="until">until</option><option value="lifetime">forever</option></select>
+        <input type="number" data-f="days" min="1" value="30" style="width:80px"><span data-f="dayslbl">days</span>
+        <input type="date" data-f="until" hidden></div>
+      <button class="btn" data-act="plan">Apply plan</button>
+      <p class="note">Replaces their current plan. "Free" ends any plan now.</p></div>
+    <div class="mbox"><h3>Free trial</h3>
+      <div class="line">Trial ends in <input type="number" data-f="tdays" min="0" max="365" value="7" style="width:80px"> days</div>
+      <button class="btn" data-act="trial">Set trial</button>
+      <p class="note">Now: ${a.trial_ends_at && new Date(a.trial_ends_at) > new Date() ? "ends " + esc(fmt(a.trial_ends_at)) : "ended " + esc(fmt(a.trial_ends_at))}. Use 0 to end it today.</p></div>
+    <div class="mbox"><h3>Account</h3>
+      ${a.admin_role === "super" ? '<p class="note">This is the super admin account. It can\'t be deactivated or deleted.</p>' : `
+      ${a.disabled ? `<button class="btn" data-act="enable">Reactivate</button><p class="note">They can sign in again right away.</p>`
+        : `<div class="line"><input type="text" data-f="reason" placeholder="Reason (only admins see it)" style="flex:1"></div>
+           <button class="btn" data-act="disable">Deactivate</button>
+           <p class="note">Signs them out everywhere. They can't sign in or run jobs until you reactivate.</p>`}
+      ${sup ? `<div style="margin-top:14px"><label class="line" style="margin:0 0 6px;font-weight:400;font-size:13.5px">
+        <input type="checkbox" data-f="block"> Block this email from signing up again</label>
+        <button class="btn danger" data-act="delete">Delete account</button>
+        <p class="note">Deletes the account for good. This can't be undone.</p></div>` : ""}`}
+    </div></div><div class="msg" data-f="msg" role="status"></div></td>`;
+  tr.after(row);
+  const f = n => row.querySelector(`[data-f="${n}"]`);
+  const syncKind = () => { const k = f("kind").value; f("days").hidden = f("dayslbl").hidden = k !== "days"; f("until").hidden = k !== "until"; };
+  f("kind").onchange = syncKind;
+  f("plan").onchange = () => { f("dur").hidden = f("plan").value === "free"; };
+  if (!opts) f("dur").hidden = true;
+  syncKind();
+  const say = (t, ok) => { const m = f("msg"); m.className = "msg " + (ok ? "ok" : "bad"); m.textContent = t; };
+  row.addEventListener("click", async ev => {
+    const btn = ev.target.closest("button[data-act]"); if (!btn) return;
+    const act = btn.dataset.act;
+    if ((act === "delete" || act === "disable") && btn.dataset.armed !== "1") {
+      btn.dataset.armed = "1"; const old = btn.textContent; btn.textContent = act === "delete" ? "Click again to delete for good" : "Click again to deactivate";
+      setTimeout(() => { if (btn.isConnected) { btn.dataset.armed = ""; btn.textContent = old; } }, 4000); return;
+    }
+    btn.disabled = true;
+    try {
+      if (act === "name") {
+        await rpc("admin_set_name", { e: a.email, new_name: f("name").value.trim() });
+        say("Name saved.", true);
+      } else if (act === "plan") {
+        const code = f("plan").value, kind = f("kind").value;
+        const body = { e: a.email, plan_code: code, kind };
+        if (code !== "free") {
+          if (kind === "days") body.days = parseInt(f("days").value, 10);
+          if (kind === "until") { if (!f("until").value) throw new Error("Choose the end date."); body.until_at = dayEnd(f("until").value); }
+        }
+        await rpc("admin_set_plan", body);
+        say(code === "free" ? "Moved to the Free plan." : "Plan applied.", true);
+      } else if (act === "trial") {
+        await rpc("admin_set_trial", { e: a.email, days: parseInt(f("tdays").value, 10) });
+        say("Trial updated.", true);
+      } else if (act === "disable") {
+        await rpc("admin_set_disabled", { e: a.email, off: true, reason: f("reason").value.trim() || null });
+        say("Deactivated. They've been signed out.", true);
+      } else if (act === "enable") {
+        await rpc("admin_set_disabled", { e: a.email, off: false });
+        say("Reactivated.", true);
+      } else if (act === "delete") {
+        await rpc("admin_delete_account", { e: a.email, block_email: f("block").checked });
+        say("Deleted.", true);
+      }
+      await Promise.all([accounts(), stats(), loadPlans()]);
+    } catch (err) { say(err.message, false); btn.disabled = false; }
+  });
+});
+
+/* ---------- plans ---------- */
+async function loadPlans() {
+  try {
+    plans = await rpc("admin_plans") || [];
+    const sup = me && me.role === "super";
+    $("#planForm").hidden = !sup;
+    $("#planRows").innerHTML = plans.map(p => `<tr data-code="${esc(p.code)}">
+      <td><b>${esc(p.name)}</b></td>
+      <td>${p.jobs_limit == null ? "Unlimited" : p.jobs_limit}</td>
+      <td>${p.users}</td>
+      <td>${p.active ? '<span class="state live">Available</span>' : '<span class="state paused">Hidden</span>'}</td>
+      <td class="acts">${sup ? `<button data-pact="edit">Edit</button>${p.code === "free" ? "" : `<button data-pact="toggle">${p.active ? "Hide" : "Show"}</button>`}` : ""}</td></tr>`).join("");
+  } catch (err) { $("#planMsg").className = "msg bad"; $("#planMsg").textContent = err.message; }
+}
+$("#planForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const b = $("#planBtn"), m = $("#planMsg"); b.disabled = true;
+  try {
+    const lim = $("#planLimit").value.trim();
+    await rpc("admin_save_plan", { plan_code: b.dataset.code || null, plan_name: $("#planName").value.trim(),
+      jobs_limit: lim ? parseInt(lim, 10) : null, is_active: true });
+    m.className = "msg ok"; m.textContent = b.dataset.code ? "Plan saved." : "Plan added.";
+    $("#planForm").reset(); delete b.dataset.code; b.textContent = "Add plan";
+    await loadPlans(); accounts();
+  } catch (err) { m.className = "msg bad"; m.textContent = err.message; }
+  b.disabled = false;
+});
+$("#planRows").addEventListener("click", async e => {
+  const b = e.target.closest("button[data-pact]"); if (!b) return;
+  const p = plans.find(x => x.code === b.closest("tr").dataset.code);
+  if (b.dataset.pact === "edit") {
+    $("#planName").value = p.name; $("#planLimit").value = p.jobs_limit ?? "";
+    $("#planBtn").dataset.code = p.code; $("#planBtn").textContent = "Save plan"; $("#planName").focus(); return;
+  }
+  b.disabled = true;
+  try { await rpc("admin_save_plan", { plan_code: p.code, plan_name: p.name, jobs_limit: p.jobs_limit, is_active: !p.active }); await loadPlans(); }
+  catch (err) { $("#planMsg").className = "msg bad"; $("#planMsg").textContent = err.message; b.disabled = false; }
+});
 
 /* ---------- admins (super admin only) ---------- */
 let me = null;
