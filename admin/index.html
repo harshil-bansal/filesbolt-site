@@ -106,6 +106,11 @@ td.acts button.danger { color: var(--bad); }
 .empty { color: var(--muted); padding: 28px 10px; text-align: center; }
 
 .signin { max-width: 380px; margin: 60px auto; }
+.jump { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0 0 14px; font-size: 14px; }
+.jump a { color: var(--muted); text-decoration: none; padding: 2px 0; border-bottom: 2px solid transparent; }
+.jump a:hover { color: var(--ink); border-bottom-color: var(--amber); }
+section[id], h1[id] { scroll-margin-top: 16px; }
+td .sub { display: block; color: var(--muted); font-size: 12.5px; }
 .err { border-top: 1px solid var(--mist); padding: 10px 0; }
 .err summary { cursor: pointer; display: flex; gap: 12px; align-items: baseline; list-style: none; }
 .err summary::-webkit-details-marker { display: none; }
@@ -152,8 +157,12 @@ td.acts button.danger { color: var(--bad); }
 
 <!-- Admin -->
 <main id="adminView" hidden>
-  <h1>Coupon codes</h1>
+  <nav class="jump" aria-label="Sections">
+    <a href="#sec-coupons">Coupons</a><a href="#sec-accounts">Accounts</a><a href="#sec-errors">Error reports</a>
+    <a href="#sec-devices">Devices</a><a href="#sec-restore">Deleted emails</a><a href="#sec-admins" id="jumpAdmins" hidden>Admins</a>
+  </nav>
   <div class="stats" id="stats"></div>
+  <h1 id="sec-coupons">Coupon codes</h1>
 
   <div class="grid">
     <form class="panel" id="form" autocomplete="off">
@@ -237,7 +246,19 @@ td.acts button.danger { color: var(--bad); }
     </section>
   </div>
 
-  <section class="panel below">
+  <section class="panel below" id="sec-accounts">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">Accounts</h2>
+      <input type="text" id="accSearch" class="shrink" style="width:260px" placeholder="Search by email" aria-label="Search accounts by email">
+    </div>
+    <p class="lead" style="margin:6px 0 0" id="accSummary"></p>
+    <div class="tablewrap" style="margin-top:12px"><table>
+      <thead><tr><th>Email</th><th>Plan</th><th>Jobs this month</th><th>Last active</th><th>PCs</th><th>Joined</th></tr></thead>
+      <tbody id="accRows"></tbody>
+    </table></div>
+  </section>
+
+  <section class="panel below" id="sec-errors">
     <div class="row" style="justify-content:space-between">
       <h2 style="margin:0">Error reports</h2>
       <div class="shrink row"><button type="button" class="btn" id="errReload">Refresh</button>
@@ -247,7 +268,7 @@ td.acts button.danger { color: var(--bad); }
     <div id="errList" style="margin-top:12px"></div>
   </section>
 
-  <section class="panel below">
+  <section class="panel below" id="sec-devices">
     <h2>Devices on an account</h2>
     <p class="lead" style="margin-bottom:0">Each account can be signed in on one PC at a time, and on up to 3 different PCs in total.
       If a customer has replaced their PCs, reset their devices here so they can sign in on new ones.</p>
@@ -266,7 +287,7 @@ td.acts button.danger { color: var(--bad); }
     </div>
   </section>
 
-  <section class="panel below">
+  <section class="panel below" id="sec-restore">
     <h2>Restore a deleted account's email</h2>
     <p class="lead" style="margin-bottom:0">When someone deletes their account, that email can't sign up again. Restore it here after they contact support.</p>
     <form class="row" id="restoreForm" style="margin-top:12px; max-width:560px">
@@ -274,6 +295,21 @@ td.acts button.danger { color: var(--bad); }
       <button class="btn shrink" id="restoreBtn">Restore email</button>
     </form>
     <div class="msg" id="restoreMsg" role="status"></div>
+  </section>
+
+  <section class="panel below" id="sec-admins" hidden>
+    <h2>Admins</h2>
+    <p class="lead" style="margin-bottom:0">Admins can use everything on this page except this section. Only you, the super admin, can add or remove admins.
+      A new admin signs in here with their own FilesBolt account, so they need to create one in the app first (same email).</p>
+    <div class="tablewrap" style="margin-top:12px"><table>
+      <thead><tr><th>Email</th><th>Role</th><th>Added</th><th></th></tr></thead>
+      <tbody id="admRows"></tbody>
+    </table></div>
+    <form class="row" id="admForm" style="margin-top:14px; max-width:560px">
+      <input type="email" id="admEmail" placeholder="name@example.com" aria-label="Email of the new admin" required>
+      <button class="btn shrink" id="admBtn">Add admin</button>
+    </form>
+    <div class="msg" id="admMsg" role="status"></div>
   </section>
 </main>
 
@@ -322,7 +358,7 @@ async function show() {
   $("#adminView").hidden = !s;
   $("#signout").hidden = !s;
   $("#who").textContent = s ? s.email : "";
-  if (s) { await Promise.all([load(), stats(), errors()]); }
+  if (s) { await Promise.all([load(), stats(), errors(), accounts(), whoAmI()]); }
   else $("#em").focus();
 }
 $("#signinForm").addEventListener("submit", async e => {
@@ -331,7 +367,7 @@ $("#signinForm").addEventListener("submit", async e => {
   try {
     const r = await call("/auth/v1/token?grant_type=password", { email: $("#em").value.trim(), password: $("#pw").value }, false);
     S.set({ access_token: r.access_token, refresh_token: r.refresh_token, expires_at: r.expires_at, email: r.user.email });
-    await rpc("admin_is_admin");
+    if (await rpc("admin_is_admin") !== true) throw new Error("This account isn't an admin.");
     $("#pw").value = "";
     show();
   } catch (err) { S.set(null); $("#signinMsg").textContent = err.message; }
@@ -361,7 +397,7 @@ $("#resetForm").addEventListener("submit", async e => {
       Authorization: "Bearer " + r.access_token }, body: JSON.stringify({ password: $("#rpw").value }) });
     if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.msg || j.message || "Couldn't save the new password."); }
     S.set({ access_token: r.access_token, refresh_token: r.refresh_token, expires_at: r.expires_at, email: r.user.email });
-    await rpc("admin_is_admin");
+    if (await rpc("admin_is_admin") !== true) throw new Error("Password saved, but this account isn't an admin.");
     $("#rpw").value = ""; $("#rcode").value = "";
     $("#resetForm").hidden = true; $("#signinForm").hidden = false;
     show();
@@ -559,6 +595,68 @@ function showMade() {
 }
 $("#copyMade").onclick = async () => { await navigator.clipboard.writeText(lastMade.join("\n")); $("#copyMade").textContent = "Copied"; setTimeout(() => $("#copyMade").textContent = "Copy all", 1200); };
 $("#csvMade").onclick = () => csv(coupons.filter(c => lastMade.includes(c.code)), "filesbolt-new-codes.csv");
+
+/* ---------- accounts ---------- */
+const PLAN_TXT = { trial: "Free trial", free: "Free", pro: "Unlimited" };
+let accTimer = null;
+async function accounts() {
+  const q = $("#accSearch").value.trim();
+  try {
+    const list = await rpc("admin_accounts", { search: q || null, how_many: 500 }) || [];
+    const now = Date.now();
+    const active7 = list.filter(a => a.last_seen && now - new Date(a.last_seen) < 7 * 864e5).length;
+    $("#accSummary").textContent = q ? `${list.length} account${list.length === 1 ? "" : "s"} match “${q}”.`
+      : `${list.length} account${list.length === 1 ? "" : "s"}, ${active7} active in the last 7 days.`;
+    $("#accRows").innerHTML = list.length ? list.map(a => {
+      let plan = PLAN_TXT[a.plan] || a.plan, sub = "";
+      if (a.plan === "trial") sub = "ends " + fmt(a.trial_ends_at);
+      else if (a.plan === "pro") sub = a.plan_ends_at ? "until " + fmt(a.plan_ends_at) : "lifetime";
+      else if (a.plan === "free") sub = "trial ended " + fmt(a.trial_ends_at);
+      return `<tr>
+        <td><b>${esc(a.email)}</b>${a.signed_in_on ? `<span class="sub">signed in on ${esc(a.signed_in_on)}</span>` : ""}</td>
+        <td class="nw">${esc(plan)}<span class="sub">${esc(sub)}</span></td>
+        <td>${a.plan === "free" ? `${a.jobs_month} of 10` : a.jobs_month}</td>
+        <td class="nw">${a.last_seen ? esc(fmt(a.last_seen)) : '<span class="help">never</span>'}</td>
+        <td>${a.pcs}</td>
+        <td class="nw">${esc(fmt(a.created_at))}</td></tr>`;
+    }).join("") : `<tr><td colspan="6" class="empty">${q ? "No accounts match." : "No accounts yet."}</td></tr>`;
+  } catch (err) { $("#accSummary").textContent = err.message; }
+}
+$("#accSearch").addEventListener("input", () => { clearTimeout(accTimer); accTimer = setTimeout(accounts, 300); });
+
+/* ---------- admins (super admin only) ---------- */
+let me = null;
+async function whoAmI() {
+  try { me = await rpc("admin_me"); } catch { me = null; }
+  const sup = me && me.role === "super";
+  $("#sec-admins").hidden = !sup; $("#jumpAdmins").hidden = !sup;
+  if (sup) admins();
+}
+function renderAdmins(list) {
+  $("#admRows").innerHTML = list.map(a => `<tr>
+    <td><b>${esc(a.email)}</b>${a.has_account ? "" : '<span class="sub">No FilesBolt account yet, so they can\'t sign in until they create one.</span>'}</td>
+    <td>${a.role === "super" ? '<span class="state live">Super admin</span>' : '<span class="state paused">Admin</span>'}</td>
+    <td class="nw">${esc(fmt(a.added_at))}${a.added_by ? `<span class="sub">by ${esc(a.added_by)}</span>` : ""}</td>
+    <td class="acts">${a.role === "super" ? "" : `<button data-email="${esc(a.email)}" class="danger">Remove</button>`}</td></tr>`).join("");
+}
+async function admins() { try { renderAdmins(await rpc("admin_list_admins") || []); } catch (err) { $("#admMsg").className = "msg bad"; $("#admMsg").textContent = err.message; } }
+$("#admForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const b = $("#admBtn"), m = $("#admMsg"); b.disabled = true;
+  try {
+    const email = $("#admEmail").value.trim();
+    renderAdmins(await rpc("admin_add_admin", { e: email }) || []);
+    m.className = "msg ok"; m.textContent = `Added ${email} as an admin.`; $("#admEmail").value = "";
+  } catch (err) { m.className = "msg bad"; m.textContent = err.message; }
+  b.disabled = false;
+});
+$("#admRows").addEventListener("click", async e => {
+  const b = e.target.closest("button[data-email]"); if (!b) return;
+  if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Remove?"; setTimeout(() => { if (b.isConnected) { b.dataset.armed = ""; b.textContent = "Remove"; } }, 4000); return; }
+  b.disabled = true;
+  try { renderAdmins(await rpc("admin_remove_admin", { e: b.dataset.email }) || []); $("#admMsg").className = "msg ok"; $("#admMsg").textContent = `Removed ${b.dataset.email}.`; }
+  catch (err) { $("#admMsg").className = "msg bad"; $("#admMsg").textContent = err.message; }
+});
 
 /* ---------- error reports ---------- */
 async function errors() {
