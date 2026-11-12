@@ -1,7 +1,7 @@
 {
-  "version": "0.3.7",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.7/FilesBolt-Setup-0.3.7.exe",
-  "size": 53648190,
-  "sha256": "013319fd6db1f9f7a78ca48bf500e9b4538a5f6115d327c7b03945f7140158f6",
-  "notes": "You can now turn on two-step sign-in (an authenticator app code after your password) from the account menu, and turn it off again any time.\nTo change the email on your account, write to support@filesbolt.com from your current email. This keeps anyone else from moving your account to their address."
+  "version": "0.3.8",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.8/FilesBolt-Setup-0.3.8.exe",
+  "size": 53650509,
+  "sha256": "5122649f6abc592b53f11c31f2d49e0fa9288fe83d40027e88346bb04fcc3ae5",
+  "notes": "The two-step sign-in window is clearer. After you turn it on, it just says you are all set. Turning it off is now a separate step that asks you to confirm."
 }
