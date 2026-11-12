@@ -1,7 +1,7 @@
 {
-  "version": "0.3.4",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.4/FilesBolt-Setup-0.3.4.exe",
-  "size": 53645363,
-  "sha256": "52427621c753f76b3d33a26b6862648afda357e8a1e018cd69894b065eb47788",
-  "notes": "If something goes wrong, FilesBolt can now send us an anonymous error report so we can fix it (you can turn this off in Settings).\nLinks to the new Terms of Service at sign-up."
+  "version": "0.3.5",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.5/FilesBolt-Setup-0.3.5.exe",
+  "size": 53642957,
+  "sha256": "f66365e327a81baa572b995d99a386cc839bc24d222b7d39495b299f45e9f455",
+  "notes": "Add your name when you sign up, or change it from the account menu.\nYour plan name and monthly jobs now show in the app.\nClear message if an account has been deactivated."
 }
