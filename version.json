@@ -1,7 +1,7 @@
 {
-  "version": "0.3.3",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.3/FilesBolt-Setup-0.3.3.exe",
-  "size": 53641256,
-  "sha256": "3cae641f5baf3a1531769c1c6cd03790dd2cb7de93ce6e60c68b11dae819a06d",
-  "notes": "Your account now works on one PC at a time. Signing in on another PC signs out the old one.\nEach account can be used on up to 3 PCs. Need more? Write to support@filesbolt.com."
+  "version": "0.3.4",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.4/FilesBolt-Setup-0.3.4.exe",
+  "size": 53645363,
+  "sha256": "52427621c753f76b3d33a26b6862648afda357e8a1e018cd69894b065eb47788",
+  "notes": "If something goes wrong, FilesBolt can now send us an anonymous error report so we can fix it (you can turn this off in Settings).\nLinks to the new Terms of Service at sign-up."
 }
