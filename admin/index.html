@@ -481,9 +481,10 @@ $("#mfaStart").onclick = async () => {
     for (const f of (u.factors || []).filter(x => x.status !== "verified")) {
       try { await authed("DELETE", `/auth/v1/factors/${f.id}`, tok); } catch {}
     }
-    const en = await authed("POST", "/auth/v1/factors", tok, { factor_type: "totp", friendly_name: "FilesBolt admin " + new Date().toISOString().slice(0, 10) });
+    const en = await authed("POST", "/auth/v1/factors", tok, { factor_type: "totp", issuer: "FilesBolt", friendly_name: "FilesBolt admin " + new Date().toISOString().slice(0, 19) });
     enrolling = en.id;
-    $("#mfaQr").src = en.totp.qr_code;
+    const qr = en.totp.qr_code || "";
+    $("#mfaQr").src = qr.startsWith("data:") ? qr : "data:image/svg+xml;charset=utf-8," + encodeURIComponent(qr);
     $("#mfaSecret").textContent = en.totp.secret.replace(/(.{4})/g, "$1 ").trim();
     $("#mfaStep2").hidden = false; b.hidden = true; $("#mfaSetupCode").focus();
   } catch (err) { m.className = "msg bad"; m.textContent = err.message; }
@@ -762,7 +763,7 @@ async function accounts() {
       else if (a.plan === "free") sub = "trial ended " + fmt(a.trial_ends_at);
       if (a.plan_name) plan = a.plan_name;
       return `<tr class="${a.disabled ? "off" : ""}" data-email="${esc(a.email)}">
-        <td><b>${esc(a.name || "No name yet")}</b><span class="sub" style="color:var(--text)">${esc(a.email)}</span>${a.admin_role ? ` <span class="state paused">${a.admin_role === "super" ? "Super admin" : "Admin"}</span>` : ""}
+        <td><b>${esc(a.name || "No name yet")}</b><span class="sub" style="color:var(--text)">${esc(a.email)}</span>${a.admin_role ? ` <span class="state paused">${a.admin_role === "super" ? "Super admin" : "Admin"}</span>` : ""}${a.mfa_on ? ' <span class="state live" title="Two-step sign-in is on">2-step</span>' : ""}
           ${a.disabled ? `<span class="sub" style="color:var(--bad)">Deactivated ${esc(fmt(a.disabled_at))}${a.disabled_reason ? ": " + esc(a.disabled_reason) : ""}</span>`
                        : a.signed_in_on ? `<span class="sub">signed in on ${esc(a.signed_in_on)}</span>` : ""}</td>
         <td class="nw">${esc(plan)}<span class="sub">${esc(sub)}</span></td>
@@ -810,6 +811,8 @@ $("#accRows").addEventListener("click", e => {
         : `<div class="line"><input type="text" data-f="reason" placeholder="Reason (only admins see it)" style="flex:1"></div>
            <button class="btn" data-act="disable">Deactivate</button>
            <p class="note">Signs them out everywhere. They can't sign in or run jobs until you reactivate.</p>`}
+      ${a.mfa_on ? `<div style="margin-top:14px"><button class="btn" data-act="mfa">Turn off two-step sign-in</button>
+        <p class="note">For someone who lost their phone. Signs them out; they sign in with just their password and can turn it on again.</p></div>` : ""}
       ${sup ? `<div style="margin-top:14px"><div class="line"><input type="email" data-f="newemail" placeholder="New email" style="flex:1"></div>
         <button class="btn" data-act="email">Change email</button>
         <p class="note">Signs them out. They sign in again with the new email. Their plan and name stay.</p></div>` : ""}
@@ -829,9 +832,9 @@ $("#accRows").addEventListener("click", e => {
   row.addEventListener("click", async ev => {
     const btn = ev.target.closest("button[data-act]"); if (!btn) return;
     const act = btn.dataset.act;
-    if ((act === "delete" || act === "disable" || act === "email") && btn.dataset.armed !== "1") {
+    if ((act === "delete" || act === "disable" || act === "email" || act === "mfa") && btn.dataset.armed !== "1") {
       if (act === "email" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f("newemail").value.trim())) { say("Enter a valid new email.", false); return; }
-      btn.dataset.armed = "1"; const old = btn.textContent; btn.textContent = act === "delete" ? "Click again to delete for good" : act === "email" ? "Click again to change" : "Click again to deactivate";
+      btn.dataset.armed = "1"; const old = btn.textContent; btn.textContent = act === "delete" ? "Click again to delete for good" : act === "email" ? "Click again to change" : act === "mfa" ? "Click again to turn it off" : "Click again to deactivate";
       setTimeout(() => { if (btn.isConnected) { btn.dataset.armed = ""; btn.textContent = old; } }, 4000); return;
     }
     btn.disabled = true;
@@ -857,6 +860,9 @@ $("#accRows").addEventListener("click", e => {
       } else if (act === "enable") {
         await rpc("admin_set_disabled", { e: a.email, off: false });
         say("Reactivated.", true);
+      } else if (act === "mfa") {
+        await rpc("admin_reset_mfa", { e: a.email });
+        say("Two-step sign-in is off for this account.", true);
       } else if (act === "email") {
         const ne = f("newemail").value.trim();
         await rpc("admin_change_email", { e: a.email, new_email: ne });
@@ -949,7 +955,7 @@ const ACT = {
   "plans.insert": "Added plan", "plans.update": "Changed plan", "plans.delete": "Deleted plan",
   "admins.insert": "Added admin", "admins.update": "Changed admin", "admins.delete": "Removed admin",
   "deleted_accounts.insert": "Blocked an email", "deleted_accounts.delete": "Restored an email",
-  "profiles.update": "Changed account", "profiles.delete": "Deleted account", "account_devices.delete": "Reset a device"
+  "profiles.update": "Changed account", "mfa.reset": "Turned off two-step sign-in", "profiles.delete": "Deleted account", "account_devices.delete": "Reset a device"
 };
 function actDetail(a) {
   const d = a.detail || {};
