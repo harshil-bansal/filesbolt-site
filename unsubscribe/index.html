@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Email preferences | FilesBolt</title>
+<meta name="description" content="Turn off FilesBolt trial emails.">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="FilesBolt home">
+      <img src="/img/logo.svg" alt="" width="32" height="32"><span>FilesBolt</span>
+    </a>
+    <nav aria-label="Main">
+      <a href="/#tools">Tools</a>
+      <a href="/#faq">Help</a>
+      <a class="btn btn-small" href="/#download">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main class="doc">
+  <div class="wrap narrow">
+    <h1>Email preferences</h1>
+    <p id="unsubMsg">Turning off trial emails…</p>
+    <script>
+      (async function () {
+        var p = new URLSearchParams(location.search), m = document.getElementById("unsubMsg");
+        if (!p.get("e") || !p.get("t")) { m.textContent = "Use the link at the bottom of a FilesBolt email to turn off trial emails."; return; }
+        try {
+          var r = await fetch("https://aovtkaljtayxuxuzureh.supabase.co/rest/v1/rpc/unsubscribe", { method: "POST",
+            headers: { apikey: "sb_publishable_qK3cBBkyFVLg7FKiLfiYFQ_Q7Ss2Sf9", "Content-Type": "application/json" },
+            body: JSON.stringify({ e: p.get("e"), t: p.get("t") }) });
+          var ok = r.ok && (await r.json()) === true;
+          m.textContent = ok ? "Done. You won't get any more trial emails at " + p.get("e") + ". Account emails, like sign-in codes, still arrive as usual."
+                             : "That link didn't work. Email support@filesbolt.com and we'll turn trial emails off for you.";
+        } catch (e) { m.textContent = "We couldn't reach the server. Check your connection and open the link again."; }
+      })();
+    </script>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span class="brand small"><img src="/img/logo.svg" alt="" width="20" height="20">FilesBolt</span>
+    <nav aria-label="Footer"><a href="/terms.html">Terms</a><a href="/refunds.html">Refunds</a><a href="/privacy.html">Privacy policy</a><a href="/#faq">Help</a></nav>
+    <span class="copy">© 2026 FilesBolt</span>
+  </div>
+</footer>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cacb71ad59fa40ed80eed50ccecd41cc"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
