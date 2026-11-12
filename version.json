@@ -1,7 +1,7 @@
 {
-  "version": "0.3.5",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.5/FilesBolt-Setup-0.3.5.exe",
-  "size": 53642957,
-  "sha256": "f66365e327a81baa572b995d99a386cc839bc24d222b7d39495b299f45e9f455",
-  "notes": "Add your name when you sign up, or change it from the account menu.\nYour plan name and monthly jobs now show in the app.\nClear message if an account has been deactivated."
+  "version": "0.3.6",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.6/FilesBolt-Setup-0.3.6.exe",
+  "size": 53648288,
+  "sha256": "50c0ce70449e31b74025011a225cfbe5b74eb989c83755d5b2d13a7b863cef51",
+  "notes": "Change the email on your account (account menu > Change email).\nAdd your name, see your plan name, and get a clear message if an account is deactivated."
 }
