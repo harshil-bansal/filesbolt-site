@@ -1,7 +1,7 @@
 {
-  "version": "0.3.8",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.8/FilesBolt-Setup-0.3.8.exe",
-  "size": 53650509,
-  "sha256": "5122649f6abc592b53f11c31f2d49e0fa9288fe83d40027e88346bb04fcc3ae5",
-  "notes": "The two-step sign-in window is clearer. After you turn it on, it just says you are all set. Turning it off is now a separate step that asks you to confirm."
+  "version": "0.4.0",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.0/FilesBolt-Setup-0.4.0.exe",
+  "size": 53686281,
+  "sha256": "24a2fa3d4e19771a75665738224c4a726545d9619711f5183f12f63d83da5afb",
+  "notes": "Your account is now in Settings: click your name at the bottom left.\nNew Usage page: jobs done and about how much time FilesBolt has saved you, plus a short monthly summary email.\nRefer a friend: share your invite code. When a friend joins and uses FilesBolt, you get a month of Unlimited free.\nContact support from Settings, a free-trial countdown, a short tour for new users, and keyboard shortcuts (press F1)."
 }
