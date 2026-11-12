@@ -133,8 +133,20 @@ td.acts button.danger { color: var(--bad); }
     <input type="email" id="em" autocomplete="username" required>
     <label for="pw">Password</label>
     <input type="password" id="pw" autocomplete="current-password" required>
-    <div class="actions"><button class="btn primary" id="signinBtn">Sign in</button></div>
+    <div class="actions"><button class="btn primary" id="signinBtn">Sign in</button>
+      <button type="button" class="btn" id="forgotBtn">Forgot password?</button></div>
     <div class="msg bad" id="signinMsg"></div>
+  </form>
+  <form class="panel signin" id="resetForm" hidden>
+    <h1>Reset password</h1>
+    <p class="lead" id="resetLead">We emailed you a 6-digit code. Enter it and choose a new password.</p>
+    <label for="rcode">Code</label>
+    <input type="text" id="rcode" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required>
+    <label for="rpw">New password <span class="help">(at least 8 characters)</span></label>
+    <input type="password" id="rpw" autocomplete="new-password" minlength="8" required>
+    <div class="actions"><button class="btn primary" id="resetBtn">Save and sign in</button>
+      <button type="button" class="btn" id="resetBack">Back</button></div>
+    <div class="msg bad" id="resetMsg"></div>
   </form>
 </main>
 
@@ -323,6 +335,37 @@ $("#signinForm").addEventListener("submit", async e => {
     $("#pw").value = "";
     show();
   } catch (err) { S.set(null); $("#signinMsg").textContent = err.message; }
+  b.disabled = false;
+});
+$("#forgotBtn").onclick = async () => {
+  const email = $("#em").value.trim(), m = $("#signinMsg");
+  if (!email) { m.textContent = "Enter your email first."; return; }
+  $("#forgotBtn").disabled = true; m.textContent = "";
+  try {
+    await call("/auth/v1/recover", { email }, false);
+    $("#signinForm").hidden = true; $("#resetForm").hidden = false;
+    $("#resetLead").textContent = `We emailed a 6-digit code to ${email}. Enter it and choose a new password.`;
+    $("#rcode").focus();
+  } catch (err) { m.textContent = err.message; }
+  $("#forgotBtn").disabled = false;
+};
+$("#resetBack").onclick = () => { $("#resetForm").hidden = true; $("#signinForm").hidden = false; };
+$("#resetForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const b = $("#resetBtn"), m = $("#resetMsg"), email = $("#em").value.trim();
+  if ($("#rpw").value.length < 8) { m.textContent = "Use at least 8 characters."; return; }
+  b.disabled = true; m.textContent = "";
+  try {
+    const r = await call("/auth/v1/verify", { type: "recovery", email, token: $("#rcode").value.trim() }, false);
+    const res = await fetch(U + "/auth/v1/user", { method: "PUT", headers: { apikey: K, "Content-Type": "application/json",
+      Authorization: "Bearer " + r.access_token }, body: JSON.stringify({ password: $("#rpw").value }) });
+    if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.msg || j.message || "Couldn't save the new password."); }
+    S.set({ access_token: r.access_token, refresh_token: r.refresh_token, expires_at: r.expires_at, email: r.user.email });
+    await rpc("admin_is_admin");
+    $("#rpw").value = ""; $("#rcode").value = "";
+    $("#resetForm").hidden = true; $("#signinForm").hidden = false;
+    show();
+  } catch (err) { m.textContent = /token|expired|invalid/i.test(err.message) ? "That code is wrong or has expired." : err.message; }
   b.disabled = false;
 });
 $("#signout").onclick = async () => {
