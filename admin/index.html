@@ -391,11 +391,28 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 let coupons = [], mode = "one", editing = null, lastMade = [];
 
-/* ---------- session (kept only for this browser tab) ---------- */
+/* ---------- session (kept only for this browser tab; ends 12 hours after signing in) ---------- */
+const MAX_SESSION_MS = 12 * 60 * 60 * 1000;
 const S = {
-  get() { try { return JSON.parse(sessionStorage.getItem("fb_admin") || "null"); } catch { return null; } },
+  raw() { try { return JSON.parse(sessionStorage.getItem("fb_admin") || "null"); } catch { return null; } },
+  get() {
+    const s = S.raw();
+    if (s && !(Date.now() - (s.signed_in_at || 0) < MAX_SESSION_MS)) { expire(s); return null; }
+    return s;
+  },
   set(v) { try { v ? sessionStorage.setItem("fb_admin", JSON.stringify(v)) : sessionStorage.removeItem("fb_admin"); } catch {} },
 };
+// Sign out for good (revoke the refresh token too) once 12 hours have passed since signing in.
+function expire(s) {
+  try { sessionStorage.removeItem("fb_admin"); } catch {}
+  fetch(U + "/auth/v1/logout", { method: "POST", headers: { apikey: K, Authorization: "Bearer " + s.access_token } }).catch(() => {});
+  try { sessionStorage.setItem("fb_admin_note", "You were signed out because 12 hours have passed since you signed in. Please sign in again."); } catch {}
+}
+// Reload so no account data stays in the page after the sign-out.
+function checkExpiry() { if (S.raw() && !S.get()) location.reload(); }
+setInterval(checkExpiry, 60 * 1000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) checkExpiry(); });
+
 async function call(path, body, auth = true) {
   const h = { apikey: K, "Content-Type": "application/json" };
   if (auth) h.Authorization = "Bearer " + await token();
@@ -416,7 +433,8 @@ async function token() {
   if (Date.now() / 1000 > s.expires_at - 60) {
     const n = await call("/auth/v1/token?grant_type=refresh_token", { refresh_token: s.refresh_token }, false)
       .catch(() => { S.set(null); show(); throw new Error("Please sign in again."); });
-    s = { access_token: n.access_token, refresh_token: n.refresh_token, expires_at: n.expires_at, email: s.email };
+    s = { access_token: n.access_token, refresh_token: n.refresh_token, expires_at: n.expires_at, email: s.email,
+          signed_in_at: s.signed_in_at };
     S.set(s);
   }
   return s.access_token;
@@ -431,8 +449,9 @@ async function authed(method, path, tok, body) {
   if (!r.ok) throw new Error((j && (j.msg || j.message || j.error_description)) || ("Error " + r.status));
   return j;
 }
-const sess = (r, email) => ({ access_token: r.access_token, refresh_token: r.refresh_token,
-  expires_at: r.expires_at || Math.floor(Date.now() / 1000) + (r.expires_in || 3600), email: email || (r.user && r.user.email) });
+const sess = (r, email, since) => ({ access_token: r.access_token, refresh_token: r.refresh_token,
+  expires_at: r.expires_at || Math.floor(Date.now() / 1000) + (r.expires_in || 3600), email: email || (r.user && r.user.email),
+  signed_in_at: since || Date.now() });
 let pendingMfa = null;
 async function finishSignIn(r) {
   const u = await authed("GET", "/auth/v1/user", r.access_token);
@@ -495,7 +514,7 @@ $("#mfaSetupForm").addEventListener("submit", async e => {
   const m = $("#mfaSetupMsg"), b = $("#mfaConfirm"); b.disabled = true; m.textContent = "";
   try {
     const v = await mfaVerify(await token(), enrolling, $("#mfaSetupCode").value.trim());
-    S.set(sess(v, S.get().email));
+    S.set(sess(v, S.get().email, S.get().signed_in_at));
     m.className = "msg ok"; m.textContent = "Two-step sign-in is on. From now on, signing in here also needs a code from your app.";
     $("#mfaStep2").hidden = true;
     setTimeout(securityBanner, 4000);
@@ -510,6 +529,8 @@ async function show() {
   $("#adminView").hidden = !s;
   $("#signout").hidden = !s;
   $("#who").textContent = s ? s.email : "";
+  let note = ""; try { note = sessionStorage.getItem("fb_admin_note") || ""; sessionStorage.removeItem("fb_admin_note"); } catch {}
+  if (!s && note) $("#signinMsg").textContent = note;
   if (s) { await whoAmI(); await Promise.all([load(), stats(), errors(), accounts(), loadPlans(), activity(), securityBanner()]); }
   else $("#em").focus();
 }
