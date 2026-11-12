@@ -181,7 +181,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
 <main id="adminView" hidden>
   <nav class="jump" aria-label="Sections">
     <a href="#sec-coupons">Coupons</a><a href="#sec-accounts">Accounts</a><a href="#sec-plans">Plans</a><a href="#sec-errors">Error reports</a>
-    <a href="#sec-devices">Devices</a><a href="#sec-restore">Deleted emails</a><a href="#sec-activity">Activity</a><a href="#sec-admins" id="jumpAdmins" hidden>Admins</a>
+    <a href="#sec-devices">Devices</a><a href="#sec-restore">Deleted emails</a><a href="#sec-usage">Usage &amp; referrals</a><a href="#sec-activity">Activity</a><a href="#sec-admins" id="jumpAdmins" hidden>Admins</a>
   </nav>
   <section class="panel" id="mfaSetup" hidden style="margin-bottom:20px;border-color:var(--amber)">
     <h2>Turn on two-step sign-in</h2>
@@ -354,6 +354,26 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
       <button class="btn shrink" id="restoreBtn">Restore email</button>
     </form>
     <div class="msg" id="restoreMsg" role="status"></div>
+  </section>
+
+  <section class="panel below" id="sec-usage">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">Usage &amp; referrals</h2>
+      <button type="button" class="btn shrink" id="useReload">Refresh</button>
+    </div>
+    <p class="lead" style="margin:6px 0 0">Jobs and estimated time saved, from every app on 0.4.0 or newer (numbers only, never file names).</p>
+    <div class="stats" id="useStats" style="margin-top:12px"></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Tool (this month)</th><th>Jobs</th><th>Time saved</th></tr></thead>
+      <tbody id="useTools"></tbody>
+    </table></div>
+    <h3 style="margin:22px 0 6px">Referrals</h3>
+    <p class="lead" style="margin:0 0 10px">The person who referred gets 30 days of Unlimited once their friend has done 3 jobs (at most 12 a year). Reverse one if it looks like abuse: it takes the 30 days back.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>When</th><th>Referred by</th><th>Friend</th><th>Status</th><th></th></tr></thead>
+      <tbody id="refRows"></tbody>
+    </table></div>
+    <p class="msg" id="refMsg"></p>
   </section>
 
   <section class="panel below" id="sec-activity">
@@ -531,7 +551,7 @@ async function show() {
   $("#who").textContent = s ? s.email : "";
   let note = ""; try { note = sessionStorage.getItem("fb_admin_note") || ""; sessionStorage.removeItem("fb_admin_note"); } catch {}
   if (!s && note) $("#signinMsg").textContent = note;
-  if (s) { await whoAmI(); await Promise.all([load(), stats(), errors(), accounts(), loadPlans(), activity(), securityBanner()]); }
+  if (s) { await whoAmI(); await Promise.all([load(), stats(), errors(), accounts(), loadPlans(), activity(), usage(), securityBanner()]); }
   else $("#em").focus();
 }
 $("#signinForm").addEventListener("submit", async e => {
@@ -972,6 +992,7 @@ $("#admRows").addEventListener("click", async e => {
 
 /* ---------- activity log ---------- */
 const ACT = {
+  "referral.reverse": "Reversed referral",
   "coupons.insert": "Created coupon", "coupons.update": "Changed coupon", "coupons.delete": "Deleted coupon",
   "plans.insert": "Added plan", "plans.update": "Changed plan", "plans.delete": "Deleted plan",
   "admins.insert": "Added admin", "admins.update": "Changed admin", "admins.delete": "Removed admin",
@@ -997,6 +1018,39 @@ async function activity() {
   } catch (err) { $("#actRows").innerHTML = `<tr><td colspan="4" class="empty">${esc(err.message)}</td></tr>`; }
 }
 $("#actReload").onclick = activity;
+
+/* ---------- usage & referrals ---------- */
+const hrs = m => { m = Math.round(+m || 0); return m < 60 ? m + " min" : Math.floor(m / 60) + " h" + (m % 60 ? " " + (m % 60) + " min" : ""); };
+const REF = { pending: "Waiting for 3 jobs", rewarded: "Free month given", capped: "Over the yearly limit", reversed: "Reversed" };
+async function usage() {
+  try {
+    const u = await rpc("admin_usage_summary");
+    $("#useStats").innerHTML = [
+      [hrs(u.minutes_month), "saved this month"], [hrs(u.minutes_last_month), "saved last month"],
+      [hrs(u.minutes_all), "saved in total"], [u.jobs_month, "jobs this month"], [u.users_month, "active users this month"],
+      [u.referrals_joined, "friends referred"], [u.referrals_rewarded, "free months given"]]
+      .map(([n, l]) => `<span><strong>${esc(String(n))}</strong>${esc(l)}</span>`).join("");
+    const t = u.tools_month || [];
+    $("#useTools").innerHTML = t.length ? t.map(x => `<tr><td>${esc(x.tool)}</td><td>${x.jobs}</td><td>${hrs(x.minutes)}</td></tr>`).join("")
+      : '<tr><td colspan="3" class="empty">No usage reported yet this month. Apps on 0.4.0 or newer send it.</td></tr>';
+    const list = await rpc("admin_referrals", { how_many: 200 }) || [];
+    $("#refRows").innerHTML = list.length ? list.map(r => `<tr>
+      <td class="nw">${esc(new Date(r.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }))}</td>
+      <td>${esc(r.referrer || "(deleted)")}</td>
+      <td>${esc(r.friend || "(deleted)")}<span class="sub">${r.friend_jobs ?? 0} jobs so far</span></td>
+      <td>${esc(REF[r.status] || r.status)}${r.note ? `<span class="sub">${esc(r.note)}</span>` : ""}</td>
+      <td>${r.status !== "reversed" && r.friend ? `<button type="button" class="btn shrink" data-rev="${esc(r.friend)}">Reverse</button>` : ""}</td></tr>`).join("")
+      : '<tr><td colspan="5" class="empty">No referrals yet.</td></tr>';
+  } catch (err) { $("#useStats").innerHTML = `<span class="msg bad">${esc(err.message)}</span>`; }
+}
+$("#useReload").onclick = usage;
+$("#refRows").addEventListener("click", async e => {
+  const b = e.target.closest("[data-rev]"); if (!b) return;
+  if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Click again to reverse"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Reverse"; }, 4000); return; }
+  b.disabled = true;
+  try { await rpc("admin_reverse_referral", { friend_email: b.dataset.rev }); $("#refMsg").className = "msg ok"; $("#refMsg").textContent = "Reversed."; await usage(); activity(); }
+  catch (err) { $("#refMsg").className = "msg bad"; $("#refMsg").textContent = err.message; b.disabled = false; }
+});
 
 /* ---------- error reports ---------- */
 async function errors() {

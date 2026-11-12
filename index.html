@@ -43,6 +43,7 @@
       <h1><span class="nw">Right-click.</span><br>Done.</h1>
       <p class="lede">Merge, compress and convert PDFs, photos and Excel files without opening a website. FilesBolt works on your own PC, so your files are never uploaded anywhere.</p>
       <div class="cta">
+        <p class="invite" data-invite hidden>A friend invited you. When you create your account in FilesBolt, enter invite code <strong data-invite-code></strong>.</p>
         <a class="btn" href="#" data-download>Download for Windows</a>
         <p class="cta-meta">30 days free, then 10 free jobs every month. For Windows 10 and 11.</p>
       </div>
@@ -284,6 +285,16 @@
   document.querySelectorAll("[data-download]").forEach(function (a) {
     if (a.getAttribute("href") === "#") a.href = DOWNLOAD_URL;
   });
+
+  // Invite links (filesbolt.com/?ref=CODE): show the code to type at sign-up, and remember it on this browser.
+  (function () {
+    var code = "";
+    try { code = (new URLSearchParams(location.search).get("ref") || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12); } catch (e) {}
+    try { if (code) localStorage.setItem("fb_ref", code); else code = localStorage.getItem("fb_ref") || ""; } catch (e) {}
+    if (!code) return;
+    document.querySelectorAll("[data-invite-code]").forEach(function (x) { x.textContent = code; });
+    document.querySelectorAll("[data-invite]").forEach(function (x) { x.hidden = false; });
+  })();
 
   // Light / dark screenshot switch
   var shot = document.getElementById("shot");
