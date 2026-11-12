@@ -1,7 +1,7 @@
 {
-  "version": "0.3.6",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.6/FilesBolt-Setup-0.3.6.exe",
-  "size": 53648288,
-  "sha256": "50c0ce70449e31b74025011a225cfbe5b74eb989c83755d5b2d13a7b863cef51",
-  "notes": "Change the email on your account (account menu > Change email).\nAdd your name, see your plan name, and get a clear message if an account is deactivated."
+  "version": "0.3.7",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.3.7/FilesBolt-Setup-0.3.7.exe",
+  "size": 53648190,
+  "sha256": "013319fd6db1f9f7a78ca48bf500e9b4538a5f6115d327c7b03945f7140158f6",
+  "notes": "You can now turn on two-step sign-in (an authenticator app code after your password) from the account menu, and turn it off again any time.\nTo change the email on your account, write to support@filesbolt.com from your current email. This keeps anyone else from moving your account to their address."
 }
