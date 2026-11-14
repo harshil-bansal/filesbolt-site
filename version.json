@@ -1,7 +1,7 @@
 {
-  "version": "0.4.2",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.2/FilesBolt-Setup-0.4.2.exe",
-  "size": 61327335,
-  "sha256": "0e88425da365a3dd27b6fe60fb93297da4e7069833311024e8d90eb1cbd20e0a",
-  "notes": "Compress now shrinks text-heavy PDFs too (invoices, rate confirmations, merged batches) with no change in how they look. A 634-page merged file went from 31 MB to about 7 MB.\nMerged PDFs come out smaller: repeated fonts and pictures are stored once.\nFix: the Contact support box is readable in dark mode."
+  "version": "0.4.5",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.5/FilesBolt-Setup-0.4.5.exe",
+  "size": 61366618,
+  "sha256": "5a6570e9b2e3a6535165ce7633312843564534f981c9007c4b94a2efaba8858a",
+  "notes": "Edit & sign: new shapes, arrows, check marks, crosses and stamps (Approved, Paid, Received, Void).\nTry FilesBolt 3 times before creating an account. Contact support can include screenshots. Account emails for coupons, password and email changes.\nFaster with Word, Excel and PowerPoint files; no lag when right-clicking hundreds of files; new right-click option Merge and print; Compress opens ready to go."
 }
