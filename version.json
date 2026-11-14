@@ -1,7 +1,7 @@
 {
-  "version": "0.4.5",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.5/FilesBolt-Setup-0.4.5.exe",
-  "size": 61366618,
-  "sha256": "5a6570e9b2e3a6535165ce7633312843564534f981c9007c4b94a2efaba8858a",
-  "notes": "Edit & sign: new shapes, arrows, check marks, crosses and stamps (Approved, Paid, Received, Void).\nTry FilesBolt 3 times before creating an account. Contact support can include screenshots. Account emails for coupons, password and email changes.\nFaster with Word, Excel and PowerPoint files; no lag when right-clicking hundreds of files; new right-click option Merge and print; Compress opens ready to go."
+  "version": "0.4.8",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.8/FilesBolt-Setup-0.4.8.exe",
+  "size": 61715746,
+  "sha256": "d1645ab3a07191cbd33cf95270574db8c73fb2785c554cedf24d7a800b718f0a",
+  "notes": "Edit & sign: a new Paint-style toolbar, opens full screen with the page fitted; change size, colour, font and style of text you already typed.\nStamps: double-click to change the words or date, pick a colour to recolour them; pick a colour straight from the page. Smoother tour."
 }
