@@ -1,7 +1,7 @@
 {
-  "version": "0.4.1",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.1/FilesBolt-Setup-0.4.1.exe",
-  "size": 58859292,
-  "sha256": "f11a4162d9c707ef00706de8dc6d3686b51422afe45534ff435d535323f6aebb",
-  "notes": "Compress is much faster and smarter, and never makes a file bigger.\nPrint straight from the finished notice after any job that makes a PDF or picture.\nThe right-click menu now shows even when you select more than 15 files.\nNew Settings pages: Redeem a coupon, Help and Delete account. Sign-up shows password strength and checks invite codes.\nFixes for PDF to Word, dark mode text boxes and Settings closing slowly. Offline use for up to 30 days."
+  "version": "0.4.2",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.2/FilesBolt-Setup-0.4.2.exe",
+  "size": 61327335,
+  "sha256": "0e88425da365a3dd27b6fe60fb93297da4e7069833311024e8d90eb1cbd20e0a",
+  "notes": "Compress now shrinks text-heavy PDFs too (invoices, rate confirmations, merged batches) with no change in how they look. A 634-page merged file went from 31 MB to about 7 MB.\nMerged PDFs come out smaller: repeated fonts and pictures are stored once.\nFix: the Contact support box is readable in dark mode."
 }
