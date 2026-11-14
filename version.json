@@ -1,7 +1,7 @@
 {
-  "version": "0.4.8",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.8/FilesBolt-Setup-0.4.8.exe",
-  "size": 61715746,
-  "sha256": "d1645ab3a07191cbd33cf95270574db8c73fb2785c554cedf24d7a800b718f0a",
-  "notes": "Edit & sign: a new Paint-style toolbar, opens full screen with the page fitted; change size, colour, font and style of text you already typed.\nStamps: double-click to change the words or date, pick a colour to recolour them; pick a colour straight from the page. Smoother tour."
+  "version": "0.4.11",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.11/FilesBolt-Setup-0.4.11.exe",
+  "size": 61737285,
+  "sha256": "8606a3636007c05201b95160362ff0ad846f8131454304399065f11ca237a4ed",
+  "notes": "Edit & sign opens big PDFs in about a second and shows text sharp at any zoom.\nFix: if an older copy of FilesBolt was on the PC, shortcuts now always open the newest version."
 }
