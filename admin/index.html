@@ -132,6 +132,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
 .err .meta { color: var(--muted); font-size: 13px; white-space: nowrap; }
 .err pre { margin: 8px 0 0; background: var(--mist); border-radius: 8px; padding: 10px; font: 12px/1.5 Consolas, monospace; white-space: pre-wrap; max-height: 280px; overflow: auto; }
 .below { margin-top: 20px; }
+  .btn.sm { padding: 3px 8px; font-size: 12px; margin-left: 6px; }
 </style>
 </head>
 <body>
@@ -330,7 +331,8 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
   <section class="panel below" id="sec-devices">
     <h2>Devices on an account</h2>
     <p class="lead" style="margin-bottom:0">Each account can be signed in on one PC at a time, and on up to 3 different PCs in total.
-      If a customer has replaced their PCs, reset their devices here so they can sign in on new ones.</p>
+      If a customer has replaced their PCs, reset their devices here so they can sign in on new ones.
+      Each PC can be used with at most 2 accounts: use <em>Free up</em> to let one more in, or <em>Shared PC</em> for offices and families (up to 10).</p>
     <form class="row" id="devForm" style="margin-top:12px; max-width:560px">
       <input type="email" id="devEmail" placeholder="name@example.com" aria-label="Account email" required>
       <button class="btn shrink" id="devBtn">Show devices</button>
@@ -338,7 +340,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     <div class="msg" id="devMsg" role="status"></div>
     <div id="devOut" hidden style="margin-top:14px">
       <div class="tablewrap"><table>
-        <thead><tr><th>Platform</th><th>Computer name</th><th>First used</th><th>Last used</th><th>Status</th></tr></thead>
+        <thead><tr><th>Platform</th><th>Computer name</th><th>First used</th><th>Last used</th><th>Status</th><th>Accounts on this PC</th></tr></thead>
         <tbody id="devRows"></tbody>
       </table></div>
       <div class="actions"><button type="button" class="btn" id="devReset">Reset devices</button></div>
@@ -992,7 +994,7 @@ $("#admRows").addEventListener("click", async e => {
 
 /* ---------- activity log ---------- */
 const ACT = {
-  "referral.reverse": "Reversed referral", "referral.add": "Added referral by hand",
+  "referral.reverse": "Reversed referral", "pc_allowances.insert": "PC accounts limit changed", "pc_allowances.update": "PC accounts limit changed", "referral.add": "Added referral by hand",
   "coupons.insert": "Created coupon", "coupons.update": "Changed coupon", "coupons.delete": "Deleted coupon",
   "plans.insert": "Added plan", "plans.update": "Changed plan", "plans.delete": "Deleted plan",
   "admins.insert": "Added admin", "admins.update": "Changed admin", "admins.delete": "Removed admin",
@@ -1088,8 +1090,12 @@ async function showDevices() {
       <td class="nw">${esc(PLAT[d.platform] || d.platform)}</td>
       <td>${esc(d.name || "Unnamed PC")} <span class="help">#${esc(d.id)}</span></td>
       <td class="nw">${esc(fmt(d.first_seen))}</td><td class="nw">${esc(fmt(d.last_seen))}</td>
-      <td><span class="state ${d.active ? "live" : "paused"}">${d.active ? "Signed in" : "Signed out"}</span></td></tr>`).join("")
-    : `<tr><td colspan="5" class="empty">This account hasn't signed in on any PC yet.</td></tr>`;
+      <td><span class="state ${d.active ? "live" : "paused"}">${d.active ? "Signed in" : "Signed out"}</span></td>
+      <td class="nw">${d.accounts} of ${d.pc_limit}${d.shared ? " (shared PC)" : ""}
+        <button type="button" class="btn sm" data-pc="${esc(d.id)}" data-act="free" title="Let one more account sign in on this PC">Free up</button>
+        <button type="button" class="btn sm" data-pc="${esc(d.id)}" data-act="${d.shared ? "unshared" : "shared"}"
+          title="Shared PCs (offices, families) allow up to 10 accounts">${d.shared ? "Not shared" : "Shared PC"}</button></td></tr>`).join("")
+    : `<tr><td colspan="6" class="empty">This account hasn't signed in on any PC yet.</td></tr>`;
   $("#devOut").hidden = false;
 }
 $("#devForm").addEventListener("submit", async e => {
@@ -1098,6 +1104,18 @@ $("#devForm").addEventListener("submit", async e => {
   devEmail = $("#devEmail").value.trim();
   try { await showDevices(); } catch (err) { $("#devMsg").className = "msg bad"; $("#devMsg").textContent = err.message; }
   b.disabled = false;
+});
+$("#devRows").addEventListener("click", async e => {
+  const b = e.target.closest("button[data-pc]");
+  if (!b) return;
+  b.disabled = true;
+  try {
+    const r = await rpc("admin_pc_slots", { e: devEmail, dev: b.dataset.pc, action: b.dataset.act });
+    await showDevices();
+    $("#devMsg").className = "msg ok";
+    $("#devMsg").textContent = b.dataset.act === "free" ? `Done. Up to ${r.pc_limit} accounts can now use that PC.`
+      : `Done. That PC now allows ${r.pc_limit} accounts.`;
+  } catch (err) { $("#devMsg").className = "msg bad"; $("#devMsg").textContent = err.message; b.disabled = false; }
 });
 $("#devReset").onclick = async () => {
   const b = $("#devReset");
