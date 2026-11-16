@@ -115,6 +115,20 @@ td.acts button.danger { color: var(--bad); }
 .jump a:hover { color: var(--ink); background: #F2F3F5; }
 .jump a.on { color: var(--ink); background: #FFF4D6; font-weight: 600; box-shadow: inset 3px 0 0 var(--amber); }
 .adm-content { min-width: 0; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin: 18px 0; }
+.kpi { background: var(--paper); border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; }
+.kpi b { display: block; font-size: 26px; line-height: 1.1; color: var(--ink); }
+.kpi span { font-size: 13px; color: var(--muted); }
+.kpi small { display: block; font-size: 12px; color: var(--muted); margin-top: 4px; }
+.dgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.dcard { padding: 18px; } .dcard.wide { grid-column: 1 / -1; }
+.dcard h3 { margin: 0 0 12px; font-size: 15px; }
+.chart svg { width: 100%; height: 160px; display: block; }
+.hbar { display: grid; grid-template-columns: 130px 1fr 40px; gap: 8px; align-items: center; font-size: 13.5px; margin: 6px 0; }
+.hbar i { display: block; height: 10px; border-radius: 6px; background: var(--amber); }
+.mini { font-size: 13.5px; } .mini div { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--rule); }
+.mini div:last-child { border-bottom: 0; } .mini span { color: var(--muted); white-space: nowrap; }
+@media (max-width: 900px) { .dgrid { grid-template-columns: 1fr; } }
 .adm-content > .adm-page { display: none; margin-top: 0 !important; }
 .adm-content > .adm-page.on { display: block; }
 #mfaSetup { grid-column: 1 / -1; }
@@ -218,9 +232,19 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
   </section>
   <div class="adm-content">
   <section class="adm-page" id="sec-overview">
-    <h1>Overview</h1>
-    <div class="stats" id="stats"></div>
-    <p class="lead">Pick a section on the left.</p>
+    <div class="row" style="justify-content:space-between;align-items:baseline">
+      <h1 style="margin:0">Overview</h1>
+      <button type="button" class="btn shrink" id="dashReload">Refresh</button>
+    </div>
+    <div class="stats" id="stats" style="margin-top:10px"></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="dgrid">
+      <div class="panel dcard wide"><h3>Sign-ups, last 30 days</h3><div id="chSignups" class="chart"></div></div>
+      <div class="panel dcard"><h3>Most used tools this month</h3><div id="chTools"></div></div>
+      <div class="panel dcard"><h3>Active people and jobs by month</h3><div id="chMonths"></div></div>
+      <div class="panel dcard"><h3>Newest accounts</h3><div id="dNewest"></div></div>
+      <div class="panel dcard"><h3>Latest error reports</h3><div id="dErrors"></div></div>
+    </div>
   </section>
   <div class="adm-page" id="sec-coupons">
   <h1>Coupon codes</h1>
@@ -374,6 +398,12 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
       <button class="btn shrink" id="restoreBtn">Restore email</button>
     </form>
     <div class="msg" id="restoreMsg" role="status"></div>
+    <h2 style="margin-top:26px">Deleted accounts (last 90 days)</h2>
+    <p class="lead" style="margin-bottom:0">Kept for 90 days, then removed automatically.</p>
+    <div class="tablewrap" style="margin-top:12px"><table>
+      <thead><tr><th>Deleted</th><th>Email</th><th>Name</th><th>Signed up</th><th>Deleted by</th><th>Can sign up again</th></tr></thead>
+      <tbody id="delRows"></tbody>
+    </table></div>
   </section>
 
   <section class="panel below adm-page" id="sec-usage">
@@ -612,7 +642,7 @@ async function show() {
     $("#mfaSetup").hidden = !setupOnly;
     if (setupOnly) return;
     await whoAmI(); showSection(location.hash.slice(1) || "sec-overview");
-    await Promise.all([load(), stats(), errors(), accounts(), loadPlans(), activity(), usage(), emails()]);
+    await Promise.all([load(), stats(), dashboard(), deletedList(), errors(), accounts(), loadPlans(), activity(), usage(), emails()]);
   }
   else $("#em").focus();
 }
@@ -670,6 +700,53 @@ async function downloads() {
     return n;
   } catch { return "?"; }
 }
+/* ---------- dashboard ---------- */
+const dt = s => new Date(s).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+async function dashboard() {
+  try {
+    const [d, errs] = await Promise.all([rpc("admin_dashboard"), rpc("admin_errors").catch(() => [])]);
+    const hrs = Math.round(d.minutes_all / 60);
+    $("#kpis").innerHTML = [
+      [d.new_7d, "new accounts this week", `${d.new_30d} in 30 days`],
+      [d.active_month, "people used it this month", `${d.jobs_month} jobs this month`],
+      [d.jobs_all, "jobs done in total", `${d.files_all} files`],
+      [hrs >= 1 ? hrs + " h" : d.minutes_all + " min", "time saved for users", "estimated"],
+      [d.guests, "PCs tried without an account", `${d.guest_converted} then signed up`],
+      [d.referrals, "friends invited", ""],
+      [d.subscribers, "get tips emails", ""],
+      [d.errors_7d, "error reports this week", d.errors_7d ? "see Error reports" : "all good"],
+    ].map(([n, l, sub]) => `<div class="kpi"><b>${esc(String(n))}</b><span>${esc(l)}</span>${sub ? `<small>${esc(sub)}</small>` : ""}</div>`).join("");
+    // sign-ups: bars
+    const sg = d.signups || [], max = Math.max(1, ...sg.map(x => x.n)), W = 600, H = 150, bw = W / Math.max(1, sg.length);
+    $("#chSignups").innerHTML = `<svg viewBox="0 0 ${W} ${H + 20}" preserveAspectRatio="none" role="img" aria-label="Sign-ups per day">` +
+      sg.map((x, i) => { const h = Math.max(x.n ? 3 : 1, x.n / max * H);
+        return `<rect x="${i * bw + 2}" y="${H - h}" width="${bw - 4}" height="${h}" rx="3" fill="${x.n ? "#F5B800" : "#E3E6EA"}"><title>${x.d}: ${x.n}</title></rect>`; }).join("") +
+      `<text x="0" y="${H + 16}" font-size="11" fill="#6E737D">${sg[0] ? sg[0].d.slice(5) : ""}</text>` +
+      `<text x="${W}" y="${H + 16}" font-size="11" fill="#6E737D" text-anchor="end">today</text>` +
+      `<text x="0" y="12" font-size="11" fill="#6E737D">max ${max}/day</text></svg>`;
+    const tmax = Math.max(1, ...(d.tools || []).map(t => t.jobs));
+    $("#chTools").innerHTML = (d.tools || []).map(t => `<div class="hbar"><span>${esc(t.tool)}</span><i style="width:${Math.max(3, t.jobs / tmax * 100)}%"></i><span>${t.jobs}</span></div>`).join("")
+      || `<p class="lead">No jobs yet this month.</p>`;
+    $("#chMonths").innerHTML = `<div class="mini">` + (d.months || []).slice().reverse().map(m =>
+      `<div><b>${esc(new Date(m.month + "-01").toLocaleString(undefined, { month: "long", year: "numeric" }))}</b><span>${m.users} people · ${m.jobs} jobs</span></div>`).join("") + `</div>`;
+    $("#dNewest").innerHTML = `<div class="mini">` + (d.newest || []).map(a =>
+      `<div><b>${esc(a.name || a.email)}</b><span>${esc(dt(a.at))}</span></div>`).join("") + `</div>`;
+    $("#dErrors").innerHTML = `<div class="mini">` + ((errs || []).slice(0, 5).map(e =>
+      `<div><b>${esc(String(e.message || e.kind).slice(0, 60))}</b><span>v${esc(e.app_version)} · ${esc(dt(e.created_at))}</span></div>`).join("")
+      || `<div><b>No error reports</b><span></span></div>`) + `</div>`;
+  } catch (e) { $("#kpis").innerHTML = `<p class="msg bad">${esc(e.message)}</p>`; }
+}
+$("#dashReload").onclick = () => { stats(); dashboard(); };
+async function deletedList() {
+  try {
+    const rows = await rpc("admin_deleted_list") || [];
+    $("#delRows").innerHTML = rows.map(r => `<tr><td class="nw">${esc(dt(r.deleted_at))}</td><td>${esc(r.email)}</td><td>${esc(r.name || "")}</td>
+      <td class="nw">${r.signed_up ? esc(new Date(r.signed_up).toLocaleDateString()) : ""}</td>
+      <td>${r.deleted_by === "self" ? "Themselves" : esc(r.deleted_by)}</td><td>${r.blocked ? "No (restore above)" : "Yes"}</td></tr>`).join("")
+      || `<tr><td colspan="6" class="empty">No accounts deleted in the last 90 days.</td></tr>`;
+  } catch (e) { $("#delRows").innerHTML = `<tr><td colspan="6" class="empty">${esc(e.message)}</td></tr>`; }
+}
+
 async function stats() {
   try {
     const [s, dl] = await Promise.all([rpc("admin_stats"), downloads()]);
@@ -1250,8 +1327,10 @@ async function errors() {
     box.innerHTML = list.map(e => `<details class="err"><summary>
         <span class="when">${esc(new Date(e.created_at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }))}</span>
         <span class="what">${esc(e.message || e.kind)}</span>
-        <span class="meta">${esc(e.kind)} · v${esc(e.app_version)}</span></summary>
-        <pre>${esc([e.os, e.context && Object.keys(e.context).length ? JSON.stringify(e.context) : "", e.device ? "PC " + e.device : "", "", e.trace || ""].filter((x, i) => x || i > 2).join("\n"))}</pre></details>`).join("");
+        <span class="meta">${e.account ? esc(e.account) + " · " : ""}${e.context && e.context.pc ? esc(e.context.pc) + " · " : ""}${esc(e.kind)} · v${esc(e.app_version)}</span></summary>
+        <pre>${esc([e.account ? "Account: " + e.account : "Account: not signed in (or unknown)",
+                   "PC: " + (e.context && e.context.pc ? e.context.pc + " " : "") + (e.device ? "(" + e.device + ")" : ""),
+                   e.os, e.context && Object.keys(e.context).length ? JSON.stringify(e.context) : "", "", e.trace || ""].filter((x, i) => x || i > 3).join("\n"))}</pre></details>`).join("");
   } catch (err) { box.innerHTML = `<p class="msg bad">${esc(err.message)}</p>`; }
 }
 $("#errReload").onclick = errors;
