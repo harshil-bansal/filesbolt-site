@@ -266,3 +266,6 @@ details p { padding: 0 0 22px; color: var(--muted); max-width: 40em; }
   .dl-in { grid-template-columns: 1fr; }
   .copy { margin-left: 0; }
 }
+.muted { color: var(--muted); }
+.btn-ghost { background: transparent; border: 1px solid #D5D9DF; }
+.btn-ghost:hover { background: #F2F3F5; }

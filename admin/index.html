@@ -183,7 +183,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
 <main id="adminView" hidden>
   <nav class="jump" aria-label="Sections">
     <a href="#sec-coupons">Coupons</a><a href="#sec-accounts">Accounts</a><a href="#sec-plans">Plans</a><a href="#sec-errors">Error reports</a>
-    <a href="#sec-devices">Devices</a><a href="#sec-restore">Deleted emails</a><a href="#sec-usage">Usage &amp; referrals</a><a href="#sec-activity">Activity</a><a href="#sec-admins" id="jumpAdmins" hidden>Admins</a>
+    <a href="#sec-devices">Devices</a><a href="#sec-restore">Deleted emails</a><a href="#sec-usage">Usage &amp; referrals</a><a href="#sec-activity">Activity</a><a href="#sec-email" id="jumpEmail" hidden>Send an email</a><a href="#sec-admins" id="jumpAdmins" hidden>Admins</a>
   </nav>
   <section class="panel" id="mfaSetup" hidden style="margin-bottom:20px;border-color:var(--amber)">
     <h2>Turn on two-step sign-in</h2>
@@ -392,6 +392,30 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     </table></div>
   </section>
 
+  <section class="panel below" id="sec-email" hidden>
+    <h2>Send an email</h2>
+    <p class="lead" style="margin-bottom:12px">Goes to everyone who gets <b>Tips, news and offers</b> (<span id="emSubs">…</span> people).
+      Write plain text; a blank line starts a new paragraph. You can insert each person's
+      <a href="#" data-tok="{first_name}">{first_name}</a>, <a href="#" data-tok="{invite_code}">{invite_code}</a> and
+      <a href="#" data-tok="{invite_link}">{invite_link}</a>. Every email ends with a link to change choices or unsubscribe.
+      Emails go out about 80 an hour.</p>
+    <form id="emForm" style="max-width:640px">
+      <input type="text" id="emSubj" maxlength="150" placeholder="Subject" aria-label="Subject" style="width:100%;margin-bottom:8px">
+      <textarea id="emBody" rows="9" placeholder="Hi {first_name}," aria-label="Message" style="width:100%;font:inherit"></textarea>
+      <div class="row" style="margin-top:10px;gap:8px">
+        <button type="button" class="btn shrink" id="emPreview">Preview</button>
+        <button type="button" class="btn shrink" id="emTest">Send a test to me</button>
+        <button type="button" class="btn primary shrink" id="emSend">Send to everyone</button>
+      </div>
+    </form>
+    <div id="emPrev" hidden style="margin-top:12px;border:1px solid var(--line);border-radius:10px;padding:16px;max-width:640px;background:#fff"></div>
+    <div class="msg" id="emMsg" role="status"></div>
+    <div class="tablewrap" style="margin-top:14px"><table>
+      <thead><tr><th>Started</th><th>Subject</th><th>Status</th><th>Sent</th><th></th></tr></thead>
+      <tbody id="emRows"></tbody>
+    </table></div>
+  </section>
+
   <section class="panel below" id="sec-admins" hidden>
     <h2>Admins</h2>
     <p class="lead" style="margin-bottom:0">Admins can use everything on this page except this section. Only you, the super admin, can add or remove admins.
@@ -562,7 +586,7 @@ async function show() {
     $("#adminView").classList.toggle("setup-only", setupOnly);
     $("#mfaSetup").hidden = !setupOnly;
     if (setupOnly) return;
-    await whoAmI(); await Promise.all([load(), stats(), errors(), accounts(), loadPlans(), activity(), usage()]);
+    await whoAmI(); await Promise.all([load(), stats(), errors(), accounts(), loadPlans(), activity(), usage(), emails()]);
   }
   else $("#em").focus();
 }
@@ -974,6 +998,7 @@ async function whoAmI() {
   try { me = await rpc("admin_me"); } catch { me = null; }
   const sup = me && me.role === "super";
   $("#sec-admins").hidden = !sup; $("#jumpAdmins").hidden = !sup;
+  $("#sec-email").hidden = !sup; $("#jumpEmail").hidden = !sup;
   if (sup) admins();
 }
 function renderAdmins(list) {
@@ -1018,6 +1043,57 @@ function actDetail(a) {
   const keys = ["plan", "days", "grant_until", "max_uses", "jobs_limit", "role", "name", "note"];
   return keys.filter(k => d[k] !== undefined && d[k] !== null).map(k => `${k.replace(/_/g, " ")}: ${d[k]}`).join("; ");
 }
+/* ---------- Send an email (super admin) ---------- */
+function emRender(d) {
+  $("#emSubs").textContent = d.subscribers;
+  const st = { test: "Test (sending)", sending: "Sending", sent: "Sent", cancelled: "Cancelled", draft: "Draft" };
+  $("#emRows").innerHTML = (d.list || []).map(c => `<tr>
+      <td class="nw">${esc(new Date(c.started_at || c.created_at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }))}</td>
+      <td>${esc(c.subject)}</td><td>${esc(st[c.status] || c.status)}</td><td>${c.sent_count}</td>
+      <td>${c.status === "sending" ? `<button type="button" class="btn shrink" data-cancel="${c.id}">Stop</button>` : ""}</td></tr>`).join("")
+    || `<tr><td colspan="5" class="lead">No emails sent yet.</td></tr>`;
+}
+async function emails() {
+  if (!me || me.role !== "super") return;
+  try { emRender(await rpc("admin_campaigns")); } catch (e) { $("#emMsg").textContent = e.message; }
+}
+function emFill(t) {
+  const code = "ABC123";
+  return t.replace(/\{first_name\}/g, "Harshil").replace(/\{invite_code\}/g, code)
+          .replace(/\{invite_link\}/g, "https://filesbolt.com/?ref=" + code);
+}
+document.querySelectorAll("#sec-email [data-tok]").forEach(a => a.addEventListener("click", e => {
+  e.preventDefault();
+  const b = $("#emBody"), tok = a.dataset.tok, i = b.selectionStart ?? b.value.length;
+  b.value = b.value.slice(0, i) + tok + b.value.slice(b.selectionEnd ?? i); b.focus();
+}));
+$("#emPreview").onclick = () => {
+  const p = $("#emPrev");
+  p.innerHTML = `<p style="margin:0 0 10px"><b>${esc(emFill($("#emSubj").value) || "(no subject)")}</b></p>` +
+    emFill($("#emBody").value).split(/\n\s*\n/).map(x => `<p style="margin:0 0 12px">${esc(x).replace(/\n/g, "<br>")}</p>`).join("") +
+    `<p class="lead" style="font-size:12px;margin:0">Choose which emails you get or unsubscribe.</p>`;
+  p.hidden = false;
+};
+async function emSend(all) {
+  const m = $("#emMsg"); m.className = "msg"; m.textContent = "";
+  const subj = $("#emSubj").value.trim(), body = $("#emBody").value.trim();
+  if (!subj || !body) { m.className = "msg bad"; m.textContent = "Write a subject and a message first."; return; }
+  if (all && !confirm(`Send "${subj}" to ${$("#emSubs").textContent} people? This can't be undone once it starts.`)) return;
+  try {
+    emRender(await rpc("admin_send_campaign", { subj, msg: body, send_now: all }));
+    m.className = "msg ok";
+    m.textContent = all ? "Queued. It starts going out within the hour, about 80 emails an hour."
+                        : "Test queued. It arrives in your inbox within the hour (marked [Test]).";
+  } catch (e) { m.className = "msg bad"; m.textContent = e.message; }
+}
+$("#emTest").onclick = () => emSend(false);
+$("#emSend").onclick = () => emSend(true);
+$("#emRows").addEventListener("click", async e => {
+  const id = e.target.dataset.cancel; if (!id) return;
+  if (!confirm("Stop sending this email? People who already got it keep it.")) return;
+  try { emRender(await rpc("admin_cancel_campaign", { cid: +id })); } catch (x) { $("#emMsg").textContent = x.message; }
+});
+
 async function activity() {
   try {
     const list = await rpc("admin_activity", { how_many: 200 }) || [];
