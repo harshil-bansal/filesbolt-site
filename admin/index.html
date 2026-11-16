@@ -1067,11 +1067,14 @@ function actDetail(a) {
 /* ---------- Send an email (super admin) ---------- */
 function emRender(d) {
   $("#emSubs").textContent = d.subscribers;
-  const st = { test: "Test (sending)", sending: "Sending", sent: "Sent", cancelled: "Cancelled", draft: "Draft" };
+  const st = { test: "Test (sending)", sending: "Sending", paused: "Paused", sent: "Sent", cancelled: "Cancelled", draft: "Draft" };
   $("#emRows").innerHTML = (d.list || []).map(c => `<tr>
       <td class="nw">${esc(new Date(c.started_at || c.created_at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }))}</td>
       <td>${esc(c.subject)}</td><td>${esc(st[c.status] || c.status)}</td><td>${c.sent_count}</td>
-      <td>${c.status === "sending" || c.status === "test" ? `<button type="button" class="btn shrink" data-cancel="${c.id}">Stop</button>` : ""}</td></tr>`).join("")
+      <td class="nw"><button type="button" class="btn shrink" data-view="${c.id}">View</button>
+        ${c.status === "sending" ? `<button type="button" class="btn shrink" data-pause="${c.id}">Pause</button>` : ""}
+        ${c.status === "paused" ? `<button type="button" class="btn shrink" data-resume="${c.id}">Resume</button>` : ""}
+        ${["sending", "test", "paused"].includes(c.status) ? `<button type="button" class="btn shrink" data-cancel="${c.id}">Cancel</button>` : ""}</td></tr>`).join("")
     || `<tr><td colspan="5" class="lead">No emails sent yet.</td></tr>`;
 }
 async function emails() {
@@ -1135,9 +1138,28 @@ $("#emConfirm").onclick = async () => {
   b.disabled = false;
 };
 $("#emRows").addEventListener("click", async e => {
-  const id = e.target.dataset.cancel; if (!id) return;
-  if (!confirm("Stop sending this email? Anyone who already got it keeps it; nobody else will get it.")) return;
-  try { emRender(await rpc("admin_cancel_campaign", { cid: +id })); } catch (x) { $("#emMsg").textContent = x.message; }
+  const d = e.target.dataset;
+  try {
+    if (d.view) {
+      const c = await rpc("admin_campaign", { cid: +d.view });
+      const p = $("#emPrev");
+      p.innerHTML = `<p class="lead" style="margin:0 0 8px;font-size:12px">Sent as it was written. Each person sees their own name and invite code.</p>` +
+        `<p style="margin:0 0 10px"><b>${esc(emFill(c.subject))}</b></p>` +
+        emFill(c.body).split(/\n\s*\n/).map(x => `<p style="margin:0 0 12px">${esc(x).replace(/\n/g, "<br>")}</p>`).join("") +
+        `<p class="lead" style="font-size:12px;margin:0">Choose which emails you get or unsubscribe.</p>`;
+      p.hidden = false; p.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else if (d.pause) {
+      emRender(await rpc("admin_pause_campaign", { cid: +d.pause, pause: true }));
+      $("#emMsg").className = "msg ok"; $("#emMsg").textContent = "Paused. Nobody else gets it until you press Resume.";
+    } else if (d.resume) {
+      emRender(await rpc("admin_pause_campaign", { cid: +d.resume, pause: false }));
+      $("#emMsg").className = "msg ok"; $("#emMsg").textContent = "Resumed. It carries on within 5 minutes, with the people who haven't had it yet.";
+    } else if (d.cancel) {
+      if (!confirm("Cancel this email? Anyone who already got it keeps it; nobody else will get it.")) return;
+      emRender(await rpc("admin_cancel_campaign", { cid: +d.cancel }));
+      $("#emMsg").className = "msg ok"; $("#emMsg").textContent = "Cancelled.";
+    }
+  } catch (x) { $("#emMsg").className = "msg bad"; $("#emMsg").textContent = x.message; }
 });
 
 async function activity() {
