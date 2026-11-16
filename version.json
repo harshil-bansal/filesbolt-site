@@ -1,7 +1,7 @@
 {
-  "version": "0.4.15",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.15/FilesBolt-Setup-0.4.15.exe",
-  "size": 61763621,
-  "sha256": "c1630e911b30070faaa2da546add59738fb465ea7cf6e9b72d875c2fbcebfbfb",
-  "notes": "Cleaner tooltips with shortcut keys. Invite codes fill in automatically when you sign up from a friend's link.\nEdit & sign thumbnails turn with the page. More reliable updates."
+  "version": "0.4.16",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.16/FilesBolt-Setup-0.4.16.exe",
+  "size": 61767573,
+  "sha256": "38ff52da2a8ec20c12f774f3383ebf9e1cf445b8e544a023ec4d791f333cec27",
+  "notes": "Edit & sign: remove any single item with its red x, right-click to Delete / Duplicate / Bring to front / Rotate,\nbigger handles, More colours, neater B/I/U, eyedropper fixes."
 }
