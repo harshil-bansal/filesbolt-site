@@ -407,6 +407,14 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
         <button type="button" class="btn shrink" id="emTest">Send a test to me</button>
         <button type="button" class="btn primary shrink" id="emSend">Send to everyone</button>
       </div>
+      <div class="row" id="emCodeRow" hidden style="margin-top:10px;gap:8px;max-width:420px">
+        <input type="text" id="emCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code"
+               placeholder="6-digit code" aria-label="Code from your authenticator app" style="max-width:150px">
+        <button type="button" class="btn primary shrink" id="emConfirm">Confirm and send</button>
+        <button type="button" class="btn shrink" id="emCodeCancel">Cancel</button>
+      </div>
+      <p class="note" id="emCodeNote" hidden>To send to everyone, enter the code from your authenticator app. This makes
+        sure nobody sends it by accident or from a computer you left signed in.</p>
     </form>
     <div id="emPrev" hidden style="margin-top:12px;border:1px solid var(--line);border-radius:10px;padding:16px;max-width:640px;background:#fff"></div>
     <div class="msg" id="emMsg" role="status"></div>
@@ -1100,7 +1108,32 @@ async function emSend(all) {
   } catch (e) { m.className = "msg bad"; m.textContent = e.message; }
 }
 $("#emTest").onclick = () => emSend(false);
-$("#emSend").onclick = () => emSend(true);
+$("#emSend").onclick = () => {
+  const m = $("#emMsg"); m.className = "msg"; m.textContent = "";
+  if (!$("#emSubj").value.trim() || !$("#emBody").value.trim()) { m.className = "msg bad"; m.textContent = "Write a subject and a message first."; return; }
+  $("#emCodeRow").hidden = $("#emCodeNote").hidden = false; $("#emCode").value = ""; $("#emCode").focus();
+};
+$("#emCodeCancel").onclick = () => { $("#emCodeRow").hidden = $("#emCodeNote").hidden = true; };
+$("#emConfirm").onclick = async () => {
+  const m = $("#emMsg"), b = $("#emConfirm"); b.disabled = true; m.className = "msg"; m.textContent = "";
+  try {
+    const code = $("#emCode").value.trim();
+    if (!/^\d{6}$/.test(code)) throw new Error("Enter the 6-digit code from your authenticator app.");
+    const tok = await token();
+    const u = await authed("GET", "/auth/v1/user", tok);
+    const f = (u.factors || []).find(x => x.factor_type === "totp" && x.status === "verified");
+    if (!f) throw new Error("Turn on two-step sign-in first.");
+    const v = await mfaVerify(tok, f.id, code);          // a fresh check; the server only accepts one from the last 2 minutes
+    S.set(sess(v, S.get().email, S.get().signed_in_at));
+    $("#emCodeRow").hidden = $("#emCodeNote").hidden = true;
+    await emSend(true);
+  } catch (e) {
+    m.className = "msg bad";
+    m.textContent = /invalid|expired|code/i.test(e.message) && !/Enter the/.test(e.message)
+      ? "That code isn't right. Try the newest code in the app." : e.message;
+  }
+  b.disabled = false;
+};
 $("#emRows").addEventListener("click", async e => {
   const id = e.target.dataset.cancel; if (!id) return;
   if (!confirm("Stop sending this email? People who already got it keep it.")) return;
