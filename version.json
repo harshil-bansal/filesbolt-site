@@ -1,7 +1,7 @@
 {
-  "version": "0.4.13",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.13/FilesBolt-Setup-0.4.13.exe",
-  "size": 61767481,
-  "sha256": "ea75fab546221ac6c4bac84c1e446da785ff48734268fc0c339cd8fd5775e9be",
-  "notes": "FilesBolt is free during our launch. Animated sidebar icons. Edit & sign: brush, double arrow, notes, Paint-style Select, rotate pages, fixes.\nChoose which emails you get. Take a screenshot in Contact support."
+  "version": "0.4.15",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.15/FilesBolt-Setup-0.4.15.exe",
+  "size": 61763621,
+  "sha256": "c1630e911b30070faaa2da546add59738fb465ea7cf6e9b72d875c2fbcebfbfb",
+  "notes": "Cleaner tooltips with shortcut keys. Invite codes fill in automatically when you sign up from a friend's link.\nEdit & sign thumbnails turn with the page. More reliable updates."
 }
