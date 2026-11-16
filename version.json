@@ -1,7 +1,7 @@
 {
-  "version": "0.4.11",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.11/FilesBolt-Setup-0.4.11.exe",
-  "size": 61737285,
-  "sha256": "8606a3636007c05201b95160362ff0ad846f8131454304399065f11ca237a4ed",
-  "notes": "Edit & sign opens big PDFs in about a second and shows text sharp at any zoom.\nFix: if an older copy of FilesBolt was on the PC, shortcuts now always open the newest version."
+  "version": "0.4.13",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.13/FilesBolt-Setup-0.4.13.exe",
+  "size": 61767481,
+  "sha256": "ea75fab546221ac6c4bac84c1e446da785ff48734268fc0c339cd8fd5775e9be",
+  "notes": "FilesBolt is free during our launch. Animated sidebar icons. Edit & sign: brush, double arrow, notes, Paint-style Select, rotate pages, fixes.\nChoose which emails you get. Take a screenshot in Contact support."
 }
