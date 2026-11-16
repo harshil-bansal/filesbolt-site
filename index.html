@@ -294,6 +294,18 @@
     if (!code) return;
     document.querySelectorAll("[data-invite-code]").forEach(function (x) { x.textContent = code; });
     document.querySelectorAll("[data-invite]").forEach(function (x) { x.hidden = false; });
+    // Clicking Download copies the code; FilesBolt finds it on the clipboard and fills it in at sign-up.
+    document.querySelectorAll("[data-download]").forEach(function (a) {
+      a.addEventListener("click", function () {
+        try {
+          navigator.clipboard.writeText("FilesBolt invite code: " + code).then(function () {
+            document.querySelectorAll("[data-invite]").forEach(function (x) {
+              x.innerHTML = "Invite code <strong>" + code + "</strong> copied. FilesBolt fills it in for you when you create your account.";
+            });
+          }).catch(function () {});
+        } catch (e) {}
+      });
+    });
   })();
 
   // Light / dark screenshot switch
