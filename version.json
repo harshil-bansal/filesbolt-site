@@ -1,7 +1,7 @@
 {
-  "version": "0.4.16",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.16/FilesBolt-Setup-0.4.16.exe",
-  "size": 61767573,
-  "sha256": "38ff52da2a8ec20c12f774f3383ebf9e1cf445b8e544a023ec4d791f333cec27",
-  "notes": "Edit & sign: remove any single item with its red x, right-click to Delete / Duplicate / Bring to front / Rotate,\nbigger handles, More colours, neater B/I/U, eyedropper fixes."
+  "version": "0.4.18",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.18/FilesBolt-Setup-0.4.18.exe",
+  "size": 61781117,
+  "sha256": "0f1f4db0c3af72f0558a0a1a576b7a21be13f5eedfdf798b1a51429945f354db",
+  "notes": "Show password eye on password boxes. Signing in with a deleted account now says so.\nDeleting your account asks for your authenticator code when two-step sign-in is on."
 }
