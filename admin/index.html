@@ -133,6 +133,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
 .err pre { margin: 8px 0 0; background: var(--mist); border-radius: 8px; padding: 10px; font: 12px/1.5 Consolas, monospace; white-space: pre-wrap; max-height: 280px; overflow: auto; }
 .below { margin-top: 20px; }
   .btn.sm { padding: 3px 8px; font-size: 12px; margin-left: 6px; }
+#adminView.setup-only > :not(#mfaSetup) { display: none !important; }
 </style>
 </head>
 <body>
@@ -186,8 +187,9 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
   </nav>
   <section class="panel" id="mfaSetup" hidden style="margin-bottom:20px;border-color:var(--amber)">
     <h2>Turn on two-step sign-in</h2>
-    <p class="lead" style="margin-bottom:12px">Protect this page with a code from an authenticator app on your phone (Google Authenticator,
-      Microsoft Authenticator or similar). Then even someone who learns your password can't get in.</p>
+    <p class="lead" style="margin-bottom:12px">Two-step sign-in is required for every admin. Set it up with an authenticator app on your
+      phone (Google Authenticator, Microsoft Authenticator or similar) to open the admin page. Then even someone who learns
+      your password can't get in.</p>
     <button type="button" class="btn primary" id="mfaStart">Set up</button>
     <form id="mfaSetupForm" autocomplete="off">
       <div id="mfaStep2" hidden>
@@ -443,6 +445,7 @@ async function call(path, body, auth = true) {
   let j = null; try { j = t ? JSON.parse(t) : null; } catch {}
   if (!r.ok) {
     const m = (j && (j.message || j.msg || j.error_description)) || ("Error " + r.status);
+    if (m === "mfa_setup_required") { show(); throw new Error("Turn on two-step sign-in first."); }
     if (m === "mfa_required") { S.set(null); show(); throw new Error("Please sign in again with your authenticator code."); }
     throw new Error(m === "not_admin" ? "This account isn't an admin." :
                     m === "Invalid login credentials" ? "That email and password don't match." : m);
@@ -539,7 +542,7 @@ $("#mfaSetupForm").addEventListener("submit", async e => {
     S.set(sess(v, S.get().email, S.get().signed_in_at));
     m.className = "msg ok"; m.textContent = "Two-step sign-in is on. From now on, signing in here also needs a code from your app.";
     $("#mfaStep2").hidden = true;
-    setTimeout(securityBanner, 4000);
+    setTimeout(show, 2500);
   } catch (err) { m.className = "msg bad"; m.textContent = /invalid|expired|code/i.test(err.message) ? "That code isn't right. Try the newest code in the app." : err.message; }
   b.disabled = false;
 });
@@ -553,7 +556,14 @@ async function show() {
   $("#who").textContent = s ? s.email : "";
   let note = ""; try { note = sessionStorage.getItem("fb_admin_note") || ""; sessionStorage.removeItem("fb_admin_note"); } catch {}
   if (!s && note) $("#signinMsg").textContent = note;
-  if (s) { await whoAmI(); await Promise.all([load(), stats(), errors(), accounts(), loadPlans(), activity(), usage(), securityBanner()]); }
+  if (s) {
+    let sec = null; try { sec = await rpc("admin_security"); } catch {}
+    const setupOnly = !!sec && !sec.mfa_on;
+    $("#adminView").classList.toggle("setup-only", setupOnly);
+    $("#mfaSetup").hidden = !setupOnly;
+    if (setupOnly) return;
+    await whoAmI(); await Promise.all([load(), stats(), errors(), accounts(), loadPlans(), activity(), usage()]);
+  }
   else $("#em").focus();
 }
 $("#signinForm").addEventListener("submit", async e => {
