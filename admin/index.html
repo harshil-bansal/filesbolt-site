@@ -398,7 +398,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
       Write plain text; a blank line starts a new paragraph. You can insert each person's
       <a href="#" data-tok="{first_name}">{first_name}</a>, <a href="#" data-tok="{invite_code}">{invite_code}</a> and
       <a href="#" data-tok="{invite_link}">{invite_link}</a>. Every email ends with a link to change choices or unsubscribe.
-      Emails go out about 80 an hour.</p>
+      Emails go out about 80 an hour; you can stop a send until it finishes.</p>
     <form id="emForm" style="max-width:640px">
       <input type="text" id="emSubj" maxlength="150" placeholder="Subject" aria-label="Subject" style="width:100%;margin-bottom:8px">
       <textarea id="emBody" rows="9" placeholder="Hi {first_name}," aria-label="Message" style="width:100%;font:inherit"></textarea>
@@ -1071,7 +1071,7 @@ function emRender(d) {
   $("#emRows").innerHTML = (d.list || []).map(c => `<tr>
       <td class="nw">${esc(new Date(c.started_at || c.created_at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }))}</td>
       <td>${esc(c.subject)}</td><td>${esc(st[c.status] || c.status)}</td><td>${c.sent_count}</td>
-      <td>${c.status === "sending" ? `<button type="button" class="btn shrink" data-cancel="${c.id}">Stop</button>` : ""}</td></tr>`).join("")
+      <td>${c.status === "sending" || c.status === "test" ? `<button type="button" class="btn shrink" data-cancel="${c.id}">Stop</button>` : ""}</td></tr>`).join("")
     || `<tr><td colspan="5" class="lead">No emails sent yet.</td></tr>`;
 }
 async function emails() {
@@ -1103,8 +1103,8 @@ async function emSend(all) {
   try {
     emRender(await rpc("admin_send_campaign", { subj, msg: body, send_now: all }));
     m.className = "msg ok";
-    m.textContent = all ? "Queued. It starts going out within the hour, about 80 emails an hour."
-                        : "Test queued. It arrives in your inbox within the hour (marked [Test]).";
+    m.textContent = all ? "Queued. It starts going out within 5 minutes, about 80 emails an hour. You can Stop it below until everyone has it."
+                        : "Test queued. It arrives in your inbox within 5 minutes (marked [Test]).";
   } catch (e) { m.className = "msg bad"; m.textContent = e.message; }
 }
 $("#emTest").onclick = () => emSend(false);
@@ -1136,7 +1136,7 @@ $("#emConfirm").onclick = async () => {
 };
 $("#emRows").addEventListener("click", async e => {
   const id = e.target.dataset.cancel; if (!id) return;
-  if (!confirm("Stop sending this email? People who already got it keep it.")) return;
+  if (!confirm("Stop sending this email? Anyone who already got it keeps it; nobody else will get it.")) return;
   try { emRender(await rpc("admin_cancel_campaign", { cid: +id })); } catch (x) { $("#emMsg").textContent = x.message; }
 });
 
