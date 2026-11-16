@@ -138,9 +138,18 @@ section[id], h1[id] { scroll-margin-top: 16px; }
 td .sub { display: block; color: var(--muted); font-size: 12.5px; }
 tr.off td { color: var(--muted); }
 tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
-.mgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
-@media (max-width: 1100px) { .mgrid { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 700px) { .mgrid { grid-template-columns: 1fr; } }
+.mwrap { padding: 6px 2px 4px; }
+.mgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.mgrid .mbox { background: var(--paper); border: 1px solid var(--rule); border-radius: 12px; padding: 16px; }
+.mlab { display: block; font-size: 12.5px; color: var(--muted); margin: 6px 0 4px; }
+.mbox .line { display: flex; gap: 8px; align-items: center; margin: 0 0 8px; }
+.chk { display: flex; gap: 8px; align-items: center; font-weight: 400; font-size: 13.5px; margin: 0 0 8px; }
+.danger { margin-top: 14px; border: 1px solid #F3C2C2; background: #FFF7F7; border-radius: 12px; padding: 16px; }
+.danger h3 { margin: 0 0 10px; font-size: 14px; color: #B42318; }
+.dgrid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.dgrid3 b { font-size: 13.5px; } .dgrid3 .note { margin: 4px 0 8px; }
+@media (max-width: 1100px) { .mgrid, .dgrid3 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 700px) { .mgrid, .dgrid3 { grid-template-columns: 1fr; } }
 .mbox h3 { font-size: 14px; margin: 0 0 8px; color: var(--ink); }
 .mbox select, .mbox input { font: inherit; border: 1px solid var(--rule); border-radius: 7px; padding: 7px 9px; background: #fff; }
 .mbox .line { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
@@ -970,43 +979,48 @@ $("#accRows").addEventListener("click", e => {
   const opts = plans.filter(p => p.active && p.code !== "free")
     .map(p => `<option value="${esc(p.code)}">${esc(p.name)}${p.jobs_limit == null ? "" : ` (${p.jobs_limit} jobs/month)`}</option>`).join("");
   const row = document.createElement("tr"); row.className = "manage";
-  row.innerHTML = `<td colspan="7"><div class="mgrid">
-    <div class="mbox"><h3>Name</h3>
-      <div class="line"><input type="text" data-f="name" maxlength="80" value="${esc(a.name || "")}" placeholder="Full name" style="flex:1"></div>
-      <button class="btn" data-act="name">Save name</button></div>
-    <div class="mbox"><h3>Plan</h3>
-      <div class="line"><select data-f="plan">${opts}<option value="free">Free (10 jobs a month)</option></select></div>
-      <div class="line" data-f="dur"><select data-f="kind"><option value="days">for</option><option value="until">until</option><option value="lifetime">forever</option></select>
-        <input type="number" data-f="days" min="1" value="30" style="width:80px"><span data-f="dayslbl">days</span>
-        <input type="date" data-f="until" hidden></div>
-      <button class="btn" data-act="plan">Apply plan</button>
-      <p class="note">Replaces their current plan. "Free" ends any plan now.</p></div>
-    <div class="mbox"><h3>Free trial</h3>
-      <div class="line">Trial ends in <input type="number" data-f="tdays" min="0" max="365" value="7" style="width:80px"> days</div>
-      <button class="btn" data-act="trial">Set trial</button>
-      <p class="note">Now: ${a.trial_ends_at && new Date(a.trial_ends_at) > new Date() ? "ends " + esc(fmt(a.trial_ends_at)) : "ended " + esc(fmt(a.trial_ends_at))}. Use 0 to end it today.</p></div>
-    <div class="mbox"><h3>Emails</h3>
-      <label class="line" style="margin:0 0 4px;font-weight:400;font-size:13.5px"><input type="checkbox" data-f="m_tips" disabled> Tips, news and offers</label>
-      <label class="line" style="margin:0 0 4px;font-weight:400;font-size:13.5px"><input type="checkbox" data-f="m_monthly" disabled> Monthly summary</label>
-      <label class="line" style="margin:0 0 8px;font-weight:400;font-size:13.5px"><input type="checkbox" data-f="m_trial" disabled> Plan reminders</label>
-      <button class="btn" data-act="mail">Save email choices</button>
-      <p class="note">For someone who asks support to stop (or start) emails. Account and security emails always go out.</p></div>
-    <div class="mbox"><h3>Account</h3>
-      ${a.admin_role === "super" ? '<p class="note">This is the super admin account. It can\'t be deactivated or deleted.</p>' : `
-      ${a.disabled ? `<button class="btn" data-act="enable">Reactivate</button><p class="note">They can sign in again right away.</p>`
-        : `<div class="line"><input type="text" data-f="reason" placeholder="Reason (only admins see it)" style="flex:1"></div>
-           <button class="btn" data-act="disable">Deactivate</button>
-           <p class="note">Signs them out everywhere. They can't sign in or run jobs until you reactivate.</p>`}
-      ${a.mfa_on ? `<div style="margin-top:14px"><button class="btn" data-act="mfa">Turn off two-step sign-in</button>
-        <p class="note">For someone who lost their phone. Signs them out; they sign in with just their password and can turn it on again.</p></div>` : ""}
-      ${sup ? `<div style="margin-top:14px"><div class="line"><input type="email" data-f="newemail" placeholder="New email" style="flex:1"></div>
-        <button class="btn" data-act="email">Change email</button>
-        <p class="note">Signs them out. They sign in again with the new email. Their plan and name stay.</p></div>` : ""}
-      ${sup ? `<div style="margin-top:14px"><label class="line" style="margin:0 0 6px;font-weight:400;font-size:13.5px">
-        <input type="checkbox" data-f="block"> Block this email from signing up again</label>
-        <button class="btn danger" data-act="delete">Delete account</button>
-        <p class="note">Deletes the account for good. This can't be undone.</p></div>` : ""}`}
-    </div></div><div class="msg" data-f="msg" role="status"></div></td>`;
+  const trialNow = a.trial_ends_at && new Date(a.trial_ends_at) > new Date() ? "ends " + esc(fmt(a.trial_ends_at)) : "ended " + esc(fmt(a.trial_ends_at));
+  row.innerHTML = `<td colspan="7"><div class="mwrap">
+    <div class="mgrid">
+      <div class="mbox"><h3>Profile</h3>
+        <label class="mlab">Name</label>
+        <div class="line"><input type="text" data-f="name" maxlength="80" value="${esc(a.name || "")}" placeholder="Full name" style="flex:1">
+          <button class="btn" data-act="name">Save</button></div>
+        ${sup && a.admin_role !== "super" ? `<label class="mlab">Change email</label>
+        <div class="line"><input type="email" data-f="newemail" placeholder="New email" style="flex:1">
+          <button class="btn" data-act="email">Change</button></div>
+        <p class="note">Signs them out; they sign in again with the new email. Plan and name stay.</p>` : ""}</div>
+      <div class="mbox"><h3>Plan</h3>
+        <div class="line"><select data-f="plan" style="flex:1">${opts}<option value="free">Free (10 jobs a month)</option></select></div>
+        <div class="line" data-f="dur"><select data-f="kind"><option value="days">for</option><option value="until">until</option><option value="lifetime">forever</option></select>
+          <input type="number" data-f="days" min="1" value="30" style="width:80px"><span data-f="dayslbl">days</span>
+          <input type="date" data-f="until" hidden></div>
+        <button class="btn" data-act="plan">Apply plan</button>
+        <p class="note">Replaces their current plan. "Free" ends any plan now.</p>
+        <label class="mlab" style="margin-top:14px">Free time</label>
+        <div class="line">Ends in <input type="number" data-f="tdays" min="0" max="365" value="7" style="width:80px"> days
+          <button class="btn" data-act="trial">Set</button></div>
+        <p class="note">Now: ${trialNow}. 0 ends it today.</p></div>
+      <div class="mbox"><h3>Emails</h3>
+        <label class="chk"><input type="checkbox" data-f="m_tips" disabled> Tips, news and offers</label>
+        <label class="chk"><input type="checkbox" data-f="m_monthly" disabled> Monthly summary</label>
+        <label class="chk"><input type="checkbox" data-f="m_trial" disabled> Plan reminders</label>
+        <button class="btn" data-act="mail" style="margin-top:6px">Save email choices</button>
+        <p class="note">Account and security emails always go out.</p></div>
+    </div>
+    ${a.admin_role === "super" ? '<p class="note" style="margin-top:14px">This is the super admin account. It can\'t be deactivated or deleted.</p>' : `
+    <div class="danger"><h3>Danger zone</h3><div class="dgrid3">
+      <div>${a.disabled ? `<b>Deactivated</b><p class="note">They can't sign in or run jobs.</p><button class="btn" data-act="enable">Reactivate</button>`
+        : `<b>Deactivate</b><p class="note">Signs them out everywhere until you reactivate.</p>
+          <div class="line"><input type="text" data-f="reason" placeholder="Reason (only admins see it)" style="flex:1">
+          <button class="btn" data-act="disable">Deactivate</button></div>`}</div>
+      ${a.mfa_on ? `<div><b>Two-step sign-in</b><p class="note">For someone who lost their phone. They sign in with just their password.</p>
+        <button class="btn" data-act="mfa">Turn it off</button></div>` : ""}
+      ${sup ? `<div><b>Delete account</b><p class="note">Deletes it for good. Can't be undone.</p>
+        <label class="chk"><input type="checkbox" data-f="block"> Block this email from signing up again</label>
+        <button class="btn danger" data-act="delete">Delete account</button></div>` : ""}
+    </div></div>`}
+    <div class="msg" data-f="msg" role="status"></div></div></td>`;
   tr.after(row);
   const f = n => row.querySelector(`[data-f="${n}"]`);
   const syncKind = () => { const k = f("kind").value; f("days").hidden = f("dayslbl").hidden = k !== "days"; f("until").hidden = k !== "until"; };
