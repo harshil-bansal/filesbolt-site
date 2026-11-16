@@ -108,9 +108,18 @@ td.acts button.danger { color: var(--bad); }
 .empty { color: var(--muted); padding: 28px 10px; text-align: center; }
 
 .signin { max-width: 380px; margin: 60px auto; }
-.jump { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0 0 14px; font-size: 14px; }
-.jump a { color: var(--muted); text-decoration: none; padding: 2px 0; border-bottom: 2px solid transparent; }
-.jump a:hover { color: var(--ink); border-bottom-color: var(--amber); }
+#adminView:not(.setup-only):not([hidden]) { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 0 28px; align-items: start; }
+.jump { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 2px; font-size: 14.5px;
+        background: var(--paper); border: 1px solid var(--rule); border-radius: 12px; padding: 10px; }
+.jump a { color: var(--muted); text-decoration: none; padding: 8px 12px; border-radius: 8px; }
+.jump a:hover { color: var(--ink); background: #F2F3F5; }
+.jump a.on { color: var(--ink); background: #FFF4D6; font-weight: 600; box-shadow: inset 3px 0 0 var(--amber); }
+.adm-content { min-width: 0; }
+.adm-content > .adm-page { display: none; margin-top: 0 !important; }
+.adm-content > .adm-page.on { display: block; }
+#mfaSetup { grid-column: 1 / -1; }
+@media (max-width: 860px) { #adminView:not(.setup-only):not([hidden]) { display: block; }
+  .jump { position: static; flex-direction: row; flex-wrap: wrap; margin-bottom: 14px; } }
 section[id], h1[id] { scroll-margin-top: 16px; }
 td .sub { display: block; color: var(--muted); font-size: 12.5px; }
 tr.off td { color: var(--muted); }
@@ -182,7 +191,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
 <!-- Admin -->
 <main id="adminView" hidden>
   <nav class="jump" aria-label="Sections">
-    <a href="#sec-coupons">Coupons</a><a href="#sec-accounts">Accounts</a><a href="#sec-plans">Plans</a><a href="#sec-errors">Error reports</a>
+    <a href="#sec-overview">Overview</a><a href="#sec-coupons">Coupons</a><a href="#sec-accounts">Accounts</a><a href="#sec-plans">Plans</a><a href="#sec-errors">Error reports</a>
     <a href="#sec-devices">Devices</a><a href="#sec-restore">Deleted emails</a><a href="#sec-usage">Usage &amp; referrals</a><a href="#sec-activity">Activity</a><a href="#sec-email" id="jumpEmail" hidden>Send an email</a><a href="#sec-admins" id="jumpAdmins" hidden>Admins</a>
   </nav>
   <section class="panel" id="mfaSetup" hidden style="margin-bottom:20px;border-color:var(--amber)">
@@ -207,8 +216,14 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     </form>
     <div class="msg" id="mfaSetupMsg" role="status"></div>
   </section>
-  <div class="stats" id="stats"></div>
-  <h1 id="sec-coupons">Coupon codes</h1>
+  <div class="adm-content">
+  <section class="adm-page" id="sec-overview">
+    <h1>Overview</h1>
+    <div class="stats" id="stats"></div>
+    <p class="lead">Pick a section on the left.</p>
+  </section>
+  <div class="adm-page" id="sec-coupons">
+  <h1>Coupon codes</h1>
 
   <div class="grid">
     <form class="panel" id="form" autocomplete="off">
@@ -291,8 +306,9 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
       </div>
     </section>
   </div>
+  </div>
 
-  <section class="panel below" id="sec-accounts">
+  <section class="panel below adm-page" id="sec-accounts">
     <div class="row" style="justify-content:space-between">
       <h2 style="margin:0">Accounts</h2>
       <input type="text" id="accSearch" class="shrink" style="width:260px" placeholder="Search by name or email" aria-label="Search accounts by name or email">
@@ -304,7 +320,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     </table></div>
   </section>
 
-  <section class="panel below" id="sec-plans">
+  <section class="panel below adm-page" id="sec-plans">
     <h2>Plans</h2>
     <p class="lead" style="margin-bottom:0">The plans you can give to accounts. The job limit is per month; leave it empty for unlimited.
       Paid checkout will use these plans later. Only the super admin can add or change plans.</p>
@@ -320,7 +336,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     <div class="msg" id="planMsg" role="status"></div>
   </section>
 
-  <section class="panel below" id="sec-errors">
+  <section class="panel below adm-page" id="sec-errors">
     <div class="row" style="justify-content:space-between">
       <h2 style="margin:0">Error reports</h2>
       <div class="shrink row"><button type="button" class="btn" id="errReload">Refresh</button>
@@ -330,7 +346,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     <div id="errList" style="margin-top:12px"></div>
   </section>
 
-  <section class="panel below" id="sec-devices">
+  <section class="panel below adm-page" id="sec-devices">
     <h2>Devices on an account</h2>
     <p class="lead" style="margin-bottom:0">Each account can be signed in on one PC at a time, and on up to 3 different PCs in total.
       If a customer has replaced their PCs, reset their devices here so they can sign in on new ones.
@@ -350,7 +366,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     </div>
   </section>
 
-  <section class="panel below" id="sec-restore">
+  <section class="panel below adm-page" id="sec-restore">
     <h2>Restore a deleted account's email</h2>
     <p class="lead" style="margin-bottom:0">When someone deletes their account, that email can't sign up again. Restore it here after they contact support.</p>
     <form class="row" id="restoreForm" style="margin-top:12px; max-width:560px">
@@ -360,7 +376,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     <div class="msg" id="restoreMsg" role="status"></div>
   </section>
 
-  <section class="panel below" id="sec-usage">
+  <section class="panel below adm-page" id="sec-usage">
     <div class="row" style="justify-content:space-between">
       <h2 style="margin:0">Usage &amp; referrals</h2>
       <button type="button" class="btn shrink" id="useReload">Refresh</button>
@@ -380,7 +396,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     <p class="msg" id="refMsg"></p>
   </section>
 
-  <section class="panel below" id="sec-activity">
+  <section class="panel below adm-page" id="sec-activity">
     <div class="row" style="justify-content:space-between">
       <h2 style="margin:0">Activity log</h2>
       <button type="button" class="btn shrink" id="actReload">Refresh</button>
@@ -392,7 +408,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     </table></div>
   </section>
 
-  <section class="panel below" id="sec-email" hidden>
+  <section class="panel below adm-page" id="sec-email" hidden>
     <h2>Send an email</h2>
     <p class="lead" style="margin-bottom:12px">Goes to everyone who gets <b>Tips, news and offers</b> (<span id="emSubs">…</span> people).
       Write plain text; a blank line starts a new paragraph. You can insert each person's
@@ -424,7 +440,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     </table></div>
   </section>
 
-  <section class="panel below" id="sec-admins" hidden>
+  <section class="panel below adm-page" id="sec-admins" hidden>
     <h2>Admins</h2>
     <p class="lead" style="margin-bottom:0">Admins can use everything on this page except this section. Only you, the super admin, can add or remove admins.
       A new admin signs in here with their own FilesBolt account, so they need to create one in the app first (same email).</p>
@@ -438,6 +454,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     </form>
     <div class="msg" id="admMsg" role="status"></div>
   </section>
+  </div>
 </main>
 
 <script>
@@ -594,7 +611,8 @@ async function show() {
     $("#adminView").classList.toggle("setup-only", setupOnly);
     $("#mfaSetup").hidden = !setupOnly;
     if (setupOnly) return;
-    await whoAmI(); await Promise.all([load(), stats(), errors(), accounts(), loadPlans(), activity(), usage(), emails()]);
+    await whoAmI(); showSection(location.hash.slice(1) || "sec-overview");
+    await Promise.all([load(), stats(), errors(), accounts(), loadPlans(), activity(), usage(), emails()]);
   }
   else $("#em").focus();
 }
@@ -1064,6 +1082,21 @@ function actDetail(a) {
   const keys = ["plan", "days", "grant_until", "max_uses", "jobs_limit", "role", "name", "note"];
   return keys.filter(k => d[k] !== undefined && d[k] !== null).map(k => `${k.replace(/_/g, " ")}: ${d[k]}`).join("; ");
 }
+/* ---------- one section at a time (left menu) ---------- */
+function showSection(id) {
+  const pages = [...document.querySelectorAll(".adm-content > .adm-page")];
+  if (!pages.some(p => p.id === id) || document.getElementById(id).hidden) id = "sec-overview";
+  pages.forEach(p => p.classList.toggle("on", p.id === id));
+  document.querySelectorAll(".jump a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + id));
+  window.scrollTo({ top: 0 });
+}
+document.querySelector(".jump").addEventListener("click", e => {
+  const a = e.target.closest("a"); if (!a) return;
+  e.preventDefault(); const id = a.getAttribute("href").slice(1);
+  history.replaceState(null, "", "#" + id); showSection(id);
+});
+window.addEventListener("hashchange", () => showSection(location.hash.slice(1)));
+
 /* ---------- Send an email (super admin) ---------- */
 function emRender(d) {
   $("#emSubs").textContent = d.subscribers;
