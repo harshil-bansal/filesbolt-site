@@ -882,6 +882,12 @@ $("#accRows").addEventListener("click", e => {
       <div class="line">Trial ends in <input type="number" data-f="tdays" min="0" max="365" value="7" style="width:80px"> days</div>
       <button class="btn" data-act="trial">Set trial</button>
       <p class="note">Now: ${a.trial_ends_at && new Date(a.trial_ends_at) > new Date() ? "ends " + esc(fmt(a.trial_ends_at)) : "ended " + esc(fmt(a.trial_ends_at))}. Use 0 to end it today.</p></div>
+    <div class="mbox"><h3>Emails</h3>
+      <label class="line" style="margin:0 0 4px;font-weight:400;font-size:13.5px"><input type="checkbox" data-f="m_tips" disabled> Tips, news and offers</label>
+      <label class="line" style="margin:0 0 4px;font-weight:400;font-size:13.5px"><input type="checkbox" data-f="m_monthly" disabled> Monthly summary</label>
+      <label class="line" style="margin:0 0 8px;font-weight:400;font-size:13.5px"><input type="checkbox" data-f="m_trial" disabled> Plan reminders</label>
+      <button class="btn" data-act="mail">Save email choices</button>
+      <p class="note">For someone who asks support to stop (or start) emails. Account and security emails always go out.</p></div>
     <div class="mbox"><h3>Account</h3>
       ${a.admin_role === "super" ? '<p class="note">This is the super admin account. It can\'t be deactivated or deleted.</p>' : `
       ${a.disabled ? `<button class="btn" data-act="enable">Reactivate</button><p class="note">They can sign in again right away.</p>`
@@ -905,6 +911,9 @@ $("#accRows").addEventListener("click", e => {
   f("plan").onchange = () => { f("dur").hidden = f("plan").value === "free"; };
   if (!opts) f("dur").hidden = true;
   syncKind();
+  rpc("admin_email_prefs", { e: a.email }).then(m => {
+    ["tips", "monthly", "trial"].forEach(k => { const c = f("m_" + k); if (c) { c.checked = !!m[k]; c.disabled = false; } });
+  }).catch(() => {});
   const say = (t, ok) => { const m = f("msg"); m.className = "msg " + (ok ? "ok" : "bad"); m.textContent = t; };
   row.addEventListener("click", async ev => {
     const btn = ev.target.closest("button[data-act]"); if (!btn) return;
@@ -916,7 +925,11 @@ $("#accRows").addEventListener("click", e => {
     }
     btn.disabled = true;
     try {
-      if (act === "name") {
+      if (act === "mail") {
+        await rpc("admin_set_email_prefs", { e: a.email, tips: f("m_tips").checked, monthly: f("m_monthly").checked,
+                                             trial: f("m_trial").checked });
+        say("Email choices saved.", true);
+      } else if (act === "name") {
         await rpc("admin_set_name", { e: a.email, new_name: f("name").value.trim() });
         say("Name saved.", true);
       } else if (act === "plan") {
