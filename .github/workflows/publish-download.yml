@@ -42,8 +42,6 @@ jobs:
           name: FilesBolt ${{ steps.f.outputs.ver }}
           body: |
             FilesBolt for Windows 10 and 11. Download **FilesBolt-Setup.exe** and run it.
-
-            ${{ steps.f.outputs.notes }}
           make_latest: true
           files: |
             incoming/${{ steps.f.outputs.file }}

@@ -3,5 +3,5 @@
   "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.18/FilesBolt-Setup-0.4.18.exe",
   "size": 61781117,
   "sha256": "0f1f4db0c3af72f0558a0a1a576b7a21be13f5eedfdf798b1a51429945f354db",
-  "notes": "Bug fixes and improvements."
+  "notes": "Show password: click the eye in any password box.\nSigning in with a deleted account now tells you so.\nExtra protection when deleting an account with two-step sign-in on."
 }
