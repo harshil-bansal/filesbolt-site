@@ -1370,7 +1370,13 @@ $("#emRows").addEventListener("click", async e => {
       p.innerHTML = `<p class="lead" style="margin:0 0 8px;font-size:12px">Sent as it was written. Each person sees their own name and invite code.</p>` +
         `<p style="margin:0 0 10px"><b>${esc(emFill(c.subject))}</b></p>` +
         emFill(c.body).split(/\n\s*\n/).map(x => `<p style="margin:0 0 12px">${esc(x).replace(/\n/g, "<br>")}</p>`).join("") +
-        `<p class="lead" style="font-size:12px;margin:0">Choose which emails you get or unsubscribe.</p>`;
+        `<p class="lead" style="font-size:12px;margin:0">Choose which emails you get or unsubscribe.</p>` +
+        (() => { const r = c.recipients || [], o = r.filter(x => x.opened_at).length;
+          return `<h3 style="margin:18px 0 6px;font-size:15px">Who got it: ${r.length}, opened: ${o}${r.length ? " (" + Math.round(o * 100 / r.length) + "%)" : ""}</h3>
+          <p class="lead" style="font-size:12px;margin:0 0 6px">"Opened" counts people whose email app loaded the pictures. Some apps block pictures or open them automatically, so treat it as a rough guide.</p>
+          <div style="max-height:260px;overflow:auto"><table><thead><tr><th>Name and email</th><th>Sent</th><th>Opened</th></tr></thead><tbody>` +
+          r.map(x => `<tr><td>${esc(x.name || "")} <span class="lead">${esc(x.email || "")}</span></td><td class="nw">${esc(x.sent_at ? new Date(x.sent_at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "")}</td><td class="nw">${x.opened_at ? esc(new Date(x.opened_at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })) : "No"}</td></tr>`).join("") +
+          `</tbody></table></div>`; })();
       p.hidden = false; p.scrollIntoView({ behavior: "smooth", block: "center" });
     } else if (d.pause) {
       emRender(await rpc("admin_pause_campaign", { cid: +d.pause, pause: true }));
