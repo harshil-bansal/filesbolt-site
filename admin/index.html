@@ -1028,7 +1028,10 @@ $("#accRows").addEventListener("click", e => {
         ${sup && a.admin_role !== "super" ? `<label class="mlab">Change email</label>
         <div class="line"><input type="email" data-f="newemail" placeholder="New email" style="flex:1">
           <button class="btn" data-act="email">Change</button></div>
-        <p class="note">Signs them out; they sign in again with the new email. Plan and name stay.</p>` : ""}</div>
+        <p class="note">Signs them out; they sign in again with the new email. Plan and name stay.</p>` : ""}
+        <label class="mlab">Password</label>
+        <div class="line"><button class="btn" data-act="reset">Send password reset email</button></div>
+        <p class="note">They get an email with a code to choose a new password, the same as "Forgot password?" in the app.</p></div>
       <div class="mbox"><h3>Plan</h3>
         <div class="line"><select data-f="plan" style="flex:1">${opts}<option value="free">Free (10 jobs a month)</option></select></div>
         <div class="line" data-f="dur"><select data-f="kind"><option value="days">for</option><option value="until">until</option><option value="lifetime">forever</option></select>
@@ -1081,7 +1084,10 @@ $("#accRows").addEventListener("click", e => {
     }
     btn.disabled = true;
     try {
-      if (act === "mail") {
+      if (act === "reset") {
+        await call("/auth/v1/recover", { email: a.email }, false);
+        say("Password reset email sent to " + a.email + ".", true);
+      } else if (act === "mail") {
         await rpc("admin_set_email_prefs", { e: a.email, tips: f("m_tips").checked, monthly: f("m_monthly").checked,
                                              trial: f("m_trial").checked });
         say("Email choices saved.", true);
