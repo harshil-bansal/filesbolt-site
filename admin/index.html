@@ -129,6 +129,14 @@ td.acts button.danger { color: var(--bad); }
 .mini { font-size: 13.5px; } .mini div { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--rule); }
 .mini div:last-child { border-bottom: 0; } .mini span { color: var(--muted); white-space: nowrap; }
 @media (max-width: 900px) { .dgrid { grid-template-columns: 1fr; } }
+.tk-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+.tk-tabs button { border: 1px solid var(--rule); background: var(--paper); border-radius: 999px; padding: 6px 14px; cursor: pointer; font: inherit; font-size: 14px; }
+.tk-tabs button.on { background: #FFF4D6; border-color: var(--amber); font-weight: 600; }
+.tk-row { display: grid; grid-template-columns: 90px minmax(0,1fr) 110px; gap: 10px; padding: 12px 10px; border-bottom: 1px solid var(--rule); cursor: pointer; }
+.tk-row:hover { background: #F7F8FA; } .tk-row .sub { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tk-msg { border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; margin: 10px 0; white-space: pre-wrap; font-size: 14.5px; }
+.tk-msg.staff { background: #FFF9E8; margin-left: 40px; } .tk-msg.customer { margin-right: 40px; }
+.tk-msg .who { font-size: 12.5px; color: var(--muted); margin-bottom: 6px; white-space: normal; }
 .adm-content > .adm-page { display: none; margin-top: 0 !important; }
 .adm-content > .adm-page.on { display: block; }
 #mfaSetup { grid-column: 1 / -1; }
@@ -214,7 +222,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
 <!-- Admin -->
 <main id="adminView" hidden>
   <nav class="jump" aria-label="Sections">
-    <a href="#sec-overview">Overview</a><a href="#sec-coupons">Coupons</a><a href="#sec-accounts">Accounts</a><a href="#sec-plans">Plans</a><a href="#sec-errors">Error reports</a>
+    <a href="#sec-overview">Overview</a><a href="#sec-support">Support <span id="tkBadge" class="state soon" hidden></span></a><a href="#sec-coupons">Coupons</a><a href="#sec-accounts">Accounts</a><a href="#sec-plans">Plans</a><a href="#sec-errors">Error reports</a>
     <a href="#sec-devices">Devices</a><a href="#sec-restore">Deleted emails</a><a href="#sec-usage">Usage &amp; referrals</a><a href="#sec-activity">Activity</a><a href="#sec-email" id="jumpEmail" hidden>Send an email</a><a href="#sec-admins" id="jumpAdmins" hidden>Admins</a>
   </nav>
   <section class="panel" id="mfaSetup" hidden style="margin-bottom:20px;border-color:var(--amber)">
@@ -367,6 +375,35 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
       <button class="btn shrink" id="planBtn">Add plan</button>
     </form>
     <div class="msg" id="planMsg" role="status"></div>
+  </section>
+
+  <section class="panel below adm-page" id="sec-support">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">Support tickets</h2>
+      <div class="shrink row"><button type="button" class="btn" id="tkReload">Refresh</button></div>
+    </div>
+    <p class="lead" style="margin:6px 0 0">Every message to support@filesbolt.com, the website's Contact us page and the app's Contact support gets a ticket.
+      Reply here or from Gmail: both land in the same email thread. New mail shows up within 5 minutes.</p>
+    <div id="tkListView">
+      <div class="tk-tabs" id="tkTabs"><button type="button" data-s="open" class="on">Open</button><button type="button" data-s="waiting">Waiting on customer</button><button type="button" data-s="solved">Solved</button>
+        <input id="tkQ" placeholder="Search ticket, email or subject" aria-label="Search tickets" style="margin-left:auto;max-width:260px"></div>
+      <div id="tkList"></div>
+    </div>
+    <div id="tkView" hidden>
+      <p><button type="button" class="btn shrink" id="tkBack">&larr; All tickets</button></p>
+      <h3 id="tkTitle" style="margin:6px 0"></h3>
+      <p class="lead" id="tkMeta" style="margin:0"></p>
+      <div id="tkMsgs"></div>
+      <textarea id="tkReply" rows="6" placeholder="Write a reply. It's emailed from support@filesbolt.com." style="width:100%;margin-top:6px"></textarea>
+      <div class="row" style="margin-top:8px;flex-wrap:wrap;gap:8px">
+        <select id="tkQuick" class="shrink" aria-label="Quick replies"><option value="">Quick replies…</option></select>
+        <button type="button" class="btn shrink" id="tkSend">Send reply</button>
+        <button type="button" class="btn shrink" id="tkSendSolve">Send and mark solved</button>
+        <button type="button" class="btn shrink" id="tkSolve">Mark solved</button>
+        <button type="button" class="btn shrink" id="tkOpen">Reopen</button>
+      </div>
+      <div class="msg" id="tkMsg" role="status"></div>
+    </div>
   </section>
 
   <section class="panel below adm-page" id="sec-errors">
@@ -653,7 +690,7 @@ async function show() {
     $("#mfaSetup").hidden = !setupOnly;
     if (setupOnly) return;
     await whoAmI(); showSection(location.hash.slice(1) || "sec-overview");
-    await Promise.all([load(), stats(), dashboard(), deletedList(), errors(), accounts(), loadPlans(), activity(), usage(), emails()]);
+    await Promise.all([load(), stats(), dashboard(), deletedList(), errors(), tickets(), accounts(), loadPlans(), activity(), usage(), emails()]);
   }
   else $("#em").focus();
 }
@@ -1175,6 +1212,67 @@ function actDetail(a) {
   const keys = ["plan", "days", "grant_until", "max_uses", "jobs_limit", "role", "name", "note"];
   return keys.filter(k => d[k] !== undefined && d[k] !== null).map(k => `${k.replace(/_/g, " ")}: ${d[k]}`).join("; ");
 }
+/* ---------- Support tickets ---------- */
+const TK = { status: "open", id: null };
+const TK_QUICK = {
+  "How to update": "Hi,\n\nTo update, open FilesBolt and go to Settings > General > Check for updates. If that doesn't work, download the newest version from https://filesbolt.com and install it over the old one. Your settings stay as they are.",
+  "Reset devices": "Hi,\n\nI've reset the PCs on your account, so you can sign in on your new PC now.",
+  "Invite code": "Hi,\n\nYou can find your invite code and link in FilesBolt: Settings > Refer a friend. Your friend enters it when they sign up.",
+  "Thanks, fixed": "Hi,\n\nThanks for letting us know. This is fixed in the latest version of FilesBolt. Please update and let us know if it happens again." };
+const tkWhen = iso => new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+async function tickets() {
+  const box = $("#tkList");
+  try {
+    const d = await rpc("admin_tickets", { p_status: TK.status, p_q: $("#tkQ").value.trim() });
+    const c = d.counts || {};
+    [...$("#tkTabs").querySelectorAll("button")].forEach(b => {
+      const n = { open: "Open", waiting: "Waiting on customer", solved: "Solved" }[b.dataset.s];
+      b.textContent = n + (b.dataset.s !== "solved" && c[b.dataset.s] ? " (" + c[b.dataset.s] + ")" : "");
+      b.classList.toggle("on", b.dataset.s === TK.status && !$("#tkQ").value.trim());
+    });
+    $("#tkBadge").hidden = !c.open; $("#tkBadge").textContent = c.open || "";
+    const list = d.list || [];
+    box.innerHTML = list.length ? list.map(t => `<div class="tk-row" data-id="${t.id}">
+        <div><b>${esc(t.ref)}</b><div class="sub">${esc({ email: "Email", web: "Website", app: "App" }[t.source] || t.source)}</div></div>
+        <div style="min-width:0"><div><b>${esc(t.subject || "(no subject)")}</b> <span class="sub">${esc(t.name || "")} &lt;${esc(t.email)}&gt;</span></div>
+          <div class="sub">${t.last_by === "staff" ? "You: " : ""}${esc(t.last || "")}</div></div>
+        <div class="sub" style="text-align:right">${esc(tkWhen(t.updated_at))}</div></div>`).join("")
+      : `<div class="empty">No tickets here.</div>`;
+  } catch (err) { box.innerHTML = `<div class="empty">${esc(err.message)}</div>`; }
+}
+async function tkShow(id) {
+  TK.id = id; $("#tkListView").hidden = true; $("#tkView").hidden = false; $("#tkMsg").textContent = "";
+  try {
+    const d = await rpc("admin_ticket", { p_id: id }), t = d.ticket, a = d.account;
+    $("#tkTitle").textContent = t.ref + " · " + (t.subject || "(no subject)");
+    $("#tkMeta").innerHTML = `${esc(t.name || "")} &lt;${esc(t.email)}&gt; · ${esc({ open: "Open", waiting: "Waiting on customer", solved: "Solved" }[t.status])} · from ${esc({ email: "email", web: "the website", app: "the app" }[t.source])}`
+      + (a ? ` · Account: ${esc(a.plan || "")}, ${a.jobs_total ?? 0} jobs, joined ${esc(fmt(a.created_at))}` : " · No FilesBolt account with this email")
+      + ((d.errors || []).length ? `<br>Latest errors: ${d.errors.map(e => esc(fmt(e.at) + " " + e.version + ": " + e.message)).join("<br>")}` : "");
+    $("#tkMsgs").innerHTML = (d.messages || []).map(m => `<div class="tk-msg ${m.author}"><div class="who">${m.author === "staff" ? esc(m.staff || "FilesBolt") + (m.sent ? "" : " · sending…") : esc(t.name || t.email)} · ${esc(tkWhen(m.at))}</div>${esc(m.body)}</div>`).join("");
+    $("#tkSolve").hidden = t.status === "solved"; $("#tkOpen").hidden = t.status !== "solved";
+  } catch (err) { $("#tkMsg").textContent = err.message; }
+}
+function tkList() { TK.id = null; $("#tkView").hidden = true; $("#tkListView").hidden = false; tickets(); }
+async function tkReply(status) {
+  const body = $("#tkReply").value.trim();
+  if (!body) { $("#tkMsg").textContent = "Write a reply first."; return; }
+  $("#tkMsg").textContent = "Sending…";
+  try { await rpc("admin_ticket_reply", { p_id: TK.id, p_body: body, p_status: status }); $("#tkReply").value = "";
+        $("#tkMsg").textContent = "Saved. It's emailed within 5 minutes."; await tkShow(TK.id); $("#tkMsg").textContent = "Saved. It's emailed within 5 minutes."; }
+  catch (err) { $("#tkMsg").textContent = err.message; }
+}
+async function tkSet(status) {
+  try { await rpc("admin_ticket_set", { p_id: TK.id, p_status: status }); await tkShow(TK.id); } catch (err) { $("#tkMsg").textContent = err.message; }
+}
+Object.keys(TK_QUICK).forEach(k => { const o = document.createElement("option"); o.textContent = k; $("#tkQuick").appendChild(o); });
+$("#tkQuick").onchange = e => { if (TK_QUICK[e.target.value]) $("#tkReply").value = TK_QUICK[e.target.value]; e.target.value = ""; };
+$("#tkTabs").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; TK.status = b.dataset.s; $("#tkQ").value = ""; tickets(); });
+let tkT; $("#tkQ").oninput = () => { clearTimeout(tkT); tkT = setTimeout(tickets, 300); };
+$("#tkList").addEventListener("click", e => { const r = e.target.closest(".tk-row"); if (r) tkShow(Number(r.dataset.id)); });
+$("#tkBack").onclick = tkList; $("#tkReload").onclick = () => TK.id ? tkShow(TK.id) : tickets();
+$("#tkSend").onclick = () => tkReply("waiting"); $("#tkSendSolve").onclick = () => tkReply("solved");
+$("#tkSolve").onclick = () => tkSet("solved"); $("#tkOpen").onclick = () => tkSet("open");
+
 /* ---------- one section at a time (left menu) ---------- */
 function showSection(id) {
   const pages = [...document.querySelectorAll(".adm-content > .adm-page")];

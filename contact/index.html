@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com https://aovtkaljtayxuxuzureh.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact us | FilesBolt</title>
+<meta name="description" content="Ask FilesBolt support a question, report a problem or share an idea.">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="FilesBolt home">
+      <img src="/img/logo.svg" alt="" width="32" height="32"><span>FilesBolt</span>
+    </a>
+    <nav aria-label="Main">
+      <a href="/#tools">Tools</a>
+      <a href="/#faq">Help</a>
+      <a class="btn btn-small" href="/#download">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main class="doc">
+  <div class="wrap narrow">
+    <h1>Contact us</h1>
+    <p>Questions, problems or ideas: send us a message and you'll get a ticket number by email. We usually reply within a day.</p>
+    <form id="cf" style="margin-top:18px;display:grid;gap:14px" novalidate>
+      <label>Your name<br><input id="cName" autocomplete="name" maxlength="80" style="width:100%;padding:10px;border:1px solid #CBD0D8;border-radius:8px;font:inherit"></label>
+      <label>Email<br><input id="cEmail" type="email" autocomplete="email" required maxlength="200" style="width:100%;padding:10px;border:1px solid #CBD0D8;border-radius:8px;font:inherit"></label>
+      <label>What is it about?<br><select id="cTopic" style="width:100%;padding:10px;border:1px solid #CBD0D8;border-radius:8px;font:inherit">
+        <option>Bug or problem</option><option>Account or sign-in</option><option>Billing</option><option>Feature idea</option><option>Other</option></select></label>
+      <label>Message<br><textarea id="cMsg" rows="7" required maxlength="8000" style="width:100%;padding:10px;border:1px solid #CBD0D8;border-radius:8px;font:inherit;resize:vertical"></textarea></label>
+      <label aria-hidden="true" style="position:absolute;left:-9999px">Website<input id="cSite" tabindex="-1" autocomplete="off"></label>
+      <p><button class="btn" type="submit" id="cSend">Send message</button></p>
+      <p id="cDone" role="status"></p>
+    </form>
+    <p class="muted" style="font-size:14px">Using the app? Settings &gt; Contact support also attaches a screenshot if you like. Or email <a href="mailto:support@filesbolt.com">support@filesbolt.com</a>.</p>
+    <script>
+      (function () {
+        var U = "https://aovtkaljtayxuxuzureh.supabase.co/rest/v1/rpc/", K = "sb_publishable_qK3cBBkyFVLg7FKiLfiYFQ_Q7Ss2Sf9";
+        var f = document.getElementById("cf"), d = document.getElementById("cDone"), b = document.getElementById("cSend");
+        function v(id) { return document.getElementById(id).value.trim(); }
+        f.addEventListener("submit", function (ev) {
+          ev.preventDefault();
+          if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v("cEmail"))) { d.textContent = "Enter a valid email address."; return; }
+          if (v("cMsg").length < 5) { d.textContent = "Write a little more about what you need."; return; }
+          b.disabled = true; d.textContent = "Sending…";
+          fetch(U + "create_web_ticket", { method: "POST", headers: { apikey: K, "Content-Type": "application/json" },
+            body: JSON.stringify({ p_name: v("cName"), p_email: v("cEmail"), p_topic: v("cTopic"), p_message: v("cMsg"), p_website: v("cSite") }) })
+            .then(function (r) { if (!r.ok) throw new Error("bad"); return r.json(); })
+            .then(function (r) {
+              if (r && r.ok) { f.reset(); d.textContent = "Thanks! Your ticket is " + r.ref + ". We've emailed you a copy, and we'll reply soon."; }
+              else { d.textContent = (r && r.message) || "That didn't work. Please try again."; }
+            })
+            .catch(function () { d.textContent = "We couldn't reach the server. Check your connection and try again."; })
+            .then(function () { b.disabled = false; });
+        });
+      })();
+    </script>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span class="brand small"><img src="/img/logo.svg" alt="" width="20" height="20">FilesBolt</span>
+    <nav aria-label="Footer"><a href="/terms.html">Terms</a><a href="/refunds.html">Refunds</a><a href="/privacy.html">Privacy policy</a><a href="/#faq">Help</a><a href="/contact/">Contact us</a></nav>
+    <span class="copy">© 2026 FilesBolt</span>
+  </div>
+</footer>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cacb71ad59fa40ed80eed50ccecd41cc"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
