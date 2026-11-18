@@ -129,14 +129,74 @@ td.acts button.danger { color: var(--bad); }
 .mini { font-size: 13.5px; } .mini div { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--rule); }
 .mini div:last-child { border-bottom: 0; } .mini span { color: var(--muted); white-space: nowrap; }
 @media (max-width: 900px) { .dgrid { grid-template-columns: 1fr; } }
-.tk-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
-.tk-tabs button { border: 1px solid var(--rule); background: var(--paper); border-radius: 999px; padding: 6px 14px; cursor: pointer; font: inherit; font-size: 14px; }
-.tk-tabs button.on { background: #FFF4D6; border-color: var(--amber); font-weight: 600; }
-.tk-row { display: grid; grid-template-columns: 90px minmax(0,1fr) 110px; gap: 10px; padding: 12px 10px; border-bottom: 1px solid var(--rule); cursor: pointer; }
-.tk-row:hover { background: #F7F8FA; } .tk-row .sub { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.tk-msg { border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; margin: 10px 0; white-space: pre-wrap; font-size: 14.5px; }
-.tk-msg.staff { background: #FFF9E8; margin-left: 40px; } .tk-msg.customer { margin-right: 40px; }
-.tk-msg .who { font-size: 12.5px; color: var(--muted); margin-bottom: 6px; white-space: normal; }
+/* ---------- Support (Zendesk-style) ---------- */
+body.zd main { max-width: none; }
+#sec-support { margin: -4px 0 0; }
+.zd-wrap { display: grid; grid-template-columns: 230px minmax(0, 1fr); border: 1px solid var(--rule); border-radius: 12px; background: var(--paper); min-height: 640px; overflow: hidden; }
+.zd-views { border-right: 1px solid var(--rule); padding: 14px 10px; background: #FAFAFB; }
+.zd-views h3 { font-size: 15px; margin: 2px 10px 10px; display: flex; justify-content: space-between; align-items: center; }
+.zd-views a { display: flex; justify-content: space-between; gap: 8px; padding: 7px 10px; border-radius: 7px; color: var(--text); text-decoration: none; font-size: 14px; }
+.zd-views a:hover { background: var(--mist); } .zd-views a.on { background: #E6EEF7; font-weight: 600; color: var(--ink); }
+.zd-views a span { color: var(--muted); } .zd-views hr { border: 0; border-top: 1px solid var(--rule); margin: 10px 6px; }
+.zd-main { min-width: 0; padding: 16px 18px; }
+.zd-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+.zd-head h2 { margin: 0; font-size: 22px; } .zd-head .cnt { color: var(--muted); font-size: 14px; }
+.zd-head input { margin-left: auto; max-width: 280px; }
+.zd-bulk { display: none; gap: 8px; align-items: center; background: #E6EEF7; border-radius: 8px; padding: 8px 10px; margin: 8px 0; font-size: 14px; }
+.zd-bulk.on { display: flex; flex-wrap: wrap; } .zd-bulk select { width: auto; }
+.zd-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; }
+.zd-table th { text-align: left; font-weight: 600; color: var(--muted); font-size: 12.5px; padding: 8px 8px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+.zd-table td { padding: 9px 8px; border-bottom: 1px solid #EEF0F2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+.zd-table tbody tr { cursor: pointer; } .zd-table tbody tr:hover { background: #F3F7FC; }
+.zd-table td.subj { max-width: 380px; color: var(--ink); } .zd-table tr.unread td.subj { font-weight: 600; }
+.zd-l { display: inline-flex; width: 20px; height: 20px; border-radius: 4px; color: #fff; font-size: 11px; font-weight: 700; align-items: center; justify-content: center; }
+.zd-pill { display: inline-block; color: #fff; font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: .02em; }
+.st-new { background: #F79A3E; } .st-open { background: #E34F32; } .st-pending { background: #3091EC; }
+.st-hold { background: #2F3941; } .st-solved { background: #87929D; } .st-closed { background: #C2C8CC; color: #2F3941; }
+.pr-urgent { color: #CC3340; font-weight: 700; } .pr-high { color: #E34F32; font-weight: 600; } .pr-low { color: var(--muted); }
+.zd-tip { position: fixed; z-index: 50; width: 440px; background: #fff; border: 1px solid var(--rule); border-radius: 10px; box-shadow: 0 12px 32px rgba(18,20,23,.18); padding: 14px 16px; font-size: 14px; pointer-events: none; }
+.zd-tip h4 { margin: 8px 0 6px; font-size: 14px; } .zd-tip .lbl { color: var(--muted); font-size: 12.5px; margin: 12px 0 4px; border-bottom: 1px solid var(--rule); padding-bottom: 4px; }
+.zd-tip p { margin: 0; white-space: pre-wrap; max-height: 110px; overflow: hidden; }
+/* ticket */
+.zd-ticket { display: grid; grid-template-columns: 250px minmax(0, 1fr) 290px; border: 1px solid var(--rule); border-radius: 12px; background: var(--paper); min-height: 680px; overflow: hidden; }
+.zd-props, .zd-cust { padding: 16px; background: #FAFAFB; font-size: 14px; }
+.zd-props { border-right: 1px solid var(--rule); } .zd-cust { border-left: 1px solid var(--rule); }
+.zd-props label { display: block; font-weight: 600; font-size: 13px; margin: 14px 0 5px; color: var(--ink); }
+.zd-props label:first-child { margin-top: 0; } .zd-props select, .zd-props input { width: 100%; }
+.zd-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .zd-two label { margin-top: 14px; }
+.zd-conv { display: flex; flex-direction: column; min-width: 0; }
+.zd-conv-h { padding: 14px 18px; border-bottom: 1px solid var(--rule); }
+.zd-conv-h h2 { margin: 0 0 4px; font-size: 19px; } .zd-conv-h .via { color: var(--muted); font-size: 13.5px; }
+.zd-msgs { flex: 1; overflow: auto; padding: 8px 18px; max-height: 520px; }
+.zd-m { display: grid; grid-template-columns: 38px 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid #EEF0F2; }
+.zd-av { width: 36px; height: 36px; border-radius: 50%; background: #DCE6F2; color: #1F4B7A; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+.zd-m.staff .zd-av { background: #FFE9A8; color: #6B4E00; }
+.zd-m .who { font-size: 14px; } .zd-m .who b { color: var(--ink); } .zd-m .who span { color: var(--muted); font-size: 12.5px; margin-left: 8px; }
+.zd-m .body { white-space: pre-wrap; margin-top: 5px; font-size: 14.5px; line-height: 1.5; word-break: break-word; }
+.zd-m.note .body { background: #FFF6D6; border: 1px solid #F2D675; border-radius: 8px; padding: 10px 12px; }
+.zd-m.note .who::after { content: "Internal note"; margin-left: 8px; font-size: 11.5px; background: #F2D675; color: #5B4300; padding: 1px 6px; border-radius: 4px; }
+.zd-comp { border-top: 1px solid var(--rule); padding: 10px 18px 14px; }
+.zd-comp.note { background: #FFFBEA; }
+.zd-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+.zd-tabs button { border: 0; background: none; font: inherit; font-size: 14px; padding: 6px 10px; border-radius: 6px; cursor: pointer; color: var(--muted); }
+.zd-tabs button.on { background: var(--mist); color: var(--ink); font-weight: 600; }
+.zd-comp textarea { width: 100%; min-height: 110px; resize: vertical; }
+.zd-foot { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.zd-submit { margin-left: auto; position: relative; display: inline-flex; }
+.zd-submit > button { background: #2F3941; color: #fff; border: 0; font: inherit; font-weight: 600; padding: 9px 16px; cursor: pointer; }
+.zd-submit > button:first-child { border-radius: 8px 0 0 8px; } .zd-submit > button:last-child { border-radius: 0 8px 8px 0; border-left: 1px solid #4A555E; padding: 9px 10px; }
+.zd-submit > button:hover { background: #1F272D; }
+.zd-menu { position: absolute; right: 0; bottom: 44px; background: #fff; border: 1px solid var(--rule); border-radius: 10px; box-shadow: 0 10px 28px rgba(18,20,23,.16); padding: 6px; min-width: 210px; z-index: 20; }
+.zd-menu button { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: none; font: inherit; font-size: 14.5px; padding: 8px 10px; border-radius: 6px; cursor: pointer; text-align: left; }
+.zd-menu button:hover { background: var(--mist); } .zd-menu i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+.zd-cust .nm { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; } .zd-cust .nm b { font-size: 16px; color: var(--ink); }
+.zd-cust .kv { display: grid; grid-template-columns: 90px 1fr; gap: 4px 8px; font-size: 13.5px; } .zd-cust .kv span { color: var(--muted); }
+.zd-cust h4 { font-size: 13.5px; margin: 18px 0 8px; border-top: 1px solid var(--rule); padding-top: 12px; }
+.zd-cust .it { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; font-size: 13.5px; cursor: pointer; } .zd-cust .it:hover b { text-decoration: underline; }
+.zd-cust .it small { display: block; color: var(--muted); }
+.zd-tagchips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; } .zd-tagchips span { background: #E9EBED; border-radius: 4px; padding: 1px 7px; font-size: 12.5px; }
+.zd-saved { color: var(--ok); font-size: 12.5px; height: 16px; margin-top: 8px; }
+@media (max-width: 1100px) { .zd-ticket { grid-template-columns: 1fr; } .zd-props, .zd-cust { border: 0; } .zd-wrap { grid-template-columns: 1fr; } }
 .adm-content > .adm-page { display: none; margin-top: 0 !important; }
 .adm-content > .adm-page.on { display: block; }
 #mfaSetup { grid-column: 1 / -1; }
@@ -378,33 +438,64 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     <div class="msg" id="planMsg" role="status"></div>
   </section>
 
-  <section class="panel below adm-page" id="sec-support">
-    <div class="row" style="justify-content:space-between">
-      <h2 style="margin:0">Support tickets</h2>
-      <div class="shrink row"><button type="button" class="btn" id="tkReload">Refresh</button></div>
-    </div>
-    <p class="lead" style="margin:6px 0 0">Every message to support@filesbolt.com, the website's Contact us page and the app's Contact support gets a ticket.
-      Reply here or from Gmail: both land in the same email thread. New mail shows up within 5 minutes.</p>
-    <div id="tkListView">
-      <div class="tk-tabs" id="tkTabs"><button type="button" data-s="open" class="on">Open</button><button type="button" data-s="waiting">Waiting on customer</button><button type="button" data-s="solved">Solved</button>
-        <input id="tkQ" placeholder="Search ticket, email or subject" aria-label="Search tickets" style="margin-left:auto;max-width:260px"></div>
-      <div id="tkList"></div>
-    </div>
-    <div id="tkView" hidden>
-      <p><button type="button" class="btn shrink" id="tkBack">&larr; All tickets</button></p>
-      <h3 id="tkTitle" style="margin:6px 0"></h3>
-      <p class="lead" id="tkMeta" style="margin:0"></p>
-      <div id="tkMsgs"></div>
-      <textarea id="tkReply" rows="6" placeholder="Write a reply. It's emailed from support@filesbolt.com." style="width:100%;margin-top:6px"></textarea>
-      <div class="row" style="margin-top:8px;flex-wrap:wrap;gap:8px">
-        <select id="tkQuick" class="shrink" aria-label="Quick replies"><option value="">Quick replies…</option></select>
-        <button type="button" class="btn shrink" id="tkSend">Send reply</button>
-        <button type="button" class="btn shrink" id="tkSendSolve">Send and mark solved</button>
-        <button type="button" class="btn shrink" id="tkSolve">Mark solved</button>
-        <button type="button" class="btn shrink" id="tkOpen">Reopen</button>
+  <section class="adm-page" id="sec-support">
+    <div class="zd-wrap" id="zdList">
+      <nav class="zd-views" aria-label="Ticket views">
+        <h3>Views <button type="button" class="btn shrink" id="tkReload" title="Refresh" style="padding:2px 8px">&#x21bb;</button></h3>
+        <a href="#" data-v="mine">Your unsolved tickets <span></span></a>
+        <a href="#" data-v="unassigned">Unassigned tickets <span></span></a>
+        <a href="#" data-v="unsolved" class="on">All unsolved tickets <span></span></a>
+        <a href="#" data-v="urgent">High and urgent <span></span></a>
+        <hr>
+        <a href="#" data-v="new">New <span></span></a>
+        <a href="#" data-v="open">Open <span></span></a>
+        <a href="#" data-v="pending">Pending <span></span></a>
+        <a href="#" data-v="hold">On-hold <span></span></a>
+        <a href="#" data-v="solved">Recently solved <span></span></a>
+        <a href="#" data-v="closed">Closed <span></span></a>
+        <a href="#" data-v="all">All tickets <span></span></a>
+      </nav>
+      <div class="zd-main">
+        <div class="zd-head"><h2 id="tkTitle">All unsolved tickets</h2><span class="cnt" id="tkCount"></span>
+          <input id="tkQ" placeholder="Search tickets, people, tags" aria-label="Search tickets"></div>
+        <div class="zd-bulk" id="tkBulk"><b id="tkSelN"></b>
+          <select id="tkBulkStatus" aria-label="Set status"><option value="">Set status…</option><option value="open">Open</option><option value="pending">Pending</option><option value="hold">On-hold</option><option value="solved">Solved</option></select>
+          <select id="tkBulkAssign" aria-label="Assign to"><option value="">Assign to…</option></select>
+          <select id="tkBulkPri" aria-label="Set priority"><option value="">Priority…</option><option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select>
+          <button type="button" class="btn shrink" id="tkBulkGo">Apply</button><button type="button" class="btn shrink" id="tkBulkClear">Clear</button></div>
+        <table class="zd-table"><thead><tr><th style="width:26px"><input type="checkbox" id="tkAll" aria-label="Select all"></th><th style="width:24px"></th><th>ID</th><th>Subject</th><th>Channel</th><th>Requester</th><th>Requested</th><th>Updated</th><th>Assignee</th><th>Priority</th></tr></thead>
+          <tbody id="tkRows"></tbody></table>
       </div>
-      <div class="msg" id="tkMsg" role="status"></div>
     </div>
+    <div id="zdTicket" hidden>
+      <p style="margin:0 0 10px"><button type="button" class="btn shrink" id="tkBack">&larr; Back to views</button></p>
+      <div class="zd-ticket">
+        <aside class="zd-props">
+          <label>Requester</label><div id="tpReq"></div>
+          <label for="tpAssignee">Assignee</label><select id="tpAssignee"></select>
+          <div style="font-size:12.5px;margin-top:4px"><a href="#" id="tpTake">take it</a></div>
+          <label for="tpTags">Tags</label><input id="tpTags" placeholder="vip, billing">
+          <div class="zd-two"><div><label for="tpKind">Type</label><select id="tpKind"><option value="question">Question</option><option value="problem">Problem</option><option value="incident">Incident</option><option value="task">Task</option></select></div>
+            <div><label for="tpPri">Priority</label><select id="tpPri"><option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></div></div>
+          <label>Status</label><div id="tpStatus"></div>
+          <div class="zd-saved" id="tpSaved"></div>
+        </aside>
+        <div class="zd-conv">
+          <div class="zd-conv-h"><h2 id="tcSubject"></h2><div class="via" id="tcVia"></div></div>
+          <div class="zd-msgs" id="tcMsgs"></div>
+          <div class="zd-comp" id="tcComp">
+            <div class="zd-tabs"><button type="button" class="on" data-m="public">Public reply</button><button type="button" data-m="note">Internal note</button></div>
+            <textarea id="tcText" placeholder="Write a reply. It's emailed from support@filesbolt.com."></textarea>
+            <div class="zd-foot"><select id="tcMacro" style="width:auto" aria-label="Macros"><option value="">Apply macro…</option></select>
+              <div class="zd-submit"><button type="button" id="tcSubmit">Submit as Pending</button><button type="button" id="tcMore" aria-label="More submit options">&#x25B2;</button>
+                <div class="zd-menu" id="tcMenu" hidden></div></div></div>
+            <div class="msg" id="tcMsg" role="status"></div>
+          </div>
+        </div>
+        <aside class="zd-cust" id="tcCust"></aside>
+      </div>
+    </div>
+    <div class="zd-tip" id="tkTip" hidden></div>
   </section>
 
   <section class="panel below adm-page" id="sec-errors">
@@ -1232,72 +1323,162 @@ $("#unlockForm").addEventListener("submit", async e => {
   try { await rpc("admin_unlock_login", { e: $("#unlockEmail").value.trim() }); m.className = "msg ok"; m.textContent = "Unlocked. They can sign in again now."; }
   catch (err) { m.className = "msg bad"; m.textContent = err.message; }
 });
-/* ---------- Support tickets ---------- */
-const TK = { status: "open", id: null };
-const TK_QUICK = {
+/* ---------- Support tickets (Zendesk-style: views, list, ticket with properties, conversation and customer) ---------- */
+const ZD = { view: "unsolved", id: null, me: "", admins: [], list: [], sel: new Set(), mode: "public", t: null };
+const ZD_ST = { new: "New", open: "Open", pending: "Pending", hold: "On-hold", solved: "Solved", closed: "Closed" };
+const ZD_COL = { new: "#F79A3E", open: "#E34F32", pending: "#3091EC", hold: "#2F3941", solved: "#87929D", closed: "#C2C8CC" };
+const ZD_VIEW = { mine: "Your unsolved tickets", unassigned: "Unassigned tickets", unsolved: "All unsolved tickets", urgent: "High and urgent",
+  new: "New tickets", open: "Open tickets", pending: "Pending tickets", hold: "On-hold tickets", solved: "Recently solved tickets",
+  closed: "Closed tickets", all: "All tickets" };
+const ZD_CH = { email: "Email", web: "Web form", app: "FilesBolt app" };
+const ZD_MACROS = {
   "How to update": "Hi,\n\nTo update, open FilesBolt and go to Settings > General > Check for updates. If that doesn't work, download the newest version from https://filesbolt.com and install it over the old one. Your settings stay as they are.",
   "Reset devices": "Hi,\n\nI've reset the PCs on your account, so you can sign in on your new PC now.",
   "Invite code": "Hi,\n\nYou can find your invite code and link in FilesBolt: Settings > Refer a friend. Your friend enters it when they sign up.",
-  "Thanks, fixed": "Hi,\n\nThanks for letting us know. This is fixed in the latest version of FilesBolt. Please update and let us know if it happens again." };
-const tkWhen = iso => new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  "Fixed in latest version": "Hi,\n\nThanks for letting us know. This is fixed in the latest version of FilesBolt. Please update and let us know if it happens again.",
+  "Need more details": "Hi,\n\nThanks for writing in. Could you tell us a little more: what you clicked, what you expected to happen, and what happened instead? A screenshot helps a lot." };
+const zdLetter = st => `<span class="zd-l st-${st}" title="${ZD_ST[st]}">${ZD_ST[st][0]}</span>`;
+const zdPill = st => `<span class="zd-pill st-${st}">${ZD_ST[st]}</span>`;
+const zdDate = iso => { const d = new Date(iso), n = new Date();
+  return d.toDateString() === n.toDateString() ? d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })
+    : d.toLocaleDateString(undefined, { month: "short", day: "numeric" }); };
+const zdLong = iso => new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
+const zdInit = s => (String(s || "?").trim().split(/[\s@.]+/).filter(Boolean).slice(0, 2).map(x => x[0]).join("") || "?").toUpperCase();
+const zdWho = e => e ? e.split("@")[0] : "—";
+function zdAdmins(sel, val, blank) {
+  sel.innerHTML = `<option value="">${blank}</option>` + ZD.admins.map(a => `<option value="${esc(a)}"${a === val ? " selected" : ""}>${esc(a)}${a === ZD.me ? " (you)" : ""}</option>`).join("");
+}
+
 async function tickets() {
-  const box = $("#tkList");
+  const rows = $("#tkRows");
   try {
-    const d = await rpc("admin_tickets", { p_status: TK.status, p_q: $("#tkQ").value.trim() });
-    const c = d.counts || {};
-    [...$("#tkTabs").querySelectorAll("button")].forEach(b => {
-      const n = { open: "Open", waiting: "Waiting on customer", solved: "Solved" }[b.dataset.s];
-      b.textContent = n + (b.dataset.s !== "solved" && c[b.dataset.s] ? " (" + c[b.dataset.s] + ")" : "");
-      b.classList.toggle("on", b.dataset.s === TK.status && !$("#tkQ").value.trim());
-    });
-    $("#tkBadge").hidden = !c.open; $("#tkBadge").textContent = c.open || "";
-    const list = d.list || [];
-    box.innerHTML = list.length ? list.map(t => `<div class="tk-row" data-id="${t.id}">
-        <div><b>${esc(t.ref)}</b><div class="sub">${esc({ email: "Email", web: "Website", app: "App" }[t.source] || t.source)}</div></div>
-        <div style="min-width:0"><div><b>${esc(t.subject || "(no subject)")}</b> <span class="sub">${esc(t.name || "")} &lt;${esc(t.email)}&gt;</span></div>
-          <div class="sub">${t.last_by === "staff" ? "You: " : ""}${esc(t.last || "")}</div></div>
-        <div class="sub" style="text-align:right">${esc(tkWhen(t.updated_at))}</div></div>`).join("")
-      : `<div class="empty">No tickets here.</div>`;
-  } catch (err) { box.innerHTML = `<div class="empty">${esc(err.message)}</div>`; }
+    const d = await rpc("admin_tickets", { p_view: ZD.view, p_q: $("#tkQ").value.trim() });
+    ZD.me = d.me; ZD.admins = d.admins || []; ZD.list = d.list || [];
+    document.querySelectorAll(".zd-views a").forEach(a => { a.querySelector("span").textContent = (d.views || {})[a.dataset.v] ?? "";
+      a.classList.toggle("on", a.dataset.v === ZD.view && !$("#tkQ").value.trim()); });
+    const n = (d.views || {}).new + (d.views || {}).open || 0;
+    $("#tkBadge").hidden = !n; $("#tkBadge").textContent = n || "";
+    $("#tkTitle").textContent = $("#tkQ").value.trim() ? "Search results" : ZD_VIEW[ZD.view];
+    $("#tkCount").textContent = ZD.list.length + (ZD.list.length === 1 ? " ticket" : " tickets");
+    zdAdmins($("#tkBulkAssign"), "", "Assign to…");
+    ZD.sel.clear(); zdBulk();
+    rows.innerHTML = ZD.list.length ? ZD.list.map((t, i) => `<tr data-i="${i}" class="${t.status === "new" ? "unread" : ""}">
+        <td><input type="checkbox" data-sel="${t.id}" aria-label="Select ${esc(t.ref)}"></td><td>${zdLetter(t.status)}</td>
+        <td>#${t.id}</td><td class="subj">${esc(t.subject || "(no subject)")}</td><td>${esc(ZD_CH[t.source] || t.source)}</td>
+        <td>${esc(t.name || t.email)}</td><td>${esc(zdDate(t.created_at))}</td><td>${esc(zdDate(t.updated_at))}</td>
+        <td>${esc(zdWho(t.assignee))}</td><td class="pr-${t.priority}">${esc(t.priority[0].toUpperCase() + t.priority.slice(1))}</td></tr>`).join("")
+      : `<tr><td colspan="10" class="empty">No tickets in this view.</td></tr>`;
+  } catch (err) { rows.innerHTML = `<tr><td colspan="10" class="empty">${esc(err.message)}</td></tr>`; }
 }
-async function tkShow(id) {
-  TK.id = id; $("#tkListView").hidden = true; $("#tkView").hidden = false; $("#tkMsg").textContent = "";
+function zdBulk() { $("#tkBulk").classList.toggle("on", ZD.sel.size > 0); $("#tkSelN").textContent = ZD.sel.size + " selected"; $("#tkAll").checked = ZD.sel.size > 0 && ZD.sel.size === ZD.list.length; }
+
+document.querySelector(".zd-views").addEventListener("click", e => { const a = e.target.closest("a[data-v]"); if (!a) return; e.preventDefault();
+  ZD.view = a.dataset.v; $("#tkQ").value = ""; tickets(); });
+let zdT; $("#tkQ").oninput = () => { clearTimeout(zdT); zdT = setTimeout(tickets, 300); };
+$("#tkReload").onclick = () => ZD.id ? zdOpen(ZD.id) : tickets();
+$("#tkRows").addEventListener("click", e => {
+  const cb = e.target.closest("input[data-sel]");
+  if (cb) { const id = Number(cb.dataset.sel); cb.checked ? ZD.sel.add(id) : ZD.sel.delete(id); zdBulk(); return; }
+  if (e.target.closest("td:first-child")) return;
+  const tr = e.target.closest("tr[data-i]"); if (tr) zdOpen(ZD.list[+tr.dataset.i].id);
+});
+$("#tkAll").onchange = e => { document.querySelectorAll("#tkRows input[data-sel]").forEach(c => { c.checked = e.target.checked;
+  e.target.checked ? ZD.sel.add(Number(c.dataset.sel)) : ZD.sel.delete(Number(c.dataset.sel)); }); zdBulk(); };
+$("#tkBulkClear").onclick = () => { ZD.sel.clear(); document.querySelectorAll("#tkRows input[data-sel]").forEach(c => c.checked = false); zdBulk(); };
+$("#tkBulkGo").onclick = async () => {
+  const set = {}; if ($("#tkBulkStatus").value) set.status = $("#tkBulkStatus").value;
+  if ($("#tkBulkAssign").value) set.assignee = $("#tkBulkAssign").value; if ($("#tkBulkPri").value) set.priority = $("#tkBulkPri").value;
+  if (!Object.keys(set).length) return;
+  try { await rpc("admin_ticket_update", { p_ids: [...ZD.sel], p_set: set }); ["#tkBulkStatus", "#tkBulkAssign", "#tkBulkPri"].forEach(x => $(x).value = ""); tickets(); }
+  catch (err) { alert(err.message); }
+};
+// hover preview, like Zendesk
+$("#tkRows").addEventListener("mouseover", e => {
+  const tr = e.target.closest("tr[data-i]"), tip = $("#tkTip"); if (!tr) { tip.hidden = true; return; }
+  const t = ZD.list[+tr.dataset.i], r = tr.getBoundingClientRect();
+  tip.innerHTML = `${zdPill(t.status)} <span class="lead" style="margin-left:6px">Ticket #${t.id}</span><h4>${esc(t.subject || "(no subject)")}</h4>
+    <p>${esc(t.first || "")}</p>${t.last && t.last.body !== t.first ? `<div class="lbl">Latest ${t.last.note ? "internal note" : "comment"}</div>
+    <p><b>${esc(t.last.by)}</b> · ${esc(zdDate(t.last.at))}<br>${esc(t.last.body)}</p>` : ""}`;
+  tip.style.left = Math.min(r.left + 260, innerWidth - 460) + "px"; tip.style.top = Math.min(r.bottom + 6, innerHeight - 260) + "px"; tip.hidden = false;
+});
+$("#tkRows").addEventListener("mouseleave", () => $("#tkTip").hidden = true);
+
+/* one ticket */
+async function zdOpen(id) {
+  ZD.id = id; $("#tkTip").hidden = true; $("#zdList").hidden = true; $("#zdTicket").hidden = false; $("#tcMsg").textContent = "";
   try {
-    const d = await rpc("admin_ticket", { p_id: id }), t = d.ticket, a = d.account;
-    $("#tkTitle").textContent = t.ref + " · " + (t.subject || "(no subject)");
-    $("#tkMeta").innerHTML = `${esc(t.name || "")} &lt;${esc(t.email)}&gt; · ${esc({ open: "Open", waiting: "Waiting on customer", solved: "Solved" }[t.status])} · from ${esc({ email: "email", web: "the website", app: "the app" }[t.source])}`
-      + (a ? ` · Account: ${esc(a.plan || "")}, ${a.jobs_total ?? 0} jobs, joined ${esc(fmt(a.created_at))}` : " · No FilesBolt account with this email")
-      + ((d.errors || []).length ? `<br>Latest errors: ${d.errors.map(e => esc(fmt(e.at) + " " + e.version + ": " + e.message)).join("<br>")}` : "");
-    $("#tkMsgs").innerHTML = (d.messages || []).map(m => `<div class="tk-msg ${m.author}"><div class="who">${m.author === "staff" ? esc(m.staff || "FilesBolt") + (m.sent ? "" : " · sending…") : esc(t.name || t.email)} · ${esc(tkWhen(m.at))}</div>${esc(m.body)}</div>`).join("");
-    $("#tkSolve").hidden = t.status === "solved"; $("#tkOpen").hidden = t.status !== "solved";
-  } catch (err) { $("#tkMsg").textContent = err.message; }
+    const d = await rpc("admin_ticket", { p_id: id }), t = ZD.t = d.ticket, a = d.account;
+    ZD.admins = d.admins || ZD.admins;
+    $("#tcSubject").textContent = (t.subject || "(no subject)");
+    $("#tcVia").innerHTML = `${zdPill(t.status)} &nbsp;#${t.id} · via ${esc(ZD_CH[t.source] || t.source)} · ${esc(zdLong(t.created_at))}`;
+    $("#tpReq").innerHTML = `<b>${esc(t.name || zdWho(t.email))}</b><br><span class="lead">${esc(t.email)}</span>`;
+    zdAdmins($("#tpAssignee"), t.assignee || "", "Unassigned");
+    $("#tpTags").value = (t.tags || []).join(", "); $("#tpKind").value = t.kind; $("#tpPri").value = t.priority;
+    $("#tpStatus").innerHTML = zdPill(t.status); $("#tpSaved").textContent = "";
+    $("#tcMsgs").innerHTML = (d.messages || []).map(m => { const staff = m.author !== "customer";
+      const who = staff ? (m.staff || "FilesBolt support") : (t.name || t.email);
+      return `<div class="zd-m ${m.author === "note" ? "note staff" : staff ? "staff" : ""}"><div class="zd-av">${esc(zdInit(staff ? zdWho(who) : who))}</div>
+        <div><div class="who"><b>${esc(staff ? zdWho(who) : who)}</b><span>${esc(zdLong(m.at))}${m.author === "staff" && !m.sent ? " · sending…" : ""}</span></div>
+        <div class="body">${esc(m.body)}</div></div></div>`; }).join("") || `<p class="lead">No messages yet.</p>`;
+    $("#tcMsgs").scrollTop = $("#tcMsgs").scrollHeight;
+    const err = d.errors || [], oth = d.others || [];
+    $("#tcCust").innerHTML = `<div class="nm"><div class="zd-av">${esc(zdInit(t.name || t.email))}</div><div><b>${esc(t.name || zdWho(t.email))}</b><br>
+        <span class="lead" style="font-size:13px">${esc(t.email)}</span></div></div>` +
+      (a ? `<div class="kv"><span>Plan</span><div>${esc(a.plan || "")}${a.disabled ? " · deactivated" : ""}</div><span>Joined</span><div>${esc(fmt(a.created_at))}</div>
+        <span>Last active</span><div>${esc(a.last_seen ? fmt(a.last_seen) : "—")}</div><span>Jobs</span><div>${a.jobs_total ?? 0}</div>
+        <span>Invite code</span><div>${esc(a.code || "—")}</div></div>
+        <p style="margin:10px 0 0"><a href="#" id="tcAcct">Open in Accounts</a></p>`
+        : `<p class="lead" style="margin:0">No FilesBolt account with this email.</p>`) +
+      `<h4>Interactions (${oth.length + 1})</h4><div class="it">${zdLetter(t.status)}<div><b>${esc(t.subject || "(no subject)")}</b><small>This ticket · ${esc(zdDate(t.created_at))}</small></div></div>` +
+      oth.map(o => `<div class="it" data-open="${o.id}">${zdLetter(o.status)}<div><b>${esc(o.subject || "(no subject)")}</b><small>#${o.id} · ${esc(zdDate(o.created_at))}</small></div></div>`).join("") +
+      (err.length ? `<h4>Recent app errors</h4>` + err.map(x => `<div style="font-size:13px;margin:0 0 8px"><b>${esc(fmt(x.at))}</b> · ${esc(x.version)}<br>${esc(x.message)}</div>`).join("") : "");
+    const acct = $("#tcAcct"); if (acct) acct.onclick = ev => { ev.preventDefault(); history.replaceState(null, "", "#sec-accounts"); showSection("sec-accounts"); };
+    zdSubmitLabel();
+  } catch (err) { $("#tcMsg").className = "msg bad"; $("#tcMsg").textContent = err.message; }
 }
-function tkList() { TK.id = null; $("#tkView").hidden = true; $("#tkListView").hidden = false; tickets(); }
-async function tkReply(status) {
-  const body = $("#tkReply").value.trim();
-  if (!body) { $("#tkMsg").textContent = "Write a reply first."; return; }
-  $("#tkMsg").textContent = "Sending…";
-  try { await rpc("admin_ticket_reply", { p_id: TK.id, p_body: body, p_status: status }); $("#tkReply").value = "";
-        $("#tkMsg").textContent = "Saved. It's emailed within 5 minutes."; await tkShow(TK.id); $("#tkMsg").textContent = "Saved. It's emailed within 5 minutes."; }
-  catch (err) { $("#tkMsg").textContent = err.message; }
+$("#tcCust").addEventListener("click", e => { const it = e.target.closest("[data-open]"); if (it) zdOpen(Number(it.dataset.open)); });
+$("#tkBack").onclick = () => { ZD.id = null; $("#zdTicket").hidden = true; $("#zdList").hidden = false; tickets(); };
+async function zdSave(set, note) {
+  try { await rpc("admin_ticket_update", { p_ids: [ZD.id], p_set: set }); $("#tpSaved").textContent = note || "Saved";
+        setTimeout(() => $("#tpSaved").textContent = "", 2000); }
+  catch (err) { $("#tpSaved").textContent = err.message; }
 }
-async function tkSet(status) {
-  try { await rpc("admin_ticket_set", { p_id: TK.id, p_status: status }); await tkShow(TK.id); } catch (err) { $("#tkMsg").textContent = err.message; }
+$("#tpAssignee").onchange = e => zdSave({ assignee: e.target.value }, "Assignee saved");
+$("#tpTake").onclick = e => { e.preventDefault(); $("#tpAssignee").value = ZD.me; zdSave({ assignee: ZD.me }, "Assigned to you"); };
+$("#tpKind").onchange = e => zdSave({ kind: e.target.value });
+$("#tpPri").onchange = e => zdSave({ priority: e.target.value });
+$("#tpTags").onchange = e => zdSave({ tags: e.target.value.split(",") }, "Tags saved");
+document.querySelector(".zd-tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return;
+  ZD.mode = b.dataset.m; document.querySelectorAll(".zd-tabs button").forEach(x => x.classList.toggle("on", x === b));
+  $("#tcComp").classList.toggle("note", ZD.mode === "note");
+  $("#tcText").placeholder = ZD.mode === "note" ? "Internal note: only admins see this. The customer gets nothing." : "Write a reply. It's emailed from support@filesbolt.com.";
+  zdSubmitLabel(); });
+function zdNext() { return ZD.mode === "note" ? (ZD.t ? (ZD.t.status === "new" ? "open" : ZD.t.status) : "open") : "pending"; }
+function zdSubmitLabel(st) { st = st || zdNext(); $("#tcSubmit").dataset.st = st; $("#tcSubmit").innerHTML = `Submit as <b>${ZD_ST[st]}</b>`; }
+$("#tcMenu").innerHTML = ["new", "open", "pending", "hold", "solved"].map(st => `<button type="button" data-st="${st}"><i style="background:${ZD_COL[st]}"></i>Submit as <b>${ZD_ST[st]}</b></button>`).join("");
+$("#tcMore").onclick = e => { e.stopPropagation(); $("#tcMenu").hidden = !$("#tcMenu").hidden; };
+document.addEventListener("click", () => { $("#tcMenu").hidden = true; });
+$("#tcMenu").addEventListener("click", e => { const b = e.target.closest("button[data-st]"); if (b) zdSubmit(b.dataset.st); });
+$("#tcSubmit").onclick = () => zdSubmit($("#tcSubmit").dataset.st);
+async function zdSubmit(st) {
+  const body = $("#tcText").value.trim(), m = $("#tcMsg");
+  $("#tcMenu").hidden = true; m.className = "msg"; m.textContent = "Saving…";
+  try {
+    await rpc("admin_ticket_reply", { p_id: ZD.id, p_body: body, p_status: st, p_internal: ZD.mode === "note" });
+    $("#tcText").value = "";
+    const note = !body ? "Status changed to " + ZD_ST[st] + "." : ZD.mode === "note" ? "Internal note added." : "Reply saved. It's emailed within 5 minutes.";
+    await zdOpen(ZD.id); m.className = "msg ok"; m.textContent = note;
+  } catch (err) { m.className = "msg bad"; m.textContent = err.message; }
 }
-Object.keys(TK_QUICK).forEach(k => { const o = document.createElement("option"); o.textContent = k; $("#tkQuick").appendChild(o); });
-$("#tkQuick").onchange = e => { if (TK_QUICK[e.target.value]) $("#tkReply").value = TK_QUICK[e.target.value]; e.target.value = ""; };
-$("#tkTabs").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; TK.status = b.dataset.s; $("#tkQ").value = ""; tickets(); });
-let tkT; $("#tkQ").oninput = () => { clearTimeout(tkT); tkT = setTimeout(tickets, 300); };
-$("#tkList").addEventListener("click", e => { const r = e.target.closest(".tk-row"); if (r) tkShow(Number(r.dataset.id)); });
-$("#tkBack").onclick = tkList; $("#tkReload").onclick = () => TK.id ? tkShow(TK.id) : tickets();
-$("#tkSend").onclick = () => tkReply("waiting"); $("#tkSendSolve").onclick = () => tkReply("solved");
-$("#tkSolve").onclick = () => tkSet("solved"); $("#tkOpen").onclick = () => tkSet("open");
+Object.keys(ZD_MACROS).forEach(k => { const o = document.createElement("option"); o.textContent = k; $("#tcMacro").appendChild(o); });
+$("#tcMacro").onchange = e => { if (ZD_MACROS[e.target.value]) { $("#tcText").value = ZD_MACROS[e.target.value]; } e.target.value = ""; };
 
 /* ---------- one section at a time (left menu) ---------- */
 function showSection(id) {
   const pages = [...document.querySelectorAll(".adm-content > .adm-page")];
   if (!pages.some(p => p.id === id) || document.getElementById(id).hidden) id = "sec-overview";
   pages.forEach(p => p.classList.toggle("on", p.id === id));
+  document.body.classList.toggle("zd", id === "sec-support");
   document.querySelectorAll(".jump a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + id));
   window.scrollTo({ top: 0 });
 }
