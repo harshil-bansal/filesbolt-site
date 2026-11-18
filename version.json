@@ -1,7 +1,7 @@
 {
-  "version": "0.4.19",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.19/FilesBolt-Setup-0.4.19.exe",
-  "size": 61775771,
-  "sha256": "15a514299cfa5f4e5aa9fc9d94e7f6e4991d0b88a294df79a0b42713a44ce6c7",
-  "notes": "Important fix for Compress: please update. Compressing some big PDFs could change a few numbers on some pages.\nThis update fixes it, and Compress now checks every page before saving."
+  "version": "0.4.20",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.20/FilesBolt-Setup-0.4.20.exe",
+  "size": 61786171,
+  "sha256": "7efeedf70f6a550e1d5fbe650a71db8bdc824e58c0275f0c5195a49d2c89ca19",
+  "notes": "Merging now always saves, even with an unusual file name.\nPDF to Word tells you right away if your Microsoft Word is too old.\nOther small fixes."
 }
