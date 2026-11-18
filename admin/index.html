@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src https://aovtkaljtayxuxuzureh.supabase.co https://api.github.com; object-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src https://aovtkaljtayxuxuzureh.supabase.co https://api.github.com; object-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
@@ -193,6 +193,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     <input type="email" id="em" autocomplete="username" required>
     <label for="pw">Password</label>
     <input type="password" id="pw" autocomplete="current-password" required>
+    <div class="cf-turnstile" id="siHuman" data-sitekey="0x4AAAAAAGHohcKdjSka0yq1" data-theme="light" style="margin-top:12px"></div>
     <div class="actions"><button class="btn primary" id="signinBtn">Sign in</button>
       <button type="button" class="btn" id="forgotBtn">Forgot password?</button></div>
     <div class="msg bad" id="signinMsg"></div>
@@ -531,6 +532,11 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
       <button class="btn shrink" id="admBtn">Add admin</button>
     </form>
     <div class="msg" id="admMsg" role="status"></div>
+    <h3 style="margin:22px 0 6px;font-size:15px">Unlock admin sign-in</h3>
+    <p class="lead" style="margin:0 0 8px">After 5 wrong passwords, admin sign-in for that email is locked for 12 hours. Unlock it here if it was a mistake.</p>
+    <form class="row" id="unlockForm" style="max-width:520px"><input type="email" id="unlockEmail" placeholder="admin@example.com" required aria-label="Admin email">
+      <button class="btn shrink">Unlock</button></form>
+    <div class="msg" id="unlockMsg" role="status"></div>
   </section>
   </div>
 </main>
@@ -698,7 +704,10 @@ $("#signinForm").addEventListener("submit", async e => {
   e.preventDefault();
   const b = $("#signinBtn"); b.disabled = true; $("#signinMsg").textContent = "";
   try {
-    const r = await call("/auth/v1/token?grant_type=password", { email: $("#em").value.trim(), password: $("#pw").value }, false);
+    const tok = (document.querySelector('#siHuman [name="cf-turnstile-response"]') || {}).value || "";
+    if (!tok) throw new Error("Please complete the \u201cI'm human\u201d check first.");
+    const r = await call("/functions/v1/admin-login", { email: $("#em").value.trim(), password: $("#pw").value, token: tok }, false)
+      .finally(() => { if (window.turnstile) window.turnstile.reset("#siHuman"); });
     $("#pw").value = "";
     await finishSignIn(r);
   } catch (err) { S.set(null); $("#signinMsg").textContent = err.message; }
@@ -1218,6 +1227,11 @@ function actDetail(a) {
   const keys = ["plan", "days", "grant_until", "max_uses", "jobs_limit", "role", "name", "note"];
   return keys.filter(k => d[k] !== undefined && d[k] !== null).map(k => `${k.replace(/_/g, " ")}: ${d[k]}`).join("; ");
 }
+$("#unlockForm").addEventListener("submit", async e => {
+  e.preventDefault(); const m = $("#unlockMsg");
+  try { await rpc("admin_unlock_login", { e: $("#unlockEmail").value.trim() }); m.className = "msg ok"; m.textContent = "Unlocked. They can sign in again now."; }
+  catch (err) { m.className = "msg bad"; m.textContent = err.message; }
+});
 /* ---------- Support tickets ---------- */
 const TK = { status: "open", id: null };
 const TK_QUICK = {
@@ -1538,5 +1552,6 @@ $("#restoreForm").addEventListener("submit", async e => {
 
 show();
 </script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </body>
 </html>
