@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com https://aovtkaljtayxuxuzureh.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com https://aovtkaljtayxuxuzureh.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Contact us | FilesBolt</title>
@@ -36,13 +36,15 @@
         <option>Bug or problem</option><option>Account or sign-in</option><option>Billing</option><option>Feature idea</option><option>Other</option></select></label>
       <label>Message<br><textarea id="cMsg" rows="7" required maxlength="8000" style="width:100%;padding:10px;border:1px solid #CBD0D8;border-radius:8px;font:inherit;resize:vertical"></textarea></label>
       <label aria-hidden="true" style="position:absolute;left:-9999px">Website<input id="cSite" tabindex="-1" autocomplete="off"></label>
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAAGHohcKdjSka0yq1" data-theme="light"></div>
       <p><button class="btn" type="submit" id="cSend">Send message</button></p>
       <p id="cDone" role="status"></p>
     </form>
     <p class="muted" style="font-size:14px">Using the app? Settings &gt; Contact support also attaches a screenshot if you like. Or email <a href="mailto:support@filesbolt.com">support@filesbolt.com</a>.</p>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script>
       (function () {
-        var U = "https://aovtkaljtayxuxuzureh.supabase.co/rest/v1/rpc/", K = "sb_publishable_qK3cBBkyFVLg7FKiLfiYFQ_Q7Ss2Sf9";
+        var U = "https://aovtkaljtayxuxuzureh.supabase.co/functions/v1/", K = "sb_publishable_qK3cBBkyFVLg7FKiLfiYFQ_Q7Ss2Sf9";
         var f = document.getElementById("cf"), d = document.getElementById("cDone"), b = document.getElementById("cSend");
         function v(id) { return document.getElementById(id).value.trim(); }
         f.addEventListener("submit", function (ev) {
@@ -50,15 +52,17 @@
           if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v("cEmail"))) { d.textContent = "Enter a valid email address."; return; }
           if (v("cMsg").length < 5) { d.textContent = "Write a little more about what you need."; return; }
           b.disabled = true; d.textContent = "Sending…";
-          fetch(U + "create_web_ticket", { method: "POST", headers: { apikey: K, "Content-Type": "application/json" },
-            body: JSON.stringify({ p_name: v("cName"), p_email: v("cEmail"), p_topic: v("cTopic"), p_message: v("cMsg"), p_website: v("cSite") }) })
-            .then(function (r) { if (!r.ok) throw new Error("bad"); return r.json(); })
+          var tok = (document.querySelector('[name="cf-turnstile-response"]') || {}).value || "";
+          if (!tok) { b.disabled = false; d.textContent = "Please complete the \u201cI'm human\u201d check first."; return; }
+          fetch(U + "contact", { method: "POST", headers: { apikey: K, "Content-Type": "application/json" },
+            body: JSON.stringify({ name: v("cName"), email: v("cEmail"), topic: v("cTopic"), message: v("cMsg"), website: v("cSite"), token: tok }) })
+            .then(function (r) { return r.json(); })
             .then(function (r) {
               if (r && r.ok) { f.reset(); d.textContent = "Thanks! Your ticket is " + r.ref + ". We've emailed you a copy, and we'll reply soon."; }
               else { d.textContent = (r && r.message) || "That didn't work. Please try again."; }
             })
             .catch(function () { d.textContent = "We couldn't reach the server. Check your connection and try again."; })
-            .then(function () { b.disabled = false; });
+            .then(function () { b.disabled = false; if (window.turnstile) window.turnstile.reset(); });
         });
       })();
     </script>

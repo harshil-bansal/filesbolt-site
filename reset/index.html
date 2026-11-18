@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com https://aovtkaljtayxuxuzureh.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Choose a new password | FilesBolt</title>
+<meta name="description" content="Choose a new FilesBolt password.">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="FilesBolt home">
+      <img src="/img/logo.svg" alt="" width="32" height="32"><span>FilesBolt</span>
+    </a>
+    <nav aria-label="Main">
+      <a href="/#tools">Tools</a>
+      <a href="/#faq">Help</a>
+      <a class="btn btn-small" href="/#download">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main class="doc">
+  <div class="wrap narrow">
+    <h1>Choose a new password</h1>
+    <p id="rMsg">Checking your link…</p>
+    <form id="rf" hidden style="margin-top:12px;display:grid;gap:14px;max-width:420px">
+      <label>New password<br><input id="rP1" type="password" autocomplete="new-password" minlength="8" maxlength="72" required style="width:100%;padding:10px;border:1px solid #CBD0D8;border-radius:8px;font:inherit"></label>
+      <label>Type it again<br><input id="rP2" type="password" autocomplete="new-password" minlength="8" maxlength="72" required style="width:100%;padding:10px;border:1px solid #CBD0D8;border-radius:8px;font:inherit"></label>
+      <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="rShow"> Show password</label>
+      <p class="muted" style="font-size:14px;margin:0">At least 8 characters. You'll be signed out on every PC, then sign in again with the new password.</p>
+      <p><button class="btn" type="submit" id="rGo">Save new password</button></p>
+      <p id="rDone" role="status"></p>
+    </form>
+    <script>
+      (function () {
+        var U = "https://aovtkaljtayxuxuzureh.supabase.co/rest/v1/rpc/", K = "sb_publishable_qK3cBBkyFVLg7FKiLfiYFQ_Q7Ss2Sf9";
+        var t = new URLSearchParams(location.search).get("t") || "";
+        var m = document.getElementById("rMsg"), f = document.getElementById("rf"), d = document.getElementById("rDone"), b = document.getElementById("rGo");
+        history.replaceState(null, "", location.pathname);  // keep the link out of the address bar and history
+        function call(fn, body) {
+          return fetch(U + fn, { method: "POST", headers: { apikey: K, "Content-Type": "application/json" }, body: JSON.stringify(body) })
+            .then(function (r) { if (!r.ok) throw new Error("bad"); return r.json(); });
+        }
+        if (!t) { m.textContent = "Open this page from the link in your FilesBolt email. Or use \u201cForgot password?\u201d in the app."; return; }
+        call("reset_link_status", { t: t }).then(function (r) {
+          if (!r || !r.ok) { m.textContent = "This link has expired or was already used. Use \u201cForgot password?\u201d in FilesBolt, or ask support@filesbolt.com for a new link."; return; }
+          m.textContent = "Choose a new password for " + r.email + "."; f.hidden = false; document.getElementById("rP1").focus();
+        }).catch(function () { m.textContent = "We couldn't reach the server. Check your connection and open the link again."; });
+        document.getElementById("rShow").addEventListener("change", function (e) {
+          document.getElementById("rP1").type = document.getElementById("rP2").type = e.target.checked ? "text" : "password"; });
+        f.addEventListener("submit", function (ev) {
+          ev.preventDefault();
+          var p1 = document.getElementById("rP1").value, p2 = document.getElementById("rP2").value;
+          if (p1.length < 8) { d.textContent = "Use at least 8 characters."; return; }
+          if (p1 !== p2) { d.textContent = "The two passwords don't match."; return; }
+          b.disabled = true; d.textContent = "Saving…";
+          call("reset_password_with_link", { t: t, new_password: p1 }).then(function (r) {
+            if (r && r.ok) { f.hidden = true; m.textContent = "Done. Your password is changed. Open FilesBolt and sign in with your new password."; }
+            else { d.textContent = (r && r.message) || "That didn't work. Please try again."; b.disabled = false; }
+          }).catch(function () { d.textContent = "We couldn't reach the server. Please try again."; b.disabled = false; });
+        });
+      })();
+    </script>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span class="brand small"><img src="/img/logo.svg" alt="" width="20" height="20">FilesBolt</span>
+    <nav aria-label="Footer"><a href="/terms.html">Terms</a><a href="/refunds.html">Refunds</a><a href="/privacy.html">Privacy policy</a><a href="/#faq">Help</a><a href="/contact/">Contact us</a></nav>
+    <span class="copy">© 2026 FilesBolt</span>
+  </div>
+</footer>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cacb71ad59fa40ed80eed50ccecd41cc"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
