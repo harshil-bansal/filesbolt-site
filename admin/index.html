@@ -1478,6 +1478,13 @@ async function zdSubmit(st) {
     await zdOpen(ZD.id); m.className = "msg ok"; m.textContent = note;
   } catch (err) { m.className = "msg bad"; m.textContent = err.message; }
 }
+// keep the Support page current: new mail syncs every few minutes, so refresh quietly every 30 s
+setInterval(() => {
+  const page = $("#sec-support");
+  if (!page || !page.classList.contains("on") || document.hidden) return;
+  if (ZD.id) { if (!$("#tcText").value.trim() && $("#tcMenu").hidden) zdOpen(ZD.id); }
+  else if (!ZD.sel.size) tickets();
+}, 30000);
 Object.keys(ZD_MACROS).forEach(k => { const o = document.createElement("option"); o.textContent = k; $("#tcMacro").appendChild(o); });
 $("#tcMacro").onchange = e => { if (ZD_MACROS[e.target.value]) { $("#tcText").value = ZD_MACROS[e.target.value]; } e.target.value = ""; };
 
