@@ -1129,6 +1129,10 @@ $("#accRows").addEventListener("click", e => {
         <div class="line"><input type="email" data-f="newemail" placeholder="New email" style="flex:1">
           <button class="btn" data-act="email">Change</button></div>
         <p class="note">Signs them out; they sign in again with the new email. Plan and name stay.</p>` : ""}
+        <label class="mlab">App language</label>
+        <div class="line"><select data-f="lang" style="flex:1">${[["", "Not set (English)"], ["en", "English"], ["es", "Español (Spanish)"]].map(([c, n]) => `<option value="${c}"${(a.language || "") === c ? " selected" : ""}>${n}</option>`).join("")}</select>
+          <button class="btn" data-act="lang">Save</button></div>
+        <p class="note">The app switches the next time it checks the account (within a few minutes), after asking them to restart.</p>
         <label class="mlab">Password</label>
         <div class="line"><button class="btn" data-act="reset">Send password reset link</button></div>
         <p class="note">They get an email with a link to filesbolt.com where they choose a new password. Works for 1 hour, once.</p></div>
@@ -1184,7 +1188,11 @@ $("#accRows").addEventListener("click", e => {
     }
     btn.disabled = true;
     try {
-      if (act === "reset") {
+      if (act === "lang") {
+        await rpc("admin_set_language", { e: a.email, code: f("lang").value });
+        a.language = f("lang").value || null;
+        say("Language saved.", true);
+      } else if (act === "reset") {
         await rpc("admin_send_reset_link", { e: a.email });
         say("Reset link emailed to " + a.email + " (arrives within 5 minutes).", true);
       } else if (act === "mail") {
