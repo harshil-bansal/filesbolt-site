@@ -1,7 +1,7 @@
 {
-  "version": "0.4.21",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.21/FilesBolt-Setup-0.4.21.exe",
-  "size": 62228778,
-  "sha256": "8a22e7124da68ca241439aa6e8b49bbdabe0df06f01b820d05a1aeef5a0f6f10",
-  "notes": "PDF to Word now works even without Microsoft Word.\nEdit & sign: Select can now pick up part of the page itself, to move, resize or erase it.\nCompress makes many PDFs much smaller.\nUpdates download more reliably."
+  "version": "0.4.22",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.22/FilesBolt-Setup-0.4.22.exe",
+  "size": 62237552,
+  "sha256": "d390e8390e16f52f6d5b7170ee39e50efd08f14c611ae552ded93a357d77aea3",
+  "notes": "FilesBolt now speaks Spanish: Settings > General > Language.\nOther small fixes."
 }
