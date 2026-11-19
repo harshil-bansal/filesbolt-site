@@ -451,9 +451,10 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
         <a href="#" data-v="open">Open <span></span></a>
         <a href="#" data-v="pending">Pending <span></span></a>
         <a href="#" data-v="hold">On-hold <span></span></a>
-        <a href="#" data-v="solved">Recently solved <span></span></a>
+        <a href="#" data-v="solved">Solved <span></span></a>
         <a href="#" data-v="closed">Closed <span></span></a>
         <a href="#" data-v="all">All tickets <span></span></a>
+        <p class="lead" style="font-size:12px;margin:14px 10px 0;line-height:1.45">New: just arrived. Open: the customer replied. Pending: waiting for the customer; solves itself after 48 h with no reply. On-hold: escalated on our side, never changes by itself. Solved: closes after 24 h. Closed: final; a new message makes a new ticket.</p>
       </nav>
       <div class="zd-main">
         <div class="zd-head"><h2 id="tkTitle">All unsolved tickets</h2><span class="cnt" id="tkCount"></span>
@@ -1336,7 +1337,7 @@ const ZD = { view: "unsolved", id: null, me: "", admins: [], list: [], sel: new 
 const ZD_ST = { new: "New", open: "Open", pending: "Pending", hold: "On-hold", solved: "Solved", closed: "Closed" };
 const ZD_COL = { new: "#F79A3E", open: "#E34F32", pending: "#3091EC", hold: "#2F3941", solved: "#87929D", closed: "#C2C8CC" };
 const ZD_VIEW = { mine: "Your unsolved tickets", unassigned: "Unassigned tickets", unsolved: "All unsolved tickets", urgent: "High and urgent",
-  new: "New tickets", open: "Open tickets", pending: "Pending tickets", hold: "On-hold tickets", solved: "Recently solved tickets",
+  new: "New tickets", open: "Open tickets", pending: "Pending tickets", hold: "On-hold tickets", solved: "Solved tickets",
   closed: "Closed tickets", all: "All tickets" };
 const ZD_CH = { email: "Email", web: "Web form", app: "FilesBolt app" };
 const ZD_MACROS = {
@@ -1441,6 +1442,10 @@ async function zdOpen(id) {
       oth.map(o => `<div class="it" data-open="${o.id}">${zdLetter(o.status)}<div><b>${esc(o.subject || "(no subject)")}</b><small>#${o.id} · ${esc(zdDate(o.created_at))}</small></div></div>`).join("") +
       (err.length ? `<h4>Recent app errors</h4>` + err.map(x => `<div style="font-size:13px;margin:0 0 8px"><b>${esc(fmt(x.at))}</b> · ${esc(x.version)}<br>${esc(x.message)}</div>`).join("") : "");
     const acct = $("#tcAcct"); if (acct) acct.onclick = ev => { ev.preventDefault(); history.replaceState(null, "", "#sec-accounts"); showSection("sec-accounts"); };
+    const closed = t.status === "closed";
+    $("#tcComp").querySelectorAll("textarea, button, select").forEach(x => x.disabled = closed);
+    ["#tpAssignee", "#tpTags", "#tpKind", "#tpPri"].forEach(x => $(x).disabled = closed);
+    $("#tcMsg").className = "msg"; $("#tcMsg").textContent = closed ? "This ticket is closed and can't be reopened. If the customer writes again, a new ticket is made." : "";
     zdSubmitLabel();
   } catch (err) { $("#tcMsg").className = "msg bad"; $("#tcMsg").textContent = err.message; }
 }
