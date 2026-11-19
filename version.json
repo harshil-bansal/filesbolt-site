@@ -1,7 +1,7 @@
 {
-  "version": "0.4.23",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.23/FilesBolt-Setup-0.4.23.exe",
-  "size": 62252833,
-  "sha256": "d5af11d47d2e8290cbfe1ad32a6b9f6e68e764819cb4bb00aed0f1cf5b4ba8ec",
-  "notes": "FilesBolt now speaks Spanish: Settings > General > Language.\nOther small fixes."
+  "version": "0.4.24",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.24/FilesBolt-Setup-0.4.24.exe",
+  "size": 62248199,
+  "sha256": "a1a115ba5386ec4e49f2bb5d46dcfd83787b4ded444d1106fada21bb6fda2ae8",
+  "notes": "FilesBolt now speaks Spanish, French, German and Hindi: Settings > General > Language.\nOther small fixes."
 }
