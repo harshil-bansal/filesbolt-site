@@ -446,6 +446,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
         <a href="#" data-v="unassigned">Unassigned tickets <span></span></a>
         <a href="#" data-v="unsolved" class="on">All unsolved tickets <span></span></a>
         <a href="#" data-v="urgent">High and urgent <span></span></a>
+        <a href="#" data-v="breached" style="color:#CC3340">SLA overdue <span></span></a>
         <hr>
         <a href="#" data-v="new">New <span></span></a>
         <a href="#" data-v="open">Open <span></span></a>
@@ -464,7 +465,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
           <select id="tkBulkAssign" aria-label="Assign to"><option value="">Assign to…</option></select>
           <select id="tkBulkPri" aria-label="Set priority"><option value="">Priority…</option><option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select>
           <button type="button" class="btn shrink" id="tkBulkGo">Apply</button><button type="button" class="btn shrink" id="tkBulkClear">Clear</button></div>
-        <table class="zd-table"><thead><tr><th style="width:26px"><input type="checkbox" id="tkAll" aria-label="Select all"></th><th style="width:24px"></th><th>ID</th><th>Subject</th><th>Channel</th><th>Requester</th><th>Requested</th><th>Updated</th><th>Assignee</th><th>Priority</th></tr></thead>
+        <table class="zd-table"><thead><tr><th style="width:26px"><input type="checkbox" id="tkAll" aria-label="Select all"></th><th style="width:24px"></th><th>ID</th><th>Subject</th><th>Channel</th><th>Requester</th><th>Requested</th><th>Updated</th><th>Assignee</th><th>Priority</th><th>SLA</th></tr></thead>
           <tbody id="tkRows"></tbody></table>
       </div>
     </div>
@@ -1336,7 +1337,7 @@ $("#unlockForm").addEventListener("submit", async e => {
 const ZD = { view: "unsolved", id: null, me: "", admins: [], list: [], sel: new Set(), mode: "public", t: null };
 const ZD_ST = { new: "New", open: "Open", pending: "Pending", hold: "On-hold", solved: "Solved", closed: "Closed" };
 const ZD_COL = { new: "#F79A3E", open: "#E34F32", pending: "#3091EC", hold: "#2F3941", solved: "#87929D", closed: "#C2C8CC" };
-const ZD_VIEW = { mine: "Your unsolved tickets", unassigned: "Unassigned tickets", unsolved: "All unsolved tickets", urgent: "High and urgent",
+const ZD_VIEW = { mine: "Your unsolved tickets", unassigned: "Unassigned tickets", unsolved: "All unsolved tickets", urgent: "High and urgent", breached: "SLA overdue",
   new: "New tickets", open: "Open tickets", pending: "Pending tickets", hold: "On-hold tickets", solved: "Solved tickets",
   closed: "Closed tickets", all: "All tickets" };
 const ZD_CH = { email: "Email", web: "Web form", app: "FilesBolt app" };
@@ -1354,6 +1355,19 @@ const zdDate = iso => { const d = new Date(iso), n = new Date();
 const zdLong = iso => new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
 const zdInit = s => (String(s || "?").trim().split(/[\s@.]+/).filter(Boolean).slice(0, 2).map(x => x[0]).join("") || "?").toUpperCase();
 const zdWho = e => e ? e.split("@")[0] : "—";
+// SLA: New = first answer within 12 h of arriving; On-hold = sorted within 48 h of being put on hold
+function zdDue(t) {
+  if (t.status === "new") return new Date(new Date(t.created_at).getTime() + 12 * 3600e3);
+  if (t.status === "hold") return new Date(new Date(t.status_at || t.updated_at).getTime() + 48 * 3600e3);
+  return null;
+}
+function zdSla(t) {
+  const due = zdDue(t); if (!due) return `<span class="lead">—</span>`;
+  const ms = due - Date.now(), a = Math.abs(ms), h = Math.floor(a / 3600e3), m = Math.floor(a % 3600e3 / 60e3);
+  const txt = (h ? h + "h " : "") + m + "m";
+  return ms < 0 ? `<span style="color:#CC3340;font-weight:700">Overdue ${txt}</span>`
+    : `<span style="color:${ms < 2 * 3600e3 ? "#B76E00" : "var(--ok)"};font-weight:600">${txt} left</span>`;
+}
 function zdAdmins(sel, val, blank) {
   sel.innerHTML = `<option value="">${blank}</option>` + ZD.admins.map(a => `<option value="${esc(a)}"${a === val ? " selected" : ""}>${esc(a)}${a === ZD.me ? " (you)" : ""}</option>`).join("");
 }
@@ -1375,9 +1389,9 @@ async function tickets() {
         <td><input type="checkbox" data-sel="${t.id}" aria-label="Select ${esc(t.ref)}"></td><td>${zdLetter(t.status)}</td>
         <td>#${t.id}</td><td class="subj">${esc(t.subject || "(no subject)")}</td><td>${esc(ZD_CH[t.source] || t.source)}</td>
         <td>${esc(t.name || t.email)}</td><td>${esc(zdDate(t.created_at))}</td><td>${esc(zdDate(t.updated_at))}</td>
-        <td>${esc(zdWho(t.assignee))}</td><td class="pr-${t.priority}">${esc(t.priority[0].toUpperCase() + t.priority.slice(1))}</td></tr>`).join("")
-      : `<tr><td colspan="10" class="empty">No tickets in this view.</td></tr>`;
-  } catch (err) { rows.innerHTML = `<tr><td colspan="10" class="empty">${esc(err.message)}</td></tr>`; }
+        <td>${esc(zdWho(t.assignee))}</td><td class="pr-${t.priority}">${esc(t.priority[0].toUpperCase() + t.priority.slice(1))}</td><td>${zdSla(t)}</td></tr>`).join("")
+      : `<tr><td colspan="11" class="empty">No tickets in this view.</td></tr>`;
+  } catch (err) { rows.innerHTML = `<tr><td colspan="11" class="empty">${esc(err.message)}</td></tr>`; }
 }
 function zdBulk() { $("#tkBulk").classList.toggle("on", ZD.sel.size > 0); $("#tkSelN").textContent = ZD.sel.size + " selected"; $("#tkAll").checked = ZD.sel.size > 0 && ZD.sel.size === ZD.list.length; }
 
@@ -1419,7 +1433,8 @@ async function zdOpen(id) {
     const d = await rpc("admin_ticket", { p_id: id }), t = ZD.t = d.ticket, a = d.account;
     ZD.admins = d.admins || ZD.admins;
     $("#tcSubject").textContent = (t.subject || "(no subject)");
-    $("#tcVia").innerHTML = `${zdPill(t.status)} &nbsp;#${t.id} · via ${esc(ZD_CH[t.source] || t.source)} · ${esc(zdLong(t.created_at))}`;
+    $("#tcVia").innerHTML = `${zdPill(t.status)} &nbsp;#${t.id} · via ${esc(ZD_CH[t.source] || t.source)} · ${esc(zdLong(t.created_at))}`
+      + (zdDue(t) ? ` · SLA: ${zdSla(t)}` : "");
     $("#tpReq").innerHTML = `<b>${esc(t.name || zdWho(t.email))}</b><br><span class="lead">${esc(t.email)}</span>`;
     zdAdmins($("#tpAssignee"), t.assignee || "", "Unassigned");
     $("#tpTags").value = (t.tags || []).join(", "); $("#tpKind").value = t.kind; $("#tpPri").value = t.priority;
@@ -1468,7 +1483,15 @@ document.querySelector(".zd-tabs").addEventListener("click", e => { const b = e.
   zdSubmitLabel(); });
 function zdNext() { return ZD.mode === "note" ? (ZD.t ? (ZD.t.status === "new" ? "open" : ZD.t.status) : "open") : "pending"; }
 function zdSubmitLabel(st) { st = st || zdNext(); $("#tcSubmit").dataset.st = st; $("#tcSubmit").innerHTML = `Submit as <b>${ZD_ST[st]}</b>`; }
-$("#tcMenu").innerHTML = ["new", "open", "pending", "hold", "solved"].map(st => `<button type="button" data-st="${st}"><i style="background:${ZD_COL[st]}"></i>Submit as <b>${ZD_ST[st]}</b></button>`).join("");
+const ZD_KEYS = { n: "new", o: "open", p: "pending", d: "hold", s: "solved" };
+$("#tcMenu").innerHTML = ["new", "open", "pending", "hold", "solved"].map(st => `<button type="button" data-st="${st}"><i style="background:${ZD_COL[st]}"></i>Submit as <b>${ZD_ST[st]}</b>
+  <span class="lead" style="margin-left:auto;font-size:12px">Ctrl+Alt+${Object.keys(ZD_KEYS).find(k => ZD_KEYS[k] === st).toUpperCase()}</span></button>`).join("");
+// keyboard: Ctrl+Alt+N / O / P / D (on-hold) / S on an open ticket
+document.addEventListener("keydown", e => {
+  if (!e.ctrlKey || !e.altKey || $("#zdTicket").hidden || !ZD.id || (ZD.t && ZD.t.status === "closed")) return;
+  const st = ZD_KEYS[e.key.toLowerCase()]; if (!st) return;
+  e.preventDefault(); zdSubmit(st);
+});
 $("#tcMore").onclick = e => { e.stopPropagation(); $("#tcMenu").hidden = !$("#tcMenu").hidden; };
 document.addEventListener("click", () => { $("#tcMenu").hidden = true; });
 $("#tcMenu").addEventListener("click", e => { const b = e.target.closest("button[data-st]"); if (b) zdSubmit(b.dataset.st); });
