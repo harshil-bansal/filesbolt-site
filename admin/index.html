@@ -1130,7 +1130,7 @@ $("#accRows").addEventListener("click", e => {
           <button class="btn" data-act="email">Change</button></div>
         <p class="note">Signs them out; they sign in again with the new email. Plan and name stay.</p>` : ""}
         <label class="mlab">App language</label>
-        <div class="line"><select data-f="lang" style="flex:1">${[["", "Not set (English)"], ["en", "English"], ["es", "Español (Spanish)"]].map(([c, n]) => `<option value="${c}"${(a.language || "") === c ? " selected" : ""}>${n}</option>`).join("")}</select>
+        <div class="line"><select data-f="lang" style="flex:1">${[["", "Not set (English)"], ["en", "English"], ["es", "Español (Spanish)"], ["fr", "Français (French)"], ["de", "Deutsch (German)"], ["hi", "हिन्दी (Hindi)"]].map(([c, n]) => `<option value="${c}"${(a.language || "") === c ? " selected" : ""}>${n}</option>`).join("")}</select>
           <button class="btn" data-act="lang">Save</button></div>
         <p class="note">The app switches the next time it checks the account (within a few minutes), after asking them to restart.</p>
         <label class="mlab">Password</label>
