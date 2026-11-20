@@ -18,6 +18,7 @@
 
 ## Links
 - [Home and download](https://filesbolt.com/)
+- [What's new (release notes)](https://filesbolt.com/updates/)
 - [Help and FAQ](https://filesbolt.com/#faq)
 - [Contact support](https://filesbolt.com/contact/)
 - [Privacy policy](https://filesbolt.com/privacy.html)

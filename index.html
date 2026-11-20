@@ -16,6 +16,8 @@
 <meta property="og:image:alt" content="The FilesBolt app window">
 <meta property="og:url" content="https://filesbolt.com/">
 <link rel="canonical" href="https://filesbolt.com/">
+<meta name="author" content="FilesBolt">
+<link rel="alternate" type="application/rss+xml" title="FilesBolt updates" href="/updates/feed.xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FilesBolt">
 <meta name="twitter:card" content="summary_large_image">
@@ -23,110 +25,174 @@
 <meta name="twitter:description" content="Merge, compress and convert PDFs, photos and Excel files on your own PC. Nothing is uploaded.">
 <meta name="twitter:image" content="https://filesbolt.com/img/app-light.png">
 <script type="application/ld+json">
-[
- {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "FilesBolt",
-  "url": "https://filesbolt.com/",
-  "applicationCategory": "UtilitiesApplication",
-  "operatingSystem": "Windows 10, Windows 11",
-  "softwareVersion": "0.4.25",
-  "description": "FilesBolt is a Windows app that merges, compresses and converts PDFs, photos and Excel files offline on your own PC, from the right-click menu. Nothing is uploaded.",
-  "featureList": [
-   "Merge PDFs, photos and Office files into one PDF",
-   "Split and organize PDF pages",
-   "Photos (JPG, PNG, HEIC, TIFF) to PDF",
-   "PDF to JPG",
-   "PDF to Word or Excel",
-   "Compress PDFs and photos",
-   "Repair PDF",
-   "Edit and sign PDFs",
-   "Watermark and page numbers",
-   "Combine or split Excel files, CSV to Excel",
-   "Add or remove a PDF password",
-   "Make or extract ZIP files"
-  ],
-  "screenshot": "https://filesbolt.com/img/app-light.png",
-  "image": "https://filesbolt.com/img/logo-512.png",
-  "downloadUrl": "https://github.com/harshil-bansal/filesbolt-site/releases/latest/download/FilesBolt-Setup.exe",
-  "offers": {
-   "@type": "Offer",
-   "price": "0",
-   "priceCurrency": "USD",
-   "description": "Free during launch"
-  },
-  "publisher": {
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
    "@type": "Organization",
+   "@id": "https://filesbolt.com/#org",
    "name": "FilesBolt",
    "url": "https://filesbolt.com/",
    "logo": "https://filesbolt.com/img/logo-512.png",
-   "email": "support@filesbolt.com"
-  }
- },
- {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-   {
-    "@type": "Question",
-    "name": "Do I need an account? What does it cost?",
-    "acceptedAnswer": {
-     "@type": "Answer",
-     "text": "Yes, a free account with your email. FilesBolt is free during our launch, with every tool and no limits. Paid plans will come later, and we'll email you well before anything changes. Your account only holds your email, your plan and how many jobs you've used. Your files are never uploaded."
-    }
-   },
-   {
-    "@type": "Question",
-    "name": "Can I use my account on more than one PC?",
-    "acceptedAnswer": {
-     "@type": "Answer",
-     "text": "Your account works on one PC at a time. If you sign in on another PC, FilesBolt signs you out on the old one. Each account can be used on up to 3 different PCs. If you've replaced your PCs and can't sign in on a new one, write to support@filesbolt.com and we'll reset your devices."
-    }
-   },
-   {
-    "@type": "Question",
-    "name": "Windows says \"Windows protected your PC\". Is it safe?",
-    "acceptedAnswer": {
-     "@type": "Answer",
-     "text": "Yes. Windows shows this for new apps that haven't built up a download history yet. Click More info, then Run anyway. We're getting FilesBolt signed so this message goes away."
-    }
-   },
-   {
-    "@type": "Question",
-    "name": "Where do the new files go?",
-    "acceptedAnswer": {
-     "@type": "Answer",
-     "text": "Next to the originals, so they're easy to find. You can pick a different folder, such as Downloads, in Settings. Your original files are never changed."
-    }
-   },
-   {
-    "@type": "Question",
-    "name": "I don't see FilesBolt when I right-click.",
-    "acceptedAnswer": {
-     "@type": "Answer",
-     "text": "On Windows 11, click Show more options at the bottom of the menu, or hold Shift while you right-click. You can also turn the menu on or off and choose which actions it shows in FilesBolt's Settings."
-    }
-   },
-   {
-    "@type": "Question",
-    "name": "Can it convert Word and PowerPoint files?",
-    "acceptedAnswer": {
-     "@type": "Answer",
-     "text": "Yes, if Microsoft Office is installed on the same PC. FilesBolt uses your copy of Word or PowerPoint to make the PDF, so the layout matches exactly."
-    }
-   },
-   {
-    "@type": "Question",
-    "name": "How do I update or uninstall it?",
-    "acceptedAnswer": {
-     "@type": "Answer",
-     "text": "To update, download and run the latest setup. It installs over the old version and keeps your settings. To remove FilesBolt, open Windows Settings, go to Apps, find FilesBolt and choose Uninstall. That also removes it from the right-click menu."
-    }
+   "email": "support@filesbolt.com",
+   "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer support",
+    "email": "support@filesbolt.com",
+    "url": "https://filesbolt.com/contact/",
+    "availableLanguage": [
+     "English",
+     "Spanish",
+     "French",
+     "German",
+     "Hindi"
+    ]
    }
-  ]
- }
-]
+  },
+  {
+   "@type": "WebSite",
+   "@id": "https://filesbolt.com/#site",
+   "name": "FilesBolt",
+   "url": "https://filesbolt.com/",
+   "inLanguage": "en",
+   "publisher": {
+    "@id": "https://filesbolt.com/#org"
+   }
+  },
+  {
+   "@type": "WebPage",
+   "@id": "https://filesbolt.com/#page",
+   "url": "https://filesbolt.com/",
+   "name": "FilesBolt: merge, compress and convert PDFs offline on Windows",
+   "isPartOf": {
+    "@id": "https://filesbolt.com/#site"
+   },
+   "about": {
+    "@id": "https://filesbolt.com/#app"
+   },
+   "datePublished": "2026-11-11",
+   "dateModified": "2026-11-19",
+   "author": {
+    "@id": "https://filesbolt.com/#org"
+   },
+   "publisher": {
+    "@id": "https://filesbolt.com/#org"
+   },
+   "inLanguage": "en"
+  },
+  {
+   "@type": "SoftwareApplication",
+   "name": "FilesBolt",
+   "url": "https://filesbolt.com/",
+   "applicationCategory": "UtilitiesApplication",
+   "operatingSystem": "Windows 10, Windows 11",
+   "softwareVersion": "0.4.25",
+   "description": "FilesBolt is a Windows app that merges, compresses and converts PDFs, photos and Excel files offline on your own PC, from the right-click menu. Nothing is uploaded.",
+   "featureList": [
+    "Merge PDFs, photos and Office files into one PDF",
+    "Split and organize PDF pages",
+    "Photos (JPG, PNG, HEIC, TIFF) to PDF",
+    "PDF to JPG",
+    "PDF to Word or Excel",
+    "Compress PDFs and photos",
+    "Repair PDF",
+    "Edit and sign PDFs",
+    "Watermark and page numbers",
+    "Combine or split Excel files, CSV to Excel",
+    "Add or remove a PDF password",
+    "Make or extract ZIP files"
+   ],
+   "screenshot": "https://filesbolt.com/img/app-light.png",
+   "image": "https://filesbolt.com/img/logo-512.png",
+   "downloadUrl": "https://github.com/harshil-bansal/filesbolt-site/releases/latest/download/FilesBolt-Setup.exe",
+   "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "description": "Free during launch"
+   },
+   "publisher": {
+    "@id": "https://filesbolt.com/#org"
+   },
+   "@id": "https://filesbolt.com/#app",
+   "author": {
+    "@id": "https://filesbolt.com/#org"
+   },
+   "datePublished": "2026-11-11",
+   "dateModified": "2026-11-19",
+   "releaseNotes": "https://filesbolt.com/updates/",
+   "inLanguage": [
+    "en",
+    "es",
+    "fr",
+    "de",
+    "hi"
+   ]
+  },
+  {
+   "@type": "FAQPage",
+   "mainEntity": [
+    {
+     "@type": "Question",
+     "name": "Do I need an account? What does it cost?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Yes, a free account with your email. FilesBolt is free during our launch, with every tool and no limits. Paid plans will come later, and we'll email you well before anything changes. Your account only holds your email, your plan and how many jobs you've used. Your files are never uploaded."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Can I use my account on more than one PC?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Your account works on one PC at a time. If you sign in on another PC, FilesBolt signs you out on the old one. Each account can be used on up to 3 different PCs. If you've replaced your PCs and can't sign in on a new one, write to support@filesbolt.com and we'll reset your devices."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Windows says \"Windows protected your PC\". Is it safe?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Yes. Windows shows this for new apps that haven't built up a download history yet. Click More info, then Run anyway. We're getting FilesBolt signed so this message goes away."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Where do the new files go?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Next to the originals, so they're easy to find. You can pick a different folder, such as Downloads, in Settings. Your original files are never changed."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "I don't see FilesBolt when I right-click.",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "On Windows 11, click Show more options at the bottom of the menu, or hold Shift while you right-click. You can also turn the menu on or off and choose which actions it shows in FilesBolt's Settings."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Can it convert Word and PowerPoint files?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Yes, if Microsoft Office is installed on the same PC. FilesBolt uses your copy of Word or PowerPoint to make the PDF, so the layout matches exactly."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "How do I update or uninstall it?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "To update, download and run the latest setup. It installs over the old version and keeps your settings. To remove FilesBolt, open Windows Settings, go to Apps, find FilesBolt and choose Uninstall. That also removes it from the right-click menu."
+     }
+    }
+   ],
+   "@id": "https://filesbolt.com/#faq"
+  }
+ ]
+}
 </script>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -328,10 +394,11 @@
 
 <section id="download" class="download">
   <div class="wrap dl-in">
-    <img class="dl-logo" src="img/logo.svg" alt="" width="96" height="96">
+    <img class="dl-logo" src="img/logo.svg" alt="FilesBolt logo" width="96" height="96">
     <div class="dl-copy">
       <h2>FilesBolt for Windows</h2>
       <dl class="dl-meta">
+        <div><dt>Updated</dt><dd data-date><time datetime="2026-11-19">November 19, 2026</time></dd></div>
         <div><dt>Version</dt><dd data-ver>0.4.25</dd></div>
         <div><dt>Works on</dt><dd>Windows 10 and 11</dd></div>
         <div><dt>Size</dt><dd data-size>59 MB</dd></div>
@@ -387,6 +454,7 @@
       <a href="terms.html">Terms</a>
       <a href="refunds.html">Refunds</a>
       <a href="privacy.html">Privacy policy</a>
+      <a href="/updates/">What's new</a>
       <a href="#faq">Help</a>
       <a href="/contact/">Contact us</a>
     </nav>

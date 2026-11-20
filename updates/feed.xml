@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel>
+<title>FilesBolt updates</title>
+<link>https://filesbolt.com/updates/</link>
+<description>New features and fixes in each FilesBolt update.</description>
+<language>en</language>
+<lastBuildDate>Thu, 19 Nov 2026 12:00:00 +0000</lastBuildDate>
+<item><title>FilesBolt 0.4.25</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.25</guid><pubDate>Thu, 19 Nov 2026 12:00:00 +0000</pubDate><description>FilesBolt now speaks Spanish, French, German and Hindi: Settings &gt; General &gt; Language.
+Other small fixes.</description></item>
+<item><title>FilesBolt 0.4.23</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.23</guid><pubDate>Thu, 19 Nov 2026 12:00:00 +0000</pubDate><description>FilesBolt now speaks Spanish: Settings &gt; General &gt; Language.
+Other small fixes.</description></item>
+<item><title>FilesBolt 0.4.21</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.21</guid><pubDate>Wed, 18 Nov 2026 12:00:00 +0000</pubDate><description>PDF to Word now works even without Microsoft Word.
+Edit &amp; sign: Select can now pick up part of the page itself, to move, resize or erase it.
+Compress makes many PDFs much smaller.
+Updates download more reliably.</description></item>
+<item><title>FilesBolt 0.4.20</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.20</guid><pubDate>Wed, 18 Nov 2026 12:00:00 +0000</pubDate><description>Merging now always saves, even with an unusual file name.
+PDF to Word tells you right away if your Microsoft Word is too old.
+Other small fixes.</description></item>
+<item><title>FilesBolt 0.4.18</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.18</guid><pubDate>Mon, 16 Nov 2026 12:00:00 +0000</pubDate><description>Show password: click the eye in any password box.
+Signing in with a deleted account now tells you so.
+Extra protection when deleting an account with two-step sign-in on.</description></item>
+<item><title>FilesBolt 0.4.16</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.16</guid><pubDate>Mon, 16 Nov 2026 12:00:00 +0000</pubDate><description>Edit &amp; sign: remove any single item with its red x, right-click to Delete / Duplicate / Bring to front / Rotate,
+bigger handles, More colours, neater B/I/U, eyedropper fixes.</description></item>
+<item><title>FilesBolt 0.4.15</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.15</guid><pubDate>Mon, 16 Nov 2026 12:00:00 +0000</pubDate><description>Cleaner tooltips with shortcut keys. Invite codes fill in automatically when you sign up from a friend&#x27;s link.
+Edit &amp; sign thumbnails turn with the page. More reliable updates.</description></item>
+<item><title>FilesBolt 0.4.13</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.13</guid><pubDate>Mon, 16 Nov 2026 12:00:00 +0000</pubDate><description>FilesBolt is free during our launch. Animated sidebar icons. Edit &amp; sign: brush, double arrow, notes, Paint-style Select, rotate pages, fixes.
+Choose which emails you get. Take a screenshot in Contact support.</description></item>
+<item><title>FilesBolt 0.4.11</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.11</guid><pubDate>Sat, 14 Nov 2026 12:00:00 +0000</pubDate><description>Edit &amp; sign opens big PDFs in about a second and shows text sharp at any zoom.
+Fix: if an older copy of FilesBolt was on the PC, shortcuts now always open the newest version.</description></item>
+</channel></rss>

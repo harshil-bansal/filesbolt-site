@@ -71,9 +71,11 @@ jobs:
           s = re.sub(r"<dd data-size>[^<]*</dd>", f"<dd data-size>{round(size / 1048576)} MB</dd>", s)
           open("index.html", "w").write(s)
           PY
+          printf '%s\n' "$NOTES" > /tmp/notes.txt
+          python3 tools/build_seo.py --add "$VER" /tmp/notes.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add version.json index.html
+          git add version.json index.html sitemap.xml updates ai .well-known
           git commit -m "Publish FilesBolt $VER" || echo "nothing to commit"
           git push
       - name: Remove the incoming branch

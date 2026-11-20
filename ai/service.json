@@ -1,0 +1,40 @@
+{
+ "name": "FilesBolt",
+ "url": "https://filesbolt.com/",
+ "type": "SoftwareApplication",
+ "offline": true,
+ "uploadsFiles": false,
+ "capabilities": {
+  "Organize": [
+   "Merge PDFs, photos and Office files into one PDF",
+   "Split pages",
+   "Reorder, rotate or remove pages"
+  ],
+  "Convert": [
+   "Photos (JPG, PNG, HEIC, TIFF) to PDF",
+   "PDF to JPG",
+   "PDF to Word",
+   "PDF tables to Excel",
+   "Word and PowerPoint to PDF (with Microsoft Office installed)"
+  ],
+  "Shrink": [
+   "Compress PDFs and photos",
+   "Repair PDFs"
+  ],
+  "Edit": [
+   "Edit and sign PDFs",
+   "Watermark",
+   "Page numbers"
+  ],
+  "Excel": [
+   "Combine Excel files",
+   "Split sheets",
+   "CSV to Excel and back"
+  ],
+  "Protect and pack": [
+   "Add or remove a PDF password",
+   "Make or extract ZIP files"
+  ]
+ },
+ "updated": "2026-11-19"
+}

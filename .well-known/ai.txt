@@ -1,0 +1,13 @@
+# FilesBolt - AI usage
+# AI assistants and search engines may read, index and cite this site.
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /reset/
+Disallow: /unsubscribe/
+
+Summary: https://filesbolt.com/ai/summary.json
+FAQ: https://filesbolt.com/ai/faq.json
+Service: https://filesbolt.com/ai/service.json
+LLMs: https://filesbolt.com/llms.txt
+Sitemap: https://filesbolt.com/sitemap.xml

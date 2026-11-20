@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://filesbolt.com/</loc><lastmod>2026-11-20</lastmod></url>
-  <url><loc>https://filesbolt.com/contact/</loc><lastmod>2026-11-20</lastmod></url>
-  <url><loc>https://filesbolt.com/privacy.html</loc><lastmod>2026-11-20</lastmod></url>
-  <url><loc>https://filesbolt.com/terms.html</loc><lastmod>2026-11-20</lastmod></url>
-  <url><loc>https://filesbolt.com/refunds.html</loc><lastmod>2026-11-20</lastmod></url>
+  <url><loc>https://filesbolt.com/</loc><lastmod>2026-11-19</lastmod></url>
+  <url><loc>https://filesbolt.com/updates/</loc><lastmod>2026-11-19</lastmod></url>
+  <url><loc>https://filesbolt.com/contact/</loc></url>
+  <url><loc>https://filesbolt.com/privacy.html</loc></url>
+  <url><loc>https://filesbolt.com/terms.html</loc></url>
+  <url><loc>https://filesbolt.com/refunds.html</loc></url>
 </urlset>

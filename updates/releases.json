@@ -1,0 +1,47 @@
+[
+ {
+  "version": "0.4.25",
+  "date": "2026-11-19",
+  "notes": "FilesBolt now speaks Spanish, French, German and Hindi: Settings > General > Language.\nOther small fixes."
+ },
+ {
+  "version": "0.4.23",
+  "date": "2026-11-19",
+  "notes": "FilesBolt now speaks Spanish: Settings > General > Language.\nOther small fixes."
+ },
+ {
+  "version": "0.4.21",
+  "date": "2026-11-18",
+  "notes": "PDF to Word now works even without Microsoft Word.\nEdit & sign: Select can now pick up part of the page itself, to move, resize or erase it.\nCompress makes many PDFs much smaller.\nUpdates download more reliably."
+ },
+ {
+  "version": "0.4.20",
+  "date": "2026-11-18",
+  "notes": "Merging now always saves, even with an unusual file name.\nPDF to Word tells you right away if your Microsoft Word is too old.\nOther small fixes."
+ },
+ {
+  "version": "0.4.18",
+  "date": "2026-11-16",
+  "notes": "Show password: click the eye in any password box.\nSigning in with a deleted account now tells you so.\nExtra protection when deleting an account with two-step sign-in on."
+ },
+ {
+  "version": "0.4.16",
+  "date": "2026-11-16",
+  "notes": "Edit & sign: remove any single item with its red x, right-click to Delete / Duplicate / Bring to front / Rotate,\nbigger handles, More colours, neater B/I/U, eyedropper fixes."
+ },
+ {
+  "version": "0.4.15",
+  "date": "2026-11-16",
+  "notes": "Cleaner tooltips with shortcut keys. Invite codes fill in automatically when you sign up from a friend's link.\nEdit & sign thumbnails turn with the page. More reliable updates."
+ },
+ {
+  "version": "0.4.13",
+  "date": "2026-11-16",
+  "notes": "FilesBolt is free during our launch. Animated sidebar icons. Edit & sign: brush, double arrow, notes, Paint-style Select, rotate pages, fixes.\nChoose which emails you get. Take a screenshot in Contact support."
+ },
+ {
+  "version": "0.4.11",
+  "date": "2026-11-14",
+  "notes": "Edit & sign opens big PDFs in about a second and shows text sharp at any zoom.\nFix: if an older copy of FilesBolt was on the PC, shortcuts now always open the newest version."
+ }
+]

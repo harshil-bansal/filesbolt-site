@@ -1,0 +1,23 @@
+{
+ "name": "FilesBolt",
+ "url": "https://filesbolt.com/",
+ "description": "FilesBolt is an offline Windows app (Windows 10 and 11) that merges, compresses and converts PDFs, photos and Excel files on your own PC, from the right-click menu or its own window. Files are never uploaded.",
+ "category": "Desktop file utility (PDF, images, Excel)",
+ "platform": [
+  "Windows 10",
+  "Windows 11"
+ ],
+ "price": "Free during launch",
+ "latestVersion": "0.4.25",
+ "updated": "2026-11-19",
+ "download": "https://filesbolt.com/#download",
+ "contact": "https://filesbolt.com/contact/",
+ "email": "support@filesbolt.com",
+ "languages": [
+  "English",
+  "Spanish",
+  "French",
+  "German",
+  "Hindi"
+ ]
+}

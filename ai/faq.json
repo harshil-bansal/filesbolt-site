@@ -1,0 +1,33 @@
+{
+ "updated": "2026-11-19",
+ "faq": [
+  {
+   "question": "Do I need an account? What does it cost?",
+   "answer": "Yes, a free account with your email. FilesBolt is free during our launch, with every tool and no limits. Paid plans will come later, and we'll email you well before anything changes. Your account only holds your email, your plan and how many jobs you've used. Your files are never uploaded."
+  },
+  {
+   "question": "Can I use my account on more than one PC?",
+   "answer": "Your account works on one PC at a time. If you sign in on another PC, FilesBolt signs you out on the old one. Each account can be used on up to 3 different PCs. If you've replaced your PCs and can't sign in on a new one, write to support@filesbolt.com and we'll reset your devices."
+  },
+  {
+   "question": "Windows says \"Windows protected your PC\". Is it safe?",
+   "answer": "Yes. Windows shows this for new apps that haven't built up a download history yet. Click More info, then Run anyway. We're getting FilesBolt signed so this message goes away."
+  },
+  {
+   "question": "Where do the new files go?",
+   "answer": "Next to the originals, so they're easy to find. You can pick a different folder, such as Downloads, in Settings. Your original files are never changed."
+  },
+  {
+   "question": "I don't see FilesBolt when I right-click.",
+   "answer": "On Windows 11, click Show more options at the bottom of the menu, or hold Shift while you right-click. You can also turn the menu on or off and choose which actions it shows in FilesBolt's Settings."
+  },
+  {
+   "question": "Can it convert Word and PowerPoint files?",
+   "answer": "Yes, if Microsoft Office is installed on the same PC. FilesBolt uses your copy of Word or PowerPoint to make the PDF, so the layout matches exactly."
+  },
+  {
+   "question": "How do I update or uninstall it?",
+   "answer": "To update, download and run the latest setup. It installs over the old version and keeps your settings. To remove FilesBolt, open Windows Settings, go to Apps, find FilesBolt and choose Uninstall. That also removes it from the right-click menu."
+  }
+ ]
+}
