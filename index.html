@@ -93,7 +93,7 @@
    "name": "FilesBolt",
    "url": "https://filesbolt.com/",
    "applicationCategory": "UtilitiesApplication",
-   "operatingSystem": "Windows 10, Windows 11",
+   "operatingSystem": "Windows 10, Windows 11, Android 10+",
    "softwareVersion": "0.4.27",
    "description": "FilesBolt is a Windows app that merges, compresses and converts PDFs, photos and Excel files offline on your own PC, from the right-click menu. Nothing is uploaded.",
    "featureList": [
@@ -419,7 +419,13 @@
       </dl>
       <a class="btn btn-big" href="#" data-download>Download FilesBolt</a>
       <p class="dl-note">Run the setup and choose where to install it. Tick "Add to the right-click menu", then create your free account with your email. Nothing else needs to be installed.</p>
-      <p class="dl-later">Mac, Android and iPhone versions are on the way.</p>
+      <div class="dl-android">
+        <h3>FilesBolt for Android <span class="beta">beta</span></h3>
+        <p>Merge, compress, convert and sign PDFs and photos on your phone, or share files straight to FilesBolt from WhatsApp, Gallery or Files. Same free account.</p>
+        <a class="btn btn-android" href="https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.7.0/FilesBolt-0.7.0.apk" data-android>Download for Android<span data-android-ver> (0.7.0)</span></a>
+        <p class="dl-steps">Open the downloaded file on your phone. If Android asks, allow installing from your browser. If Play Protect shows a warning, tap <em>More details</em>, then <em>Install anyway</em>. After that, FilesBolt updates itself. Needs Android 10 or newer.</p>
+      </div>
+      <p class="dl-later">Mac and iPhone versions are on the way.</p>
     </div>
   </div>
 </section>
@@ -477,7 +483,12 @@
 </footer>
 
 <script>
-  // One place to change the download link and version for every button on the page.
+  // Android: link and version come from android.json, which each Android release updates.
+fetch("/android.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
+  document.querySelectorAll("[data-android]").forEach(function (a) { if (j.url) a.href = j.url; });
+  document.querySelectorAll("[data-android-ver]").forEach(function (x) { if (j.version) x.textContent = " (" + j.version + ")"; });
+}).catch(function () {});
+// One place to change the download link and version for every button on the page.
   var DOWNLOAD_URL = "https://github.com/harshil-bansal/filesbolt-site/releases/latest/download/FilesBolt-Setup.exe";
   document.querySelectorAll("[data-download]").forEach(function (a) {
     if (a.getAttribute("href") === "#") a.href = DOWNLOAD_URL;

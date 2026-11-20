@@ -269,3 +269,11 @@ details p { padding: 0 0 22px; color: var(--muted); max-width: 40em; }
 .muted { color: var(--muted); }
 .btn-ghost { background: transparent; border: 1px solid #D5D9DF; }
 .btn-ghost:hover { background: #F2F3F5; }
+
+.dl-android { margin-top: 28px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.14); max-width: 560px; }
+.dl-android h3 { font-size: 20px; margin: 0 0 6px; color: #fff; }
+.dl-android p { color: #C9CDD3; margin: 0 0 14px; }
+.dl-android .beta { font-size: 12px; font-weight: 600; color: #121417; background: #FFB800; border-radius: 6px; padding: 2px 7px; vertical-align: middle; }
+.download .btn-android { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.4); }
+.download .btn-android:hover { background: rgba(255,255,255,.08); }
+.dl-steps { font-size: 14px; color: #A9AFB8 !important; margin-top: 12px !important; }

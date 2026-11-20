@@ -655,7 +655,7 @@ const S = {
 // Sign out for good (revoke the refresh token too) once 12 hours have passed since signing in.
 function expire(s) {
   try { sessionStorage.removeItem("fb_admin"); } catch {}
-  fetch(U + "/auth/v1/logout", { method: "POST", headers: { apikey: K, Authorization: "Bearer " + s.access_token } }).catch(() => {});
+  fetch(U + "/auth/v1/logout?scope=local", { method: "POST", headers: { apikey: K, Authorization: "Bearer " + s.access_token } }).catch(() => {});
   try { sessionStorage.setItem("fb_admin_note", "You were signed out because 12 hours have passed since you signed in. Please sign in again."); } catch {}
 }
 // Reload so no account data stays in the page after the sign-out.
@@ -836,7 +836,7 @@ $("#resetForm").addEventListener("submit", async e => {
   b.disabled = false;
 });
 $("#signout").onclick = async () => {
-  try { await call("/auth/v1/logout", {}); } catch {}
+  try { await call("/auth/v1/logout?scope=local", {}); } catch {}
   S.set(null); show();
 };
 
