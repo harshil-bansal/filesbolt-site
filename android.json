@@ -1,8 +1,8 @@
 {
-  "version": "0.3.1",
-  "code": 301,
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.3.1/FilesBolt-0.3.1.apk",
-  "size": 9642992,
-  "sha256": "3f3a8f51db274437cd4ab93c43d3f6751ba1bb69b0d94d21140cdbf8d599e01f",
-  "notes": "Small fixes and improvements."
+  "version": "0.5.0",
+  "code": 500,
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.5.0/FilesBolt-0.5.0.apk",
+  "size": 9774064,
+  "sha256": "c9d2defeac1add13ef4ccde7c139e8f7d0b29424ecf7837add5ee70aa86b9b0e",
+  "notes": "New: Edit & sign, PDF to Word and Excel, Excel tools, and a home screen with every tool.\nAlso: contact support, email settings and delete account in your Account page."
 }
