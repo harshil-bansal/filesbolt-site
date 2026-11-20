@@ -1,8 +1,8 @@
 {
-  "version": "0.6.5",
-  "code": 605,
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.6.5/FilesBolt-0.6.5.apk",
+  "version": "0.7.0",
+  "code": 700,
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.7.0/FilesBolt-0.7.0.apk",
   "size": 9815040,
-  "sha256": "3d925ad41da63712af974d48792e392bf6580d521958ce1e37ab82cda0fbaaf3",
-  "notes": "Edit & sign: every tool is now visible at once, bigger colour buttons, and a Change text button."
+  "sha256": "893b7d24f136e0f295b2b6177247bb6db4997df6b0d5906b4e4d9ecbae77e6af",
+  "notes": "FilesBolt now speaks Spanish, French, German and Hindi. It follows your phone language, or pick one at the bottom of the home screen."
 }
