@@ -97,7 +97,7 @@ def main():
     # --- Home page dates (schema + visible)
     index = re.sub(r'"dateModified": "[^"]*"', f'"dateModified": "{mod}"', index)
     index = re.sub(r'"softwareVersion": "[^"]*"', f'"softwareVersion": "{latest["version"]}"', index)
-    index = re.sub(r'<dd data-date>[^<]*</dd>', f'<dd data-date><time datetime="{mod}">{nice(mod)}</time></dd>', index)
+    index = re.sub(r'<dd data-date>.*?</dd>', f'<dd data-date><time datetime="{mod}">{nice(mod)}</time></dd>', index)
     open("index.html", "w", encoding="utf-8").write(index)
 
     # --- Sitemap
