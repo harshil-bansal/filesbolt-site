@@ -1,8 +1,8 @@
 {
-  "version": "0.5.0",
-  "code": 500,
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.5.0/FilesBolt-0.5.0.apk",
-  "size": 9774064,
-  "sha256": "c9d2defeac1add13ef4ccde7c139e8f7d0b29424ecf7837add5ee70aa86b9b0e",
-  "notes": "New: Edit & sign, PDF to Word and Excel, Excel tools, and a home screen with every tool.\nAlso: contact support, email settings and delete account in your Account page."
+  "version": "0.6.0",
+  "code": 600,
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.6.0/FilesBolt-0.6.0.apk",
+  "size": 9782008,
+  "sha256": "6c06055dd271f02ad45e0666173e5aff826dd3b36cd8073ee841739d28afe89a",
+  "notes": "New: share a file straight to Merge, Compress, Edit & sign and more from the Share menu (choose your 5 on the home screen).\nAlso: a FilesBolt widget for your home screen, and shortcuts when you long-press the app icon."
 }
