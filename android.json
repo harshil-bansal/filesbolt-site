@@ -1,8 +1,8 @@
 {
-  "version": "0.7.0",
-  "code": 700,
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.7.0/FilesBolt-0.7.0.apk",
-  "size": 9815040,
-  "sha256": "893b7d24f136e0f295b2b6177247bb6db4997df6b0d5906b4e4d9ecbae77e6af",
-  "notes": "FilesBolt now speaks Spanish, French, German and Hindi. It follows your phone language, or pick one at the bottom of the home screen."
+  "version": "0.7.1",
+  "code": 701,
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.7.1/FilesBolt-0.7.1.apk",
+  "size": 9831424,
+  "sha256": "c73da8056c686c068d97393a3c518bbcd4b774b5e03c493e92ba2953f61d3db5",
+  "notes": "See your usage and time saved in Account. Signing out now only signs out this phone."
 }
