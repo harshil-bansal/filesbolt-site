@@ -101,7 +101,7 @@ def main():
     open("index.html", "w", encoding="utf-8").write(index)
 
     # --- Sitemap
-    pages = [("", mod), ("updates/", mod), ("contact/", None), ("privacy.html", None), ("terms.html", None), ("refunds.html", None)]
+    pages = [("", mod), ("updates/", mod), ("about/", None), ("contact/", None), ("privacy.html", None), ("terms.html", None), ("refunds.html", None)]
     sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for p, d in pages:
         sm.append(f"  <url><loc>{SITE}/{p}</loc>" + (f"<lastmod>{d}</lastmod>" if d else "") + "</url>")
