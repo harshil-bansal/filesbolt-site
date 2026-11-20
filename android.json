@@ -1,8 +1,8 @@
 {
-  "version": "0.6.4",
-  "code": 604,
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.6.4/FilesBolt-0.6.4.apk",
+  "version": "0.6.5",
+  "code": 605,
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.6.5/FilesBolt-0.6.5.apk",
   "size": 9815040,
-  "sha256": "c0e784b2f541ad58d13305e621945dd71d14086f8a77016017b48ed2a7436d3d",
-  "notes": "Edit & sign: turn, resize and recolour your signature and other items, drag to move, double-tap text to change it, and a new eraser."
+  "sha256": "3d925ad41da63712af974d48792e392bf6580d521958ce1e37ab82cda0fbaaf3",
+  "notes": "Edit & sign: every tool is now visible at once, bigger colour buttons, and a Change text button."
 }
