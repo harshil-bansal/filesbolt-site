@@ -1,7 +1,7 @@
 {
-  "version": "0.4.27",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.27/FilesBolt-Setup-0.4.27.exe",
-  "size": 62259403,
-  "sha256": "949e8f5f4f01154d9c4d6f4418fcc254df06aacef9304c229f29c2dc985472bc",
+  "version": "0.4.28",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.28/FilesBolt-Setup-0.4.28.exe",
+  "size": 62246995,
+  "sha256": "a358fc0f6ac303ad6c677e054405aaa13fdf3e4d0136dfa4915d5666045d7b36",
   "notes": "Small fixes and improvements."
 }
