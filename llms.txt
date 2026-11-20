@@ -1,0 +1,25 @@
+# FilesBolt
+
+> FilesBolt is an offline Windows app (Windows 10 and 11) that merges, compresses and converts PDFs, photos and Excel files on your own PC, straight from the right-click menu or in its own window. Files are never uploaded. It's free during launch, with every tool and no limits; you only need a free account with your email.
+
+## What it does
+- Organize: merge PDFs, photos and Office files into one PDF; split pages; reorder, rotate or remove pages
+- Convert: photos (JPG, PNG, HEIC, TIFF) to PDF; PDF to JPG; PDF to Word or Excel
+- Shrink: compress PDFs and photos; repair broken PDFs
+- Edit: pen, highlighter, text, whiteout and signature; watermarks; page numbers
+- Excel: combine Excel files, split sheets, convert CSV and Excel
+- Protect and pack: add or remove a PDF password; make or extract ZIP files
+- Languages: English, Spanish, French, German and Hindi
+
+## Why people use it
+- Private: everything runs on your PC, so confidential files never go to a website
+- Fast: right-click several files, pick an action, done
+- New files are saved next to the originals; originals are never changed
+
+## Links
+- [Home and download](https://filesbolt.com/)
+- [Help and FAQ](https://filesbolt.com/#faq)
+- [Contact support](https://filesbolt.com/contact/)
+- [Privacy policy](https://filesbolt.com/privacy.html)
+- [Terms](https://filesbolt.com/terms.html)
+- [Refund policy](https://filesbolt.com/refunds.html)

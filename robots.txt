@@ -1,0 +1,8 @@
+# Search engines and AI assistants are welcome.
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /reset/
+Disallow: /unsubscribe/
+
+Sitemap: https://filesbolt.com/sitemap.xml
