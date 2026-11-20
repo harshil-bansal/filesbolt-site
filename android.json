@@ -1,8 +1,8 @@
 {
-  "version": "0.6.2",
-  "code": 602,
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.6.2/FilesBolt-0.6.2.apk",
-  "size": 9798656,
-  "sha256": "c59c7333c4a2a52d7af3927ea9a1cf5f7b09a1bba68c4b5ac48e2965ae553a12",
-  "notes": "Share-menu actions now work in the background: share files to FilesBolt Merge, Compress and more, and get a notification with Open and Share when it is done."
+  "version": "0.6.4",
+  "code": 604,
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.6.4/FilesBolt-0.6.4.apk",
+  "size": 9815040,
+  "sha256": "c0e784b2f541ad58d13305e621945dd71d14086f8a77016017b48ed2a7436d3d",
+  "notes": "Edit & sign: turn, resize and recolour your signature and other items, drag to move, double-tap text to change it, and a new eraser."
 }
