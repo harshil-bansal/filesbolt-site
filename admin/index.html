@@ -253,7 +253,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
     <input type="email" id="em" autocomplete="username" required>
     <label for="pw">Password</label>
     <input type="password" id="pw" autocomplete="current-password" required>
-    <div class="cf-turnstile" id="siHuman" data-sitekey="0x4AAAAAAGHohcKdjSka0yq1" data-theme="light" style="margin-top:12px"></div>
+    <div id="siHuman" style="margin-top:12px;min-height:65px"></div>
     <div class="actions"><button class="btn primary" id="signinBtn">Sign in</button>
       <button type="button" class="btn" id="forgotBtn">Forgot password?</button></div>
     <div class="msg bad" id="signinMsg"></div>
@@ -709,7 +709,7 @@ async function finishSignIn(r) {
   const f = (u.factors || []).find(x => x.factor_type === "totp" && x.status === "verified");
   if (f) {
     pendingMfa = { r, factor: f.id, email: u.email };
-    $("#signinForm").hidden = true; $("#resetForm").hidden = true; $("#mfaForm").hidden = false;
+    $("#signinForm").hidden = true; $("#resetForm").hidden = true; $("#mfaForm").hidden = false; tsSync();
     $("#mfaMsg").textContent = ""; $("#mfaCode").value = ""; $("#mfaCode").focus();
     return;
   }
@@ -728,12 +728,12 @@ $("#mfaForm").addEventListener("submit", async e => {
     const v = await mfaVerify(pendingMfa.r.access_token, pendingMfa.factor, $("#mfaCode").value.trim());
     S.set(sess(v, pendingMfa.email)); pendingMfa = null;
     if (await rpc("admin_is_admin") !== true) { S.set(null); throw new Error("This account isn't an admin."); }
-    $("#mfaForm").hidden = true; $("#signinForm").hidden = false;
+    $("#mfaForm").hidden = true; $("#signinForm").hidden = false; tsSync();
     show();
   } catch (err) { m.textContent = /invalid|expired|code/i.test(err.message) ? "That code isn't right. Check the time on your phone and try the newest code." : err.message; }
   b.disabled = false;
 });
-$("#mfaBack").onclick = () => { pendingMfa = null; $("#mfaForm").hidden = true; $("#signinForm").hidden = false; };
+$("#mfaBack").onclick = () => { pendingMfa = null; $("#mfaForm").hidden = true; $("#signinForm").hidden = false; tsSync(); };
 
 // Set up (shown inside the admin page when two-step isn't on yet)
 let enrolling = null;
@@ -774,10 +774,21 @@ $("#mfaSetupForm").addEventListener("submit", async e => {
 });
 
 /* ---------- views ---------- */
+// Human check: only while the sign-in form is on screen, so it isn't refreshing unseen (and unchecked) in the background.
+let tsId = null;
+function tsSync() {
+  const want = !$("#signinView").hidden && !$("#signinForm").hidden;
+  if (!window.turnstile) return;
+  if (want && tsId === null) tsId = window.turnstile.render("#siHuman", { sitekey: "0x4AAAAAAGHohcKdjSka0yq1", theme: "light" });
+  if (!want && tsId !== null) { window.turnstile.remove(tsId); tsId = null; }
+}
+window.fbTsReady = tsSync;
+
 async function show() {
   const s = S.get();
   $("#signinView").hidden = !!s;
   $("#adminView").hidden = !s;
+  tsSync();
   $("#signout").hidden = !s;
   $("#who").textContent = s ? s.email : "";
   let note = ""; try { note = sessionStorage.getItem("fb_admin_note") || ""; sessionStorage.removeItem("fb_admin_note"); } catch {}
@@ -797,10 +808,10 @@ $("#signinForm").addEventListener("submit", async e => {
   e.preventDefault();
   const b = $("#signinBtn"); b.disabled = true; $("#signinMsg").textContent = "";
   try {
-    const tok = (document.querySelector('#siHuman [name="cf-turnstile-response"]') || {}).value || "";
+    const tok = (window.turnstile && tsId !== null && window.turnstile.getResponse(tsId)) || "";
     if (!tok) throw new Error("Please complete the \u201cI'm human\u201d check first.");
     const r = await call("/functions/v1/admin-login", { email: $("#em").value.trim(), password: $("#pw").value, token: tok }, false)
-      .finally(() => { if (window.turnstile) window.turnstile.reset("#siHuman"); });
+      .catch(err => { if (window.turnstile && tsId !== null) window.turnstile.reset(tsId); throw err; });
     $("#pw").value = "";
     await finishSignIn(r);
   } catch (err) { S.set(null); $("#signinMsg").textContent = err.message; }
@@ -812,13 +823,13 @@ $("#forgotBtn").onclick = async () => {
   $("#forgotBtn").disabled = true; m.textContent = "";
   try {
     await call("/auth/v1/recover", { email }, false);
-    $("#signinForm").hidden = true; $("#resetForm").hidden = false;
+    $("#signinForm").hidden = true; $("#resetForm").hidden = false; tsSync();
     $("#resetLead").textContent = `We emailed a 6-digit code to ${email}. Enter it and choose a new password.`;
     $("#rcode").focus();
   } catch (err) { m.textContent = err.message; }
   $("#forgotBtn").disabled = false;
 };
-$("#resetBack").onclick = () => { $("#resetForm").hidden = true; $("#signinForm").hidden = false; };
+$("#resetBack").onclick = () => { $("#resetForm").hidden = true; $("#signinForm").hidden = false; tsSync(); };
 $("#resetForm").addEventListener("submit", async e => {
   e.preventDefault();
   const b = $("#resetBtn"), m = $("#resetMsg"), email = $("#em").value.trim();
@@ -1776,6 +1787,6 @@ $("#restoreForm").addEventListener("submit", async e => {
 
 show();
 </script>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=fbTsReady" async defer></script>
 </body>
 </html>
