@@ -1,0 +1,70 @@
+# Publishes a new Mac DMG.
+# 1. Push FilesBolt-<version>-mac.dmg (and optionally NOTES.txt) to the "incoming-mac" branch.
+# 2. Run this workflow. It creates the release mac-v<version> (with a stable FilesBolt-mac.dmg for the
+#    website button) and writes mac.json, which the Mac app's updater reads.
+name: Publish Mac
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: incoming-mac
+          path: incoming
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: site
+      - name: Find DMG
+        id: f
+        working-directory: incoming
+        run: |
+          f=$(ls FilesBolt-*-mac.dmg | head -1)
+          v=${f#FilesBolt-}; v=${v%-mac.dmg}
+          cp "$f" FilesBolt-mac.dmg
+          echo "file=$f" >> $GITHUB_OUTPUT
+          echo "ver=$v" >> $GITHUB_OUTPUT
+          echo "size=$(stat -c %s "$f")" >> $GITHUB_OUTPUT
+          echo "sha=$(sha256sum "$f" | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+          notes=""; [ -f NOTES.txt ] && notes=$(cat NOTES.txt)
+          { echo "notes<<EOF_NOTES"; echo "$notes"; echo "EOF_NOTES"; } >> $GITHUB_OUTPUT
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: mac-v${{ steps.f.outputs.ver }}
+          target_commitish: main
+          name: FilesBolt for Mac ${{ steps.f.outputs.ver }}
+          body: FilesBolt for Mac (beta, Apple Silicon). Download **FilesBolt-mac.dmg**, open it and drag FilesBolt to Applications.
+          prerelease: true
+          make_latest: false
+          files: |
+            incoming/${{ steps.f.outputs.file }}
+            incoming/FilesBolt-mac.dmg
+      - name: Write mac.json
+        working-directory: site
+        env:
+          VER: ${{ steps.f.outputs.ver }}
+          SIZE: ${{ steps.f.outputs.size }}
+          SHA: ${{ steps.f.outputs.sha }}
+          FILE: ${{ steps.f.outputs.file }}
+          NOTES: ${{ steps.f.outputs.notes }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          v = os.environ["VER"]; a, b, c = (int(x) for x in v.split("."))
+          info = {"version": v, "code": a * 10000 + b * 100 + c,
+                  "url": f"https://github.com/${{ github.repository }}/releases/download/mac-v{v}/{os.environ['FILE']}",
+                  "size": int(os.environ["SIZE"]), "sha256": os.environ["SHA"], "notes": os.environ.get("NOTES", "").strip()}
+          open("mac.json", "w").write(json.dumps(info, indent=2) + "\n")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mac.json
+          git commit -m "Publish FilesBolt for Mac $VER" || echo "nothing to commit"
+          git push
+      - name: Remove the incoming-mac branch
+        working-directory: site
+        run: git push origin --delete incoming-mac || true
