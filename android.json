@@ -1,8 +1,8 @@
 {
-  "version": "0.7.2",
-  "code": 702,
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.7.2/FilesBolt-0.7.2.apk",
-  "size": 9847808,
-  "sha256": "844f3b82607fe36c73c663a47fce3cd3aa1835239cb5fcb5691234377039883d",
-  "notes": "Edit & sign: many more colours, or mix your own. Contact support: add up to 3 screenshots."
+  "version": "0.7.3",
+  "code": 703,
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.7.3/FilesBolt-0.7.3.apk",
+  "size": 9848332,
+  "sha256": "e52a0684d2fb230d2558b746532b64f07b5d8e5a2a96799e6f3dce24093dc2e8",
+  "notes": "Safer file sharing and a new Download my data option."
 }
