@@ -1,7 +1,7 @@
 {
-  "version": "0.4.28",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.28/FilesBolt-Setup-0.4.28.exe",
-  "size": 62246995,
-  "sha256": "a358fc0f6ac303ad6c677e054405aaa13fdf3e4d0136dfa4915d5666045d7b36",
-  "notes": "Small fixes and improvements."
+  "version": "0.4.29",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.29/FilesBolt-Setup-0.4.29.exe",
+  "size": 62281427,
+  "sha256": "7396bbf62552d0aa512beb21d185e23202df4024b91a24989af8add756323a1f",
+  "notes": "Safer file conversions and a new Download my data option in Settings."
 }

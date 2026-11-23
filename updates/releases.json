@@ -1,5 +1,10 @@
 [
  {
+  "version": "0.4.29",
+  "date": "2026-11-23",
+  "notes": "Safer file conversions and a new Download my data option in Settings."
+ },
+ {
   "version": "0.4.28",
   "date": "2026-11-20",
   "notes": "Small fixes and improvements."
