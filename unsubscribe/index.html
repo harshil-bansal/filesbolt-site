@@ -48,6 +48,7 @@
       (function () {
         var U = "https://aovtkaljtayxuxuzureh.supabase.co/rest/v1/rpc/", K = "sb_publishable_qK3cBBkyFVLg7FKiLfiYFQ_Q7Ss2Sf9";
         var q = new URLSearchParams(location.search), e = q.get("e"), t = q.get("t");
+        try { history.replaceState(null, "", location.pathname); } catch (_) {}
         var m = document.getElementById("unsubMsg"), f = document.getElementById("prefs"), d = document.getElementById("pDone");
         var box = { tips: document.getElementById("pTips"), monthly: document.getElementById("pMonthly"), trial: document.getElementById("pTrial") };
         function call(fn, body) {

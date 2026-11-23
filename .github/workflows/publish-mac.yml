@@ -31,7 +31,7 @@ jobs:
           echo "size=$(stat -c %s "$f")" >> $GITHUB_OUTPUT
           echo "sha=$(sha256sum "$f" | cut -d' ' -f1)" >> $GITHUB_OUTPUT
           notes=""; [ -f NOTES.txt ] && notes=$(cat NOTES.txt)
-          { echo "notes<<EOF_NOTES"; echo "$notes"; echo "EOF_NOTES"; } >> $GITHUB_OUTPUT
+          d="EOF_$(openssl rand -hex 16)"; { echo "notes<<$d"; echo "$notes"; echo "$d"; } >> $GITHUB_OUTPUT
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: mac-v${{ steps.f.outputs.ver }}

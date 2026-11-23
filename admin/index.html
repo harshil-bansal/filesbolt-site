@@ -848,7 +848,7 @@ $("#resetForm").addEventListener("submit", async e => {
 });
 $("#signout").onclick = async () => {
   try { await call("/auth/v1/logout?scope=local", {}); } catch {}
-  S.set(null); show();
+  S.set(null); location.reload();   // clear everything that was on screen
 };
 
 /* ---------- data ---------- */

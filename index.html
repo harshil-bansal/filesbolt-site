@@ -485,7 +485,7 @@
 <script>
   // Android: link and version come from android.json, which each Android release updates.
 fetch("/android.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
-  document.querySelectorAll("[data-android]").forEach(function (a) { if (j.url) a.href = j.url; });
+  document.querySelectorAll("[data-android]").forEach(function (a) { if (/^https:\/\/github\.com\/harshil-bansal\//.test(j.url || "")) a.href = j.url; });
   document.querySelectorAll("[data-android-ver]").forEach(function (x) { if (j.version) x.textContent = " (" + j.version + ")"; });
 }).catch(function () {});
 // One place to change the download link and version for every button on the page.

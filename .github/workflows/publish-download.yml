@@ -26,6 +26,7 @@ jobs:
         run: |
           f=$(ls FilesBolt-Setup-*.exe | head -1)
           v=${f#FilesBolt-Setup-}; v=${v%.exe}
+          [[ "$v" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Bad version in file name: $v"; exit 1; }
           cp "$f" FilesBolt-Setup.exe
           size=$(stat -c %s "$f")
           sha=$(sha256sum "$f" | cut -d' ' -f1)
@@ -34,7 +35,7 @@ jobs:
           echo "ver=$v" >> $GITHUB_OUTPUT
           echo "size=$size" >> $GITHUB_OUTPUT
           echo "sha=$sha" >> $GITHUB_OUTPUT
-          { echo "notes<<EOF_NOTES"; echo "$notes"; echo "EOF_NOTES"; } >> $GITHUB_OUTPUT
+          d="EOF_$(openssl rand -hex 16)"; { echo "notes<<$d"; echo "$notes"; echo "$d"; } >> $GITHUB_OUTPUT
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.f.outputs.ver }}
