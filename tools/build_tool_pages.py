@@ -231,9 +231,7 @@ if __name__ == "__main__":
         d.mkdir(parents=True, exist_ok=True)
         h = page(slug, p).replace('<html lang="en">', '<html lang="hi">', 1)
         h = h.replace(f'<link rel="canonical" href="https://filesbolt.com/{slug}/">',
-                      f'<link rel="canonical" href="https://filesbolt.com/hi/{slug}/">\n'
-                      f'<link rel="alternate" hreflang="en" href="https://filesbolt.com/{slug}/">\n'
-                      f'<link rel="alternate" hreflang="hi" href="https://filesbolt.com/hi/{slug}/">', 1)
+                      f'<link rel="canonical" href="https://filesbolt.com/hi/{slug}/">', 1)
         h = h.replace("<h2>How to do it</h2>", "<h2>कैसे करें</h2>").replace("<h2>Why offline?</h2>", "<h2>ऑफ़लाइन क्यों?</h2>")
         h = h.replace("<h2>Questions</h2>", "<h2>सवाल</h2>").replace("Download FilesBolt for Windows", "Windows के लिए FilesBolt डाउनलोड करें")
         h = re.sub(r"<p>Online PDF websites.*?uploads\.</p>", "<p>ऑनलाइन PDF वेबसाइटें आपकी फ़ाइलें अपने सर्वर पर अपलोड करवाती हैं। "
