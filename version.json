@@ -1,7 +1,7 @@
 {
-  "version": "0.4.31",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.31/FilesBolt-Setup-0.4.31.exe",
-  "size": 62312297,
-  "sha256": "bce2aa98ca6ce57d39a12e38ca551edf299b7b2e51ee7b173a7533d8722d5f79",
-  "notes": "New: Resize pictures. Edit & sign can now copy, paste and crop. Settings fix."
+  "version": "0.4.32",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.32/FilesBolt-Setup-0.4.32.exe",
+  "size": 62311500,
+  "sha256": "f320e36cf862c52427e0832aa8c6d389bcc1a4a990c68d06d09057064d5691df",
+  "notes": "New: right-click a photo to resize it for email (under 500 KB)."
 }
