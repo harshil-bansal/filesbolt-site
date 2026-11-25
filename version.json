@@ -1,7 +1,7 @@
 {
-  "version": "0.4.32",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.32/FilesBolt-Setup-0.4.32.exe",
-  "size": 62311500,
-  "sha256": "f320e36cf862c52427e0832aa8c6d389bcc1a4a990c68d06d09057064d5691df",
-  "notes": "New: right-click a photo to resize it for email (under 500 KB)."
+  "version": "0.4.33",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.33/FilesBolt-Setup-0.4.33.exe",
+  "size": 62309701,
+  "sha256": "9632cbcb981fde3b3d5d6cdcfc7107ee2491f8341d3cdd897a20e317b6ba3bf3",
+  "notes": "Small improvements."
 }

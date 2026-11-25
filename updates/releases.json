@@ -1,5 +1,10 @@
 [
  {
+  "version": "0.4.33",
+  "date": "2026-11-25",
+  "notes": "Small improvements."
+ },
+ {
   "version": "0.4.32",
   "date": "2026-11-25",
   "notes": "New: right-click a photo to resize it for email (under 500 KB)."
