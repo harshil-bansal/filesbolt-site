@@ -321,6 +321,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
       <div class="panel dcard"><h3>Most used tools this month</h3><div id="chTools"></div></div>
       <div class="panel dcard"><h3>Active people and jobs by month</h3><div id="chMonths"></div></div>
       <div class="panel dcard"><h3>Newest accounts</h3><div id="dNewest"></div></div>
+      <div class="panel dcard"><h3>Release health, last 24 hours</h3><div id="dHealth"></div></div>
       <div class="panel dcard"><h3>Latest error reports</h3><div id="dErrors"></div></div>
     </div>
   </section>
@@ -892,6 +893,18 @@ async function dashboard() {
       `<div><b>${esc(new Date(m.month + "-01").toLocaleString(undefined, { month: "long", year: "numeric" }))}</b><span>${m.users} people · ${m.jobs} jobs</span></div>`).join("") + `</div>`;
     $("#dNewest").innerHTML = `<div class="mini">` + (d.newest || []).map(a =>
       `<div><b>${esc(a.name || a.email)}</b><span>${esc(dt(a.at))}</span></div>`).join("") + `</div>`;
+    // errors per app version in the last 24 hours: a bad release shows up at once
+    const since = Date.now() - 864e5, byV = {};
+    (errs || []).filter(e => new Date(e.created_at) > since).forEach(e => {
+      const v = byV[e.app_version] = byV[e.app_version] || { n: 0, msgs: {} };
+      v.n++; const m = String(e.message || e.kind).slice(0, 70); v.msgs[m] = (v.msgs[m] || 0) + 1;
+    });
+    const vs = Object.entries(byV).sort((x, y) => y[1].n - x[1].n);
+    $("#dHealth").innerHTML = `<div class="mini">` + (vs.map(([v, o]) => {
+      const top = Object.entries(o.msgs).sort((x, y) => y[1] - x[1])[0];
+      return `<div><b style="color:${o.n >= 5 ? "#B3261E" : "inherit"}">v${esc(v)}: ${o.n} error${o.n > 1 ? "s" : ""}</b>` +
+             `<span>${esc(top[0])}${top[1] > 1 ? " (×" + top[1] + ")" : ""}</span></div>`; }).join("")
+      || `<div><b>All good</b><span>No errors in the last 24 hours</span></div>`) + `</div>`;
     $("#dErrors").innerHTML = `<div class="mini">` + ((errs || []).slice(0, 5).map(e =>
       `<div><b>${esc(String(e.message || e.kind).slice(0, 60))}</b><span>v${esc(e.app_version)} · ${esc(dt(e.created_at))}</span></div>`).join("")
       || `<div><b>No error reports</b><span></span></div>`) + `</div>`;
