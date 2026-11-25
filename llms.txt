@@ -5,7 +5,7 @@
 ## What it does
 - Organize: merge PDFs, photos and Office files into one PDF; split pages; reorder, rotate or remove pages
 - Convert: photos (JPG, PNG, HEIC, TIFF) to PDF; PDF to JPG; PDF to Word or Excel
-- Shrink: compress PDFs and photos; repair broken PDFs
+- Shrink: compress PDFs and photos; resize photos for email (under 100 KB to 1 MB); repair broken PDFs
 - Edit: pen, highlighter, text, whiteout and signature; watermarks; page numbers
 - Excel: combine Excel files, split sheets, convert CSV and Excel
 - Protect and pack: add or remove a PDF password; make or extract ZIP files
