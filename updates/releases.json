@@ -1,5 +1,10 @@
 [
  {
+  "version": "0.4.34",
+  "date": "2026-11-25",
+  "notes": "Security improvements."
+ },
+ {
   "version": "0.4.33",
   "date": "2026-11-25",
   "notes": "Small improvements."
