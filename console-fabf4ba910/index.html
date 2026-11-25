@@ -24,13 +24,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
 [hidden] { display: none !important; }
 
 header { background: var(--ink); color: #fff; }
-.bar { max-width: 1320px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; gap: 12px; }
+.bar { max-width: 1600px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; gap: 12px; }
 .bar img { width: 28px; height: 28px; }
 .bar b { font-size: 17px; }
 .bar .who { margin-left: auto; color: #B9BEC6; font-size: 14px; }
 .bar button { background: none; border: 1px solid #3A3F47; color: #fff; border-radius: 6px; padding: 4px 12px; cursor: pointer; }
 
-main { max-width: 1320px; margin: 0 auto; padding: 24px; }
+html { scrollbar-gutter: stable; overflow-y: scroll; }
+main { max-width: 1600px; margin: 0 auto; padding: 24px; }
 h1 { font-size: 26px; margin: 0 0 4px; color: var(--ink); }
 h2 { font-size: 18px; margin: 0 0 14px; color: var(--ink); }
 .lead { color: var(--muted); margin: 0 0 20px; }
@@ -130,7 +131,6 @@ td.acts button.danger { color: var(--bad); }
 .mini div:last-child { border-bottom: 0; } .mini span { color: var(--muted); white-space: nowrap; }
 @media (max-width: 900px) { .dgrid { grid-template-columns: 1fr; } }
 /* ---------- Support (Zendesk-style) ---------- */
-body.zd main { max-width: none; }
 #sec-support { margin: -4px 0 0; }
 .zd-wrap { display: grid; grid-template-columns: 230px minmax(0, 1fr); border: 1px solid var(--rule); border-radius: 12px; background: var(--paper); min-height: 640px; overflow: hidden; }
 .zd-views { border-right: 1px solid var(--rule); padding: 14px 10px; background: #FAFAFB; }
