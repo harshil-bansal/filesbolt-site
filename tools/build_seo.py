@@ -102,6 +102,11 @@ def main():
 
     # --- Sitemap
     pages = [("", mod), ("updates/", mod), ("about/", None), ("contact/", None), ("privacy.html", None), ("terms.html", None), ("refunds.html", None)]
+    try:
+        from build_tool_pages import PAGES as TOOL_PAGES
+        pages += [(f"{k}/", None) for k in TOOL_PAGES]
+    except Exception:
+        pass
     sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for p, d in pages:
         sm.append(f"  <url><loc>{SITE}/{p}</loc>" + (f"<lastmod>{d}</lastmod>" if d else "") + "</url>")
@@ -120,7 +125,7 @@ def main():
                    "Organize": ["Merge PDFs, photos and Office files into one PDF", "Split pages", "Reorder, rotate or remove pages"],
                    "Convert": ["Photos (JPG, PNG, HEIC, TIFF) to PDF", "PDF to JPG", "PDF to Word", "PDF tables to Excel",
                                "Word and PowerPoint to PDF (with Microsoft Office installed)"],
-                   "Shrink": ["Compress PDFs and photos", "Repair PDFs"],
+                   "Shrink": ["Compress PDFs and photos", "Resize photos for email", "Repair PDFs"],
                    "Edit": ["Edit and sign PDFs", "Watermark", "Page numbers"],
                    "Excel": ["Combine Excel files", "Split sheets", "CSV to Excel and back"],
                    "Protect and pack": ["Add or remove a PDF password", "Make or extract ZIP files"]},
