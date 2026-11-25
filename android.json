@@ -1,8 +1,8 @@
 {
-  "version": "0.7.7",
-  "code": 707,
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.7.7/FilesBolt-0.7.7.apk",
-  "size": 9881172,
-  "sha256": "d636075029968549ef6e1436609ab40d1a2575f267d0024c22c75e061bc66173",
-  "notes": "Security improvements."
+  "version": "0.7.8",
+  "code": 708,
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.7.8/FilesBolt-0.7.8.apk",
+  "size": 9897560,
+  "sha256": "609110146226041b031e6e0cddbcd8e9755a91ce909fd11f96067f51e8ce7198",
+  "notes": "Safer passwords: FilesBolt now warns you if a password has appeared in a known data breach.\nFixed choosing a new password with \"Forgot password\"."
 }
