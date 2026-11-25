@@ -116,14 +116,14 @@ PAGES.update({
         intro="Right-click a PDF or photo and choose <b>FilesBolt → Rotate right</b>. To turn only some pages, open FilesBolt and "
               "use Organize pages.",
         steps=["Right-click the PDF or photo.", "Choose FilesBolt → Rotate right.", "A rotated copy is saved next to it."],
-        faq=[("Can I rotate just one page?", "Yes, with Organize pages in the app."),)]),
+        faq=[("Can I rotate just one page?", "Yes, with Organize pages in the app.")]),
     "watermark-pdf": dict(
         title="Add a watermark to a PDF offline",
         h1="Add a watermark to a PDF, on your PC",
         desc="Stamp text like CONFIDENTIAL or DRAFT on every page of a PDF. Any text, colour and position. Offline.",
         intro="Open FilesBolt, add the PDF and choose <b>Watermark</b>. Type the text, pick the colour, size and position, and save.",
         steps=["Open FilesBolt and add the PDF.", "Choose Watermark and type your text.", "Save: a watermarked copy appears next to the original."],
-        faq=[("Can I add page numbers too?", "Yes, with Page numbers."),)]),
+        faq=[("Can I add page numbers too?", "Yes, with Page numbers.")]),
     "combine-excel": dict(
         title="Combine Excel files into one, offline",
         h1="Combine Excel and CSV files into one workbook",
@@ -139,7 +139,7 @@ PAGES.update({
         desc="Save a copy of a password-protected PDF without the password, when you know it. On your PC.",
         intro="Open FilesBolt, add the PDF and choose <b>Remove password</b>. Type the current password and an unlocked copy is saved.",
         steps=["Open FilesBolt and add the PDF.", "Choose Remove password and type the current password.", "An unlocked copy is saved next to it."],
-        faq=[("Can it unlock a PDF if I don't know the password?", "No. You need the correct password."),)]),
+        faq=[("Can it unlock a PDF if I don't know the password?", "No. You need the correct password.")]),
 })
 
 
