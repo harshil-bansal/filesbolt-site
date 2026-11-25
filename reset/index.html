@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com https://aovtkaljtayxuxuzureh.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com https://aovtkaljtayxuxuzureh.supabase.co https://api.pwnedpasswords.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -44,6 +44,16 @@
         var t = new URLSearchParams(location.search).get("t") || "";
         var m = document.getElementById("rMsg"), f = document.getElementById("rf"), d = document.getElementById("rDone"), b = document.getElementById("rGo");
         history.replaceState(null, "", location.pathname);  // keep the link out of the address bar and history
+        // Free HaveIBeenPwned check: only the first 5 characters of the SHA-1 hash leave this page.
+        function leaked(pw) {
+          if (!window.crypto || !crypto.subtle) return Promise.resolve(false);
+          return crypto.subtle.digest("SHA-1", new TextEncoder().encode(pw)).then(function (buf) {
+            var h = Array.from(new Uint8Array(buf)).map(function (x) { return ("0" + x.toString(16)).slice(-2); }).join("").toUpperCase();
+            return fetch("https://api.pwnedpasswords.com/range/" + h.slice(0, 5), { headers: { "Add-Padding": "true" } })
+              .then(function (r) { return r.ok ? r.text() : ""; })
+              .then(function (t) { return t.split("\n").some(function (l) { var p = l.trim().split(":"); return p[0] === h.slice(5) && p[1] && p[1] !== "0"; }); });
+          }).catch(function () { return false; });
+        }
         function call(fn, body) {
           return fetch(U + fn, { method: "POST", headers: { apikey: K, "Content-Type": "application/json" }, body: JSON.stringify(body) })
             .then(function (r) { if (!r.ok) throw new Error("bad"); return r.json(); });
@@ -61,10 +71,13 @@
           if (p1.length < 8) { d.textContent = "Use at least 8 characters."; return; }
           if (p1 !== p2) { d.textContent = "The two passwords don't match."; return; }
           b.disabled = true; d.textContent = "Saving…";
+          leaked(p1).then(function (bad) {
+          if (bad) { b.disabled = false; d.textContent = "This password has shown up in a data breach on another website, so it isn't safe. Please choose a different one."; return; }
           call("reset_password_with_link", { t: t, new_password: p1 }).then(function (r) {
             if (r && r.ok) { f.hidden = true; m.textContent = "Done. Your password is changed. Open FilesBolt and sign in with your new password."; }
             else { d.textContent = (r && r.message) || "That didn't work. Please try again."; b.disabled = false; }
           }).catch(function () { d.textContent = "We couldn't reach the server. Please try again."; b.disabled = false; });
+          });
         });
       })();
     </script>
