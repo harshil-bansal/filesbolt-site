@@ -1,8 +1,8 @@
 {
-  "version": "0.7.5",
-  "code": 705,
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.7.5/FilesBolt-0.7.5.apk",
-  "size": 9881100,
-  "sha256": "501c28072640ddcdd0ccc3eae8dd8934f4af123e47b97fe1ad059118c34f6805",
-  "notes": "New: Resize pictures, for email, forms and uploads."
+  "version": "0.7.6",
+  "code": 706,
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.7.6/FilesBolt-0.7.6.apk",
+  "size": 9881176,
+  "sha256": "c16364a03c81c469b34f75cd62a97518f481ca6df88e42cb0a86657d104efa91",
+  "notes": "Resize pictures is now in the Share menu too (turn it on in Share menu settings)."
 }
