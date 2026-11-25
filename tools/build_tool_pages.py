@@ -90,6 +90,58 @@ PAGES = {
              ("Is the password sent anywhere?", "No. It never leaves your PC.")]),
 }
 
+PAGES.update({
+    "pdf-to-word": dict(
+        title="PDF to Word offline on Windows",
+        h1="Turn a PDF into an editable Word file, on your PC",
+        desc="Convert PDF to Word (.docx) without uploading. Uses Microsoft Word when you have it for the best layout.",
+        intro="Right-click a PDF and choose <b>FilesBolt → Convert PDF to Word</b>. With Microsoft Word installed you get its "
+              "full-quality conversion; without it, FilesBolt makes a simpler .docx you can still edit.",
+        steps=["Right-click the PDF.", "Choose FilesBolt → Convert PDF to Word.", "Open the .docx saved next to the PDF."],
+        faq=[("Do I need Microsoft Word?", "No, but with Word 2013 or newer the layout is closer to the original."),
+             ("What about scanned PDFs?", "Scans are pictures of text, so the text can't be edited yet.")]),
+    "heic-to-jpg": dict(
+        title="HEIC to JPG on Windows, offline",
+        h1="Convert iPhone HEIC photos to JPG",
+        desc="Turn iPhone HEIC photos into JPG on your Windows PC with a right-click. No upload, no app store codec needed.",
+        intro="Select the HEIC photos, right-click and choose <b>FilesBolt → Convert to JPG</b>. JPG copies appear next to them, "
+              "the right way up.",
+        steps=["Select the .heic photos in File Explorer.", "Right-click: FilesBolt → Convert to JPG.", "The JPGs are saved next to the originals."],
+        faq=[("Do I need to install a HEIC extension from Microsoft?", "No. FilesBolt reads HEIC by itself."),
+             ("Can I make a PDF from HEIC photos?", "Yes: choose Convert to PDF or Merge into one PDF.")]),
+    "rotate-pdf": dict(
+        title="Rotate PDF pages offline",
+        h1="Rotate a PDF or photo, on your PC",
+        desc="Turn sideways PDF pages or photos the right way with a right-click. Offline.",
+        intro="Right-click a PDF or photo and choose <b>FilesBolt → Rotate right</b>. To turn only some pages, open FilesBolt and "
+              "use Organize pages.",
+        steps=["Right-click the PDF or photo.", "Choose FilesBolt → Rotate right.", "A rotated copy is saved next to it."],
+        faq=[("Can I rotate just one page?", "Yes, with Organize pages in the app."),)]),
+    "watermark-pdf": dict(
+        title="Add a watermark to a PDF offline",
+        h1="Add a watermark to a PDF, on your PC",
+        desc="Stamp text like CONFIDENTIAL or DRAFT on every page of a PDF. Any text, colour and position. Offline.",
+        intro="Open FilesBolt, add the PDF and choose <b>Watermark</b>. Type the text, pick the colour, size and position, and save.",
+        steps=["Open FilesBolt and add the PDF.", "Choose Watermark and type your text.", "Save: a watermarked copy appears next to the original."],
+        faq=[("Can I add page numbers too?", "Yes, with Page numbers."),)]),
+    "combine-excel": dict(
+        title="Combine Excel files into one, offline",
+        h1="Combine Excel and CSV files into one workbook",
+        desc="Put several Excel or CSV files into one workbook, each as its own sheet or all rows stacked. On your PC.",
+        intro="Select the files, right-click and choose <b>FilesBolt → Combine into one Excel file</b>. In the app you can choose "
+              "one sheet per file, or all rows in one sheet.",
+        steps=["Select the .xlsx or .csv files.", "Right-click: FilesBolt → Combine into one Excel file.", "Open Combined.xlsx in the same folder."],
+        faq=[("Does it keep formatting?", "Values, formulas and basic formatting are kept."),
+             ("Can I split a workbook into files?", "Yes: Split sheets saves each sheet as its own file.")]),
+    "unlock-pdf": dict(
+        title="Remove a PDF password offline",
+        h1="Remove the password from a PDF you can open",
+        desc="Save a copy of a password-protected PDF without the password, when you know it. On your PC.",
+        intro="Open FilesBolt, add the PDF and choose <b>Remove password</b>. Type the current password and an unlocked copy is saved.",
+        steps=["Open FilesBolt and add the PDF.", "Choose Remove password and type the current password.", "An unlocked copy is saved next to it."],
+        faq=[("Can it unlock a PDF if I don't know the password?", "No. You need the correct password."),)]),
+})
+
 
 def page(slug, p):
     url = f"https://filesbolt.com/{slug}/"
