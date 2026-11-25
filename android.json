@@ -1,8 +1,8 @@
 {
-  "version": "0.7.4",
-  "code": 704,
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.7.4/FilesBolt-0.7.4.apk",
+  "version": "0.7.5",
+  "code": 705,
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.7.5/FilesBolt-0.7.5.apk",
   "size": 9881100,
-  "sha256": "2cafc0e9aa9367da0450e92bdce53aa94e4107a878b3d3e9fbb2963fb9ef324b",
-  "notes": "Turn on two-step sign-in in the app, and pinch to zoom in Edit & sign."
+  "sha256": "501c28072640ddcdd0ccc3eae8dd8934f4af123e47b97fe1ad059118c34f6805",
+  "notes": "New: Resize pictures, for email, forms and uploads."
 }
