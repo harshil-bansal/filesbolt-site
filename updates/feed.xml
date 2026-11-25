@@ -5,6 +5,8 @@
 <description>New features and fixes in each FilesBolt update.</description>
 <language>en</language>
 <lastBuildDate>Wed, 25 Nov 2026 12:00:00 +0000</lastBuildDate>
+<item><title>FilesBolt 0.4.35</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.35</guid><pubDate>Wed, 25 Nov 2026 12:00:00 +0000</pubDate><description>Safer passwords: FilesBolt now warns you if a password has appeared in a known data breach.
+Fixed choosing a new password with &quot;Forgot password&quot;.</description></item>
 <item><title>FilesBolt 0.4.34</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.34</guid><pubDate>Wed, 25 Nov 2026 12:00:00 +0000</pubDate><description>Security improvements.</description></item>
 <item><title>FilesBolt 0.4.33</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.33</guid><pubDate>Wed, 25 Nov 2026 12:00:00 +0000</pubDate><description>Small improvements.</description></item>
 <item><title>FilesBolt 0.4.32</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.32</guid><pubDate>Wed, 25 Nov 2026 12:00:00 +0000</pubDate><description>New: right-click a photo to resize it for email (under 500 KB).</description></item>

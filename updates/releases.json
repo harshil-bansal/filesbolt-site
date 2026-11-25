@@ -1,5 +1,10 @@
 [
  {
+  "version": "0.4.35",
+  "date": "2026-11-25",
+  "notes": "Safer passwords: FilesBolt now warns you if a password has appeared in a known data breach.\nFixed choosing a new password with \"Forgot password\"."
+ },
+ {
   "version": "0.4.34",
   "date": "2026-11-25",
   "notes": "Security improvements."
