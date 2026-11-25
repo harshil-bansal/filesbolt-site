@@ -1,5 +1,10 @@
 [
  {
+  "version": "0.4.41",
+  "date": "2026-11-25",
+  "notes": "A fresh new look for Edit & sign, plus a Blur tool to hide private details.\nNew: Screenshot & edit (Ctrl+Alt+S), and an optional glass look on Windows 11 (Settings > General)."
+ },
+ {
   "version": "0.4.35",
   "date": "2026-11-25",
   "notes": "Safer passwords: FilesBolt now warns you if a password has appeared in a known data breach.\nFixed choosing a new password with \"Forgot password\"."

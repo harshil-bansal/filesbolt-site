@@ -1,7 +1,7 @@
 {
-  "version": "0.4.35",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.35/FilesBolt-Setup-0.4.35.exe",
-  "size": 62311573,
-  "sha256": "9b708e205a34ca61f1a862542162d13ef71628b7c50c6d30228f4d324c1ebc05",
-  "notes": "Safer passwords: FilesBolt now warns you if a password has appeared in a known data breach.\nFixed choosing a new password with \"Forgot password\"."
+  "version": "0.4.41",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.41/FilesBolt-Setup-0.4.41.exe",
+  "size": 62505187,
+  "sha256": "e79497cc0966c817f41501ae4a552e8f4b67e552245b55227ff85e23d4f65784",
+  "notes": "A fresh new look for Edit & sign, plus a Blur tool to hide private details.\nNew: Screenshot & edit (Ctrl+Alt+S), and an optional glass look on Windows 11 (Settings > General)."
 }
