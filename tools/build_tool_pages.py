@@ -149,10 +149,11 @@ def page(slug, p):
     head = re.sub(r"<title>.*?</title>", f"<title>{html.escape(p['title'])} | FilesBolt</title>", head, flags=re.S)
     head = re.sub(r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{html.escape(p["desc"])}">', head)
     head = re.sub(r'<link rel="canonical" href="[^"]*">', f'<link rel="canonical" href="{url}">', head)
-    if slug in globals().get("HI", {}):
-        head = head.replace(f'<link rel="canonical" href="{url}">', f'<link rel="canonical" href="{url}">\n'
-                            f'<link rel="alternate" hreflang="en" href="{url}">\n'
-                            f'<link rel="alternate" hreflang="hi" href="https://filesbolt.com/hi/{slug}/">', 1)
+    alts = [(c, d) for c, d in (("hi", "HI"), ("es", "ES")) if slug in globals().get(d, {})]
+    if alts:
+        links = f'<link rel="alternate" hreflang="en" href="{url}">' + "".join(
+            f'\n<link rel="alternate" hreflang="{c}" href="https://filesbolt.com/{c}/{slug}/">' for c, _ in alts)
+        head = head.replace(f'<link rel="canonical" href="{url}">', f'<link rel="canonical" href="{url}">\n' + links, 1)
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "HowTo", "name": p["h1"], "step": [{"@type": "HowToStep", "position": i + 1, "text": s} for i, s in enumerate(p["steps"])]},
         {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in p["faq"]]},
@@ -225,6 +226,48 @@ HI = {
         faq=[("क्या iPhone की HEIC फ़ोटो चलेंगी?", "हाँ, HEIC के साथ JPG, PNG, WEBP और TIFF भी।")]),
 }
 
+
+
+ES = {
+    "merge-pdf": dict(
+        title="Unir PDF sin conexión en Windows", h1="Une PDF en un solo archivo, sin subirlos",
+        desc="Combina PDF, fotos y archivos de Word en un solo PDF en tu PC. Clic derecho, Unir, listo.",
+        intro="Selecciona los archivos en el Explorador, haz clic derecho y elige <b>FilesBolt → Merge into one PDF</b>. "
+              "El PDF unido aparece en la misma carpeta en un par de segundos. No se sube nada.",
+        steps=["Selecciona los PDF, fotos o archivos de Word en el Explorador.", "Clic derecho: FilesBolt → Merge into one PDF.",
+               "Encontrarás Merged.pdf en la misma carpeta."],
+        faq=[("¿Puedo cambiar el orden?", "Sí. Abre FilesBolt, añade los archivos, arrástralos al orden que quieras y pulsa Merge."),
+             ("¿Hay límite de tamaño?", "No. Todo se hace en tu PC, así que no hay límite de subida.")]),
+    "compress-pdf": dict(
+        title="Comprimir PDF sin conexión", h1="Reduce el tamaño de tus PDF, sin subirlos",
+        desc="Reduce PDF y fotos para el correo en tu propio PC. FilesBolt solo guarda una copia si de verdad es más pequeña.",
+        intro="Haz clic derecho en un PDF y elige <b>FilesBolt → Compress</b>. Junto al original aparece una copia más pequeña.",
+        steps=["Clic derecho en el PDF.", "Elige FilesBolt → Compress.", "La copia reducida se guarda junto al original."],
+        faq=[("¿Pierde calidad?", "El texto sigue nítido. Las imágenes se ajustan a lo que necesita la página."),
+             ("¿Se suben mis archivos?", "No. Todo ocurre en tu ordenador.")]),
+    "resize-image": dict(
+        title="Reducir el tamaño de fotos: menos de 100 KB a 1 MB", h1="Fotos más pequeñas para correo y formularios",
+        desc="Reduce fotos en tu PC a menos de 100 KB, 200 KB, 500 KB o 1 MB para formularios con límite de tamaño.",
+        intro="Haz clic derecho en una foto y elige <b>FilesBolt → Resize for email (under 500 KB)</b>. En la aplicación también "
+              "puedes elegir menos de 100 KB, lo que piden muchos formularios en línea.",
+        steps=["Clic derecho en las fotos.", "Elige FilesBolt → Resize for email (under 500 KB).", "Se guarda una copia más pequeña junto a cada foto."],
+        faq=[("¿Se giran las fotos del móvil?", "No. Se ponen derechas antes de reducirlas.")]),
+    "sign-pdf": dict(
+        title="Firmar un PDF sin conexión en Windows", h1="Firma y rellena PDF en tu PC",
+        desc="Añade tu firma, texto, fechas y marcas a un PDF sin internet. Tu firma se queda en tu PC.",
+        intro="Haz clic derecho en un PDF y elige <b>FilesBolt → Edit and sign</b>. Dibuja tu firma una vez, colócala, añade texto "
+              "o la fecha de hoy y guarda.",
+        steps=["Clic derecho en el PDF: FilesBolt → Edit and sign.", "Añade tu firma, texto o fecha.", "Guarda: aparece una copia _signed junto al original."],
+        faq=[("¿Se sube mi firma?", "No. Solo se guarda en tu PC para reutilizarla.")]),
+    "jpg-to-pdf": dict(
+        title="Fotos a PDF (JPG, HEIC) sin conexión", h1="Convierte fotos en PDF, sin subirlas",
+        desc="Convierte fotos JPG, PNG y HEIC de iPhone en PDF en tu PC. Un PDF por foto o todas en uno.",
+        intro="Selecciona las fotos, haz clic derecho y elige <b>FilesBolt → Convert to PDF</b>, o <b>Merge into one PDF</b> para "
+              "ponerlas todas en un archivo.",
+        steps=["Selecciona las fotos en el Explorador.", "Clic derecho: FilesBolt → Convert to PDF (o Merge into one PDF).", "El PDF se guarda junto a las fotos."],
+        faq=[("¿Funciona con fotos HEIC del iPhone?", "Sí, además de JPG, PNG, WEBP y TIFF.")]),
+}
+
 if __name__ == "__main__":
     for slug, p in HI.items():
         d = ROOT / "hi" / slug
@@ -248,3 +291,17 @@ if __name__ == "__main__":  # English pages
         (d / "index.html").write_text(page(slug, p), encoding="utf-8")
     print(len(PAGES), "pages")
 
+if __name__ == "__main__":  # Spanish pages
+    for slug, p in ES.items():
+        d = ROOT / "es" / slug
+        d.mkdir(parents=True, exist_ok=True)
+        h = page(slug, p).replace('<html lang="en">', '<html lang="es">', 1)
+        h = h.replace(f'<link rel="canonical" href="https://filesbolt.com/{slug}/">', f'<link rel="canonical" href="https://filesbolt.com/es/{slug}/">', 1)
+        h = h.replace("<h2>How to do it</h2>", "<h2>Cómo hacerlo</h2>").replace("<h2>Why offline?</h2>", "<h2>¿Por qué sin conexión?</h2>")
+        h = h.replace("<h2>Questions</h2>", "<h2>Preguntas</h2>").replace("Download FilesBolt for Windows", "Descargar FilesBolt para Windows")
+        h = re.sub(r"<p>Online PDF websites.*?uploads\.</p>", "<p>Las webs de PDF en línea te hacen subir tus archivos a sus servidores. "
+                   "FilesBolt hace lo mismo en tu propio ordenador, así que tus contratos, documentos de identidad y facturas no salen de él. "
+                   "Funciona sin internet.</p>", h, flags=re.S)
+        h = re.sub(r"<h2>More things FilesBolt does</h2>\s*<p>.*?</p>", "", h, flags=re.S)
+        (d / "index.html").write_text(h, encoding="utf-8")
+    print(len(ES), "Spanish pages")
