@@ -1,7 +1,6 @@
 # Search engines and AI assistants are welcome.
 User-agent: *
 Allow: /
-Disallow: /admin/
 Disallow: /reset/
 Disallow: /unsubscribe/
 

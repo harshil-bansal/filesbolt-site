@@ -2,7 +2,6 @@
 # AI assistants and search engines may read, index and cite this site.
 User-agent: *
 Allow: /
-Disallow: /admin/
 Disallow: /reset/
 Disallow: /unsubscribe/
 
