@@ -149,6 +149,10 @@ def page(slug, p):
     head = re.sub(r"<title>.*?</title>", f"<title>{html.escape(p['title'])} | FilesBolt</title>", head, flags=re.S)
     head = re.sub(r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{html.escape(p["desc"])}">', head)
     head = re.sub(r'<link rel="canonical" href="[^"]*">', f'<link rel="canonical" href="{url}">', head)
+    if slug in globals().get("HI", {}):
+        head = head.replace(f'<link rel="canonical" href="{url}">', f'<link rel="canonical" href="{url}">\n'
+                            f'<link rel="alternate" hreflang="en" href="{url}">\n'
+                            f'<link rel="alternate" hreflang="hi" href="https://filesbolt.com/hi/{slug}/">', 1)
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "HowTo", "name": p["h1"], "step": [{"@type": "HowToStep", "position": i + 1, "text": s} for i, s in enumerate(p["steps"])]},
         {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in p["faq"]]},
@@ -176,9 +180,73 @@ def page(slug, p):
     return head + body + TPL[FOOT_START:]
 
 
+
+
+# ---------------------------------------------------------------- Hindi versions of the most-searched guides
+HI = {
+    "merge-pdf": dict(
+        title="PDF फ़ाइलें ऑफ़लाइन जोड़ें (Windows)", h1="PDF फ़ाइलों को एक में जोड़ें, बिना अपलोड किए",
+        desc="अपने PC पर PDF, फ़ोटो और Word फ़ाइलों को एक PDF में जोड़ें। राइट-क्लिक करें, Merge चुनें, हो गया।",
+        intro="File Explorer में फ़ाइलें चुनें, राइट-क्लिक करें और <b>FilesBolt → Merge into one PDF</b> चुनें। जुड़ी हुई PDF "
+              "एक-दो सेकंड में उसी फ़ोल्डर में आ जाती है। कुछ भी अपलोड नहीं होता।",
+        steps=["File Explorer में PDF, फ़ोटो या Word फ़ाइलें चुनें।", "राइट-क्लिक करें और FilesBolt → Merge into one PDF चुनें।",
+               "उसी फ़ोल्डर में Merged.pdf मिलेगी।"],
+        faq=[("क्या मैं क्रम बदल सकता हूँ?", "हाँ। FilesBolt खोलें, फ़ाइलें जोड़ें, उन्हें खींचकर क्रम बदलें और Merge पर क्लिक करें।"),
+             ("क्या फ़ाइल के आकार की कोई सीमा है?", "नहीं। सब कुछ आपके PC पर चलता है, इसलिए अपलोड की कोई सीमा नहीं है।")]),
+    "compress-pdf": dict(
+        title="PDF का आकार ऑफ़लाइन छोटा करें", h1="PDF को छोटा करें, बिना अपलोड किए",
+        desc="ईमेल के लिए PDF और फ़ोटो अपने PC पर छोटे करें। FilesBolt कॉपी तभी बनाता है जब वह सच में छोटी हो।",
+        intro="PDF पर राइट-क्लिक करें और <b>FilesBolt → Compress</b> चुनें। मूल फ़ाइल के पास एक छोटी कॉपी बन जाती है।",
+        steps=["File Explorer में PDF पर राइट-क्लिक करें।", "FilesBolt → Compress चुनें।", "छोटी कॉपी मूल फ़ाइल के पास सेव हो जाती है।"],
+        faq=[("क्या क्वालिटी खराब होगी?", "टेक्स्ट साफ़ रहता है। PDF के अंदर की तस्वीरें पेज के हिसाब से छोटी की जाती हैं।"),
+             ("मेरी फ़ाइल छोटी क्यों नहीं हुई?", "कुछ PDF पहले से ही छोटी होती हैं। FilesBolt कभी बड़ी फ़ाइल नहीं देता।")]),
+    "resize-image": dict(
+        title="फ़ोटो का साइज़ छोटा करें: 100 KB से 1 MB तक", h1="फ़ॉर्म और ईमेल के लिए फ़ोटो छोटी करें",
+        desc="सरकारी फ़ॉर्म, नौकरी के आवेदन और ईमेल के लिए फ़ोटो को 100 KB, 200 KB, 500 KB या 1 MB से कम करें। अपने PC पर।",
+        intro="फ़ोटो पर राइट-क्लिक करें और <b>FilesBolt → Resize for email (under 500 KB)</b> चुनें। ऐप में आप 100 KB से कम "
+              "भी चुन सकते हैं, जो कई ऑनलाइन फ़ॉर्म माँगते हैं।",
+        steps=["फ़ोटो पर राइट-क्लिक करें।", "FilesBolt → Resize for email (under 500 KB) चुनें।", "हर फ़ोटो के पास एक छोटी कॉपी सेव होती है; मूल नहीं बदलती।"],
+        faq=[("क्या सरकारी फ़ॉर्म के लिए 100 KB से कम कर सकते हैं?", "हाँ। ऐप में Resize images → Under 100 KB चुनें।"),
+             ("क्या मोबाइल की फ़ोटो उलटी हो जाएँगी?", "नहीं। साइज़ बदलने से पहले फ़ोटो सीधी कर दी जाती है।")]),
+    "sign-pdf": dict(
+        title="PDF पर ऑफ़लाइन हस्ताक्षर करें", h1="अपने PC पर PDF पर हस्ताक्षर करें और भरें",
+        desc="PDF में अपने हस्ताक्षर, टेक्स्ट, तारीख और टिक जोड़ें, बिना इंटरनेट के। आपके हस्ताक्षर आपके PC पर ही रहते हैं।",
+        intro="PDF पर राइट-क्लिक करें और <b>FilesBolt → Edit and sign</b> चुनें। एक बार हस्ताक्षर बनाएँ, उसे रखें, टेक्स्ट या आज की "
+              "तारीख जोड़ें और सेव करें।",
+        steps=["PDF पर राइट-क्लिक करें और FilesBolt → Edit and sign चुनें।", "अपने हस्ताक्षर, टेक्स्ट या तारीख जोड़ें।",
+               "Save पर क्लिक करें: मूल फ़ाइल के पास _signed कॉपी बन जाती है।"],
+        faq=[("क्या मेरे हस्ताक्षर अपलोड होते हैं?", "नहीं। वे सिर्फ़ आपके PC पर सेव रहते हैं।")]),
+    "jpg-to-pdf": dict(
+        title="फ़ोटो से PDF बनाएँ (JPG, HEIC)", h1="फ़ोटो से PDF बनाएँ, बिना अपलोड किए",
+        desc="JPG, PNG और iPhone की HEIC फ़ोटो को अपने PC पर PDF में बदलें। हर फ़ोटो की अलग PDF या सभी की एक PDF।",
+        intro="फ़ोटो चुनें, राइट-क्लिक करें और <b>FilesBolt → Convert to PDF</b> चुनें, या सबको एक फ़ाइल में रखने के लिए "
+              "<b>Merge into one PDF</b> चुनें।",
+        steps=["File Explorer में फ़ोटो चुनें।", "राइट-क्लिक: FilesBolt → Convert to PDF (या Merge into one PDF)।", "PDF फ़ोटो के पास सेव हो जाती है।"],
+        faq=[("क्या iPhone की HEIC फ़ोटो चलेंगी?", "हाँ, HEIC के साथ JPG, PNG, WEBP और TIFF भी।")]),
+}
+
 if __name__ == "__main__":
+    for slug, p in HI.items():
+        d = ROOT / "hi" / slug
+        d.mkdir(parents=True, exist_ok=True)
+        h = page(slug, p).replace('<html lang="en">', '<html lang="hi">', 1)
+        h = h.replace(f'<link rel="canonical" href="https://filesbolt.com/{slug}/">',
+                      f'<link rel="canonical" href="https://filesbolt.com/hi/{slug}/">\n'
+                      f'<link rel="alternate" hreflang="en" href="https://filesbolt.com/{slug}/">\n'
+                      f'<link rel="alternate" hreflang="hi" href="https://filesbolt.com/hi/{slug}/">', 1)
+        h = h.replace("<h2>How to do it</h2>", "<h2>कैसे करें</h2>").replace("<h2>Why offline?</h2>", "<h2>ऑफ़लाइन क्यों?</h2>")
+        h = h.replace("<h2>Questions</h2>", "<h2>सवाल</h2>").replace("Download FilesBolt for Windows", "Windows के लिए FilesBolt डाउनलोड करें")
+        h = re.sub(r"<p>Online PDF websites.*?uploads\.</p>", "<p>ऑनलाइन PDF वेबसाइटें आपकी फ़ाइलें अपने सर्वर पर अपलोड करवाती हैं। "
+                   "FilesBolt यही काम आपके अपने कंप्यूटर पर करता है, इसलिए आपके दस्तावेज़, ID और बिल कहीं नहीं जाते। "
+                   "यह बिना इंटरनेट के भी चलता है।</p>", h, flags=re.S)
+        h = re.sub(r"<h2>More things FilesBolt does</h2>\s*<p>.*?</p>", "", h, flags=re.S)
+        (d / "index.html").write_text(h, encoding="utf-8")
+    print(len(HI), "Hindi pages")
+
+if __name__ == "__main__":  # English pages
     for slug, p in PAGES.items():
         d = ROOT / slug
         d.mkdir(exist_ok=True)
         (d / "index.html").write_text(page(slug, p), encoding="utf-8")
     print(len(PAGES), "pages")
+

@@ -103,8 +103,8 @@ def main():
     # --- Sitemap
     pages = [("", mod), ("updates/", mod), ("about/", None), ("contact/", None), ("privacy.html", None), ("terms.html", None), ("refunds.html", None)]
     try:
-        from build_tool_pages import PAGES as TOOL_PAGES
-        pages += [(f"{k}/", None) for k in TOOL_PAGES]
+        from build_tool_pages import PAGES as TOOL_PAGES, HI as HI_PAGES
+        pages += [(f"{k}/", None) for k in TOOL_PAGES] + [(f"hi/{k}/", None) for k in HI_PAGES]
     except Exception:
         pass
     sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
