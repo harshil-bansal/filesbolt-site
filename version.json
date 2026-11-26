@@ -1,7 +1,7 @@
 {
-  "version": "0.4.41",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.41/FilesBolt-Setup-0.4.41.exe",
-  "size": 62505187,
-  "sha256": "e79497cc0966c817f41501ae4a552e8f4b67e552245b55227ff85e23d4f65784",
-  "notes": "A fresh new look for Edit & sign, plus a Blur tool to hide private details.\nNew: Screenshot & edit (Ctrl+Alt+S), and an optional glass look on Windows 11 (Settings > General)."
+  "version": "0.4.43",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.43/FilesBolt-Setup-0.4.43.exe",
+  "size": 62505464,
+  "sha256": "a4d37aaaaa1487073d9b1711c9cd6aa672c69e5e2ee94036e4006bd1bb4c80a4",
+  "notes": "The glass look now works on Windows 10 too, and stays clear in dark mode.\nIf Windows' transparency effects are off, Settings shows how to turn them on."
 }

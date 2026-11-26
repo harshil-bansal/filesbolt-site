@@ -1,5 +1,10 @@
 [
  {
+  "version": "0.4.43",
+  "date": "2026-11-26",
+  "notes": "The glass look now works on Windows 10 too, and stays clear in dark mode.\nIf Windows' transparency effects are off, Settings shows how to turn them on."
+ },
+ {
   "version": "0.4.41",
   "date": "2026-11-25",
   "notes": "A fresh new look for Edit & sign, plus a Blur tool to hide private details.\nNew: Screenshot & edit (Ctrl+Alt+S), and an optional glass look on Windows 11 (Settings > General)."
