@@ -1,7 +1,7 @@
 {
-  "version": "0.4.54",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.54/FilesBolt-Setup-0.4.54.exe",
-  "size": 62540715,
-  "sha256": "8d689955be7ad5555d4c05c837ebce00c1f76fc8fd56650b2862eadbb829f85d",
-  "notes": "Pause your Pro plan instead of cancelling, a nicer Resize images window, title bars that match dark mode, and a faster first open.\nEarly users get a gift: Pro free until 1 June 2027."
+  "version": "0.4.55",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.55/FilesBolt-Setup-0.4.55.exe",
+  "size": 62540730,
+  "sha256": "fd21cf403e8d98db2576e58b6019975f2c74c059f9a49e667287bd77becac837",
+  "notes": "The gift email button now opens FilesBolt with your code filled in. Bug fixes and improvements."
 }
