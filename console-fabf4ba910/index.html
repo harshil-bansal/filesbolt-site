@@ -101,6 +101,13 @@ td.acts { white-space: nowrap; text-align: right; }
 td.acts button { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
 td.acts button:hover { color: var(--ink); background: var(--mist); }
 td.acts button.danger { color: var(--bad); }
+td.acts a.btnlink { display: inline-block; padding: 4px 8px; margin: 2px 4px 2px 0; border-radius: 6px; font-size: 13px; text-decoration: none; background: #F2F2F5; color: inherit; }
+td.acts a.btnlink:hover { background: #E8E8ED; }
+tr.payx td { background: #FAFAFC; }
+.paynote { margin: 8px 0 0; font-size: 12.5px; color: var(--muted); }
+.btn.ghostb { background: transparent; color: inherit; border: 1px solid #D2D2D7; }
+small.bad { color: var(--bad); }
+
 .state { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
 .state.live { background: #E3F4EA; color: var(--ok); }
 .state.paused { background: var(--mist); color: var(--muted); }
@@ -283,7 +290,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
 <!-- Admin -->
 <main id="adminView" hidden>
   <nav class="jump" aria-label="Sections">
-    <a href="#sec-overview">Overview</a><a href="#sec-support">Support <span id="tkBadge" class="state soon" hidden></span></a><a href="#sec-coupons">Coupons</a><a href="#sec-accounts">Accounts</a><a href="#sec-plans">Plans</a><a href="#sec-errors">Error reports</a>
+    <a href="#sec-overview">Overview</a><a href="#sec-support">Support <span id="tkBadge" class="state soon" hidden></span></a><a href="#sec-coupons">Coupons</a><a href="#sec-accounts">Accounts</a><a href="#sec-payments">Payments</a><a href="#sec-plans">Plans</a><a href="#sec-errors">Error reports</a>
     <a href="#sec-devices">Devices</a><a href="#sec-restore">Deleted emails</a><a href="#sec-usage">Usage &amp; referrals</a><a href="#sec-activity">Activity</a><a href="#sec-email" id="jumpEmail" hidden>Send an email</a><a href="#sec-admins" id="jumpAdmins" hidden>Admins</a>
   </nav>
   <section class="panel" id="mfaSetup" hidden style="margin-bottom:20px;border-color:var(--amber)">
@@ -421,6 +428,22 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
       <thead><tr><th>Name and email</th><th>Plan</th><th>Jobs this month</th><th>Last active</th><th>PCs</th><th>Joined</th><th></th></tr></thead>
       <tbody id="accRows"></tbody>
     </table></div>
+  </section>
+
+  <section class="panel below adm-page" id="sec-payments">
+    <h2>Payments</h2>
+    <p class="lead" style="margin-bottom:0">Card payments for FilesBolt Pro (sold through Stripe). Receipts and invoices are Stripe's own
+      documents. A full refund ends Pro straight away and stops renewal; a partial refund leaves the plan as it is.
+      Every refund and change is written to Activity.</p>
+    <form class="row" id="payFind" style="margin-top:12px; max-width:560px">
+      <input type="search" id="payQ" placeholder="Search by email, name or invoice number" aria-label="Search payments">
+      <button class="btn shrink">Search</button>
+    </form>
+    <div class="tablewrap" style="margin-top:12px"><table>
+      <thead><tr><th>Date</th><th>Customer</th><th>Amount</th><th>Status</th><th>Plan now</th><th></th></tr></thead>
+      <tbody id="payRows"></tbody>
+    </table></div>
+    <div class="msg" id="payMsg" role="status"></div>
   </section>
 
   <section class="panel below adm-page" id="sec-plans">
@@ -671,7 +694,7 @@ async function call(path, body, auth = true) {
   const t = await r.text();
   let j = null; try { j = t ? JSON.parse(t) : null; } catch {}
   if (!r.ok) {
-    const m = (j && (j.message || j.msg || j.error_description)) || ("Error " + r.status);
+    const m = (j && (j.message || j.msg || j.error_description || j.error)) || ("Error " + r.status);
     if (m === "mfa_setup_required") { show(); throw new Error("Turn on two-step sign-in first."); }
     if (m === "mfa_required") { S.set(null); show(); throw new Error("Please sign in again with your authenticator code."); }
     throw new Error(m === "not_admin" ? "This account isn't an admin." :
@@ -801,7 +824,7 @@ async function show() {
     $("#mfaSetup").hidden = !setupOnly;
     if (setupOnly) return;
     await whoAmI(); showSection(location.hash.slice(1) || "sec-overview");
-    await Promise.all([load(), stats(), dashboard(), deletedList(), errors(), tickets(), accounts(), loadPlans(), activity(), usage(), emails()]);
+    await Promise.all([load(), stats(), dashboard(), deletedList(), errors(), tickets(), accounts(), loadPlans(), loadPayments(), activity(), usage(), emails()]);
   }
   else $("#em").focus();
 }
@@ -1263,6 +1286,97 @@ $("#accRows").addEventListener("click", e => {
 });
 
 /* ---------- plans ---------- */
+let payments = [];
+const money = (minor, cur) => {
+  cur = String(cur || "USD").toUpperCase();
+  const zero = ["JPY", "KRW", "VND"].includes(cur);
+  try { return new Intl.NumberFormat(undefined, { style: "currency", currency: cur }).format(zero ? minor : minor / 100); }
+  catch { return (zero ? minor : minor / 100).toFixed(2) + " " + cur; }
+};
+function payState(p) {
+  if (p.status === "refunded") return '<span class="state paused">Refunded</span>';
+  if (p.status === "partly_refunded") return `<span class="state soon">Part refunded (${esc(money(p.refunded_amount, p.currency))})</span>`;
+  return '<span class="state live">Paid</span>';
+}
+function planNow(p) {
+  if (p.plan !== "pro" || (p.plan_ends_at && new Date(p.plan_ends_at) < new Date())) return "Free";
+  const until = p.plan_ends_at ? " until " + fmt(p.plan_ends_at) : "";
+  if (p.plan_paused_until && new Date(p.plan_paused_until) > new Date()) return "Pro" + until + "<br><small>Paused until " + fmt(p.plan_paused_until) + "</small>";
+  if (p.payment_failed_at) return "Pro" + until + '<br><small class="bad">Last payment failed</small>';
+  return "Pro" + until + "<br><small>" + (p.plan_renews === false ? "Won't renew" : p.plan_renews ? "Renews" : "") + "</small>";
+}
+async function loadPayments() {
+  const m = $("#payMsg");
+  try {
+    payments = await rpc("admin_payments", { q: $("#payQ").value.trim() || null, how_many: 200 }) || [];
+    $("#payRows").innerHTML = payments.length ? payments.map(p => `<tr data-id="${p.id}">
+      <td>${esc(fmt(p.created_at))}</td>
+      <td><b>${esc(p.name || "")}</b><br><small>${esc(p.email || "")}</small></td>
+      <td>${esc(money(p.amount, p.currency))}<br><small>${p.subscription ? "monthly" : "one-off"}</small></td>
+      <td>${payState(p)}</td>
+      <td>${planNow(p)}</td>
+      <td class="acts">
+        ${p.receipt_url ? `<a class="btnlink" href="${esc(p.receipt_url)}" target="_blank" rel="noopener">Receipt</a>` : `<button data-pay="sync">Get receipt</button>`}
+        ${p.invoice_pdf ? `<a class="btnlink" href="${esc(p.invoice_pdf)}" target="_blank" rel="noopener">Invoice PDF</a>` : ""}
+        ${p.status !== "refunded" ? `<button data-pay="refund">Refund…</button>` : ""}
+        ${p.subscription ? `<button data-pay="manage">Renewal…</button>` : ""}
+      </td></tr>
+      <tr class="payx" data-for="${p.id}" hidden><td colspan="6"></td></tr>`).join("")
+      : '<tr><td colspan="6" class="muted">No payments yet.</td></tr>';
+    m.textContent = ""; m.className = "msg";
+  } catch (err) { m.className = "msg bad"; m.textContent = err.message; }
+}
+const billing = body => call("/functions/v1/admin-billing", body);
+$("#payFind").addEventListener("submit", e => { e.preventDefault(); loadPayments(); });
+$("#payRows").addEventListener("click", async e => {
+  const b = e.target.closest("button[data-pay], button[data-go]"); if (!b) return;
+  const row = b.closest("tr"), id = Number(row.dataset.id || row.dataset.for), p = payments.find(x => x.id === id);
+  const box = $(`#payRows tr.payx[data-for="${id}"]`), cell = box.firstElementChild, m = $("#payMsg");
+  const run = async (body, done) => {
+    b.disabled = true;
+    try { await billing(body); m.className = "msg ok"; m.textContent = done; box.hidden = true; await loadPayments(); accounts(); }
+    catch (err) { m.className = "msg bad"; m.textContent = err.message; b.disabled = false; }
+  };
+  const act = b.dataset.pay || b.dataset.go;
+  if (act === "sync") return run({ action: "sync", payment_id: id }, "Receipt links added.");
+  if (act === "refund") {
+    const left = (p.amount - (p.refunded_amount || 0)) / 100;
+    box.hidden = false;
+    cell.innerHTML = `<div class="row" style="max-width:760px; align-items:center">
+      <span>Refund to <b>${esc(p.email)}</b>:</span>
+      <input type="number" id="rfAmt" class="shrink" style="width:130px" min="0.01" step="0.01" max="${left}" value="${left}" aria-label="Amount">
+      <span>${esc(String(p.currency).toUpperCase())} (full = ${left})</span>
+      <input type="text" id="rfWhy" placeholder="Reason (for your records)" maxlength="200" aria-label="Reason">
+      <button class="btn shrink" style="background:#D93025" data-go="dorefund">Refund now</button>
+      <button class="btn shrink ghostb" data-go="close">Cancel</button></div>
+      <p class="paynote">The money goes back to the customer's card in 5–10 days. Stripe keeps its fee. This can't be undone.</p>`;
+    return;
+  }
+  if (act === "dorefund") {
+    const amt = Math.round(parseFloat($("#rfAmt").value) * 100);
+    const full = amt >= p.amount - (p.refunded_amount || 0);
+    if (!(amt > 0)) { m.className = "msg bad"; m.textContent = "Enter an amount."; return; }
+    return run({ action: "refund", payment_id: id, amount: amt, reason: $("#rfWhy").value.trim() },
+      full ? "Refunded in full. Pro has ended for this customer and renewal is stopped." : "Part refund sent. Their plan is unchanged.");
+  }
+  if (act === "manage") {
+    box.hidden = false;
+    cell.innerHTML = `<div class="row" style="max-width:760px; align-items:center">
+      <span>Renewal for <b>${esc(p.email)}</b>:</span>
+      <button class="btn shrink" data-go="cancel">Cancel renewal</button>
+      <select id="psMonths" class="shrink" aria-label="Pause for"><option value="1">1 month</option><option value="2">2 months</option><option value="3">3 months</option></select>
+      <button class="btn shrink" data-go="pause">Pause</button>
+      <button class="btn shrink" data-go="resume">Turn renewal back on</button>
+      <button class="btn shrink ghostb" data-go="close">Close</button></div>
+      <p class="paynote">They keep Pro for the time already paid. Do this only when the customer asks.</p>`;
+    return;
+  }
+  if (act === "cancel") return run({ action: "cancel", email: p.email }, "Renewal cancelled.");
+  if (act === "pause") return run({ action: "pause", email: p.email, months: Number($("#psMonths").value) }, "Paused.");
+  if (act === "resume") return run({ action: "resume", email: p.email }, "Renewal is back on.");
+  if (act === "close") { box.hidden = true; }
+});
+
 async function loadPlans() {
   try {
     plans = await rpc("admin_plans") || [];
