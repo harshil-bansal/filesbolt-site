@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com https://aovtkaljtayxuxuzureh.supabase.co https://api.pwnedpasswords.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your FilesBolt gift | FilesBolt</title>
+<meta name="description" content="Apply your FilesBolt gift code.">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="FilesBolt home">
+      <img src="/img/logo.svg" alt="" width="32" height="32"><span>FilesBolt</span>
+    </a>
+    <nav aria-label="Main">
+      <a href="/#tools">Tools</a>
+      <a href="/updates/">What&#39;s new</a><a href="/#faq">Help</a>
+      <a class="btn btn-small" href="/#download">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main class="doc">
+  <div class="wrap narrow" style="text-align:center">
+    <h1>Pro is on us</h1>
+    <p>Your gift: <strong>FilesBolt Pro free until 1 June 2027</strong>. No card needed, and nothing renews by itself.</p>
+    <div id="gCode" style="display:inline-block;min-width:260px;font-size:32px;font-weight:700;letter-spacing:6px;color:#121417;background:#FFF4D1;border:2px solid #121417;border-radius:10px;padding:14px 22px;margin:14px 0 6px;user-select:all">EARLY2027</div>
+    <p style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px">
+      <button class="btn" type="button" id="gCopy">Copy code</button>
+      <a class="btn" id="gOpen" href="filesbolt://gift?code=EARLY2027" style="background:#121417;color:#fff">Open FilesBolt and apply</a>
+    </p>
+    <p id="gNote" class="muted" role="status" style="min-height:1.5em"></p>
+    <div style="text-align:left;max-width:460px;margin:22px auto 0">
+      <p class="muted" style="font-size:15px"><strong>How to apply it yourself:</strong> open FilesBolt, go to <strong>Settings &rarr; Account</strong>, paste the code and click <strong>Apply code</strong>. On your phone: <strong>Account</strong> in the FilesBolt app.</p>
+      <p class="muted" style="font-size:15px">Don&#39;t have FilesBolt on this device? <a href="/#download">Download it</a>, sign in, then apply the code. Use it by 1 June 2027.</p>
+    </div>
+    <script>
+    (function () {
+      var p = new URLSearchParams(location.search);
+      var code = (p.get("code") || "EARLY2027").toUpperCase().replace(/[^A-Z0-9_-]/g, "").slice(0, 40) || "EARLY2027";
+      var box = document.getElementById("gCode"), note = document.getElementById("gNote"), open = document.getElementById("gOpen");
+      box.textContent = code;
+      var link = "filesbolt://gift?code=" + encodeURIComponent(code);
+      if (/Android/i.test(navigator.userAgent)) {
+        link = "intent://gift?code=" + encodeURIComponent(code) + "#Intent;scheme=filesbolt;package=com.filesbolt.app;end";
+      }
+      if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) { open.hidden = true; }
+      open.href = link;
+      function copied() { note.textContent = "Copied. Paste it in FilesBolt and click Apply code."; }
+      document.getElementById("gCopy").addEventListener("click", function () {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).then(copied, fallback);
+        } else { fallback(); }
+      });
+      function fallback() {
+        var r = document.createRange(); r.selectNodeContents(box);
+        var s = getSelection(); s.removeAllRanges(); s.addRange(r);
+        try { document.execCommand("copy"); copied(); } catch (e) { note.textContent = "Press Ctrl+C to copy the selected code."; }
+      }
+      open.addEventListener("click", function () {
+        note.textContent = "Opening FilesBolt… If nothing happens, copy the code and paste it in Settings → Account.";
+      });
+      if (p.get("copy") === "1") { note.textContent = "Click Copy code, then paste it in FilesBolt."; document.getElementById("gCopy").focus(); }
+    })();
+    </script>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span class="brand small"><img src="/img/logo.svg" alt="" width="20" height="20">FilesBolt</span>
+    <nav aria-label="Footer"><a href="/pricing/">Pricing</a><a href="/terms.html">Terms</a><a href="/refunds.html">Refunds</a><a href="/privacy.html">Privacy policy</a><a href="/#faq">Help</a><a href="/contact/">Contact us</a></nav>
+    <span class="copy">© 2026 FilesBolt · <span id="co">Lumisha LLC</span></span><script>try{if(/^Asia\/(Kolkata|Calcutta)$/.test(Intl.DateTimeFormat().resolvedOptions().timeZone))document.getElementById("co").textContent="Lumisha India Private Limited"}catch(e){}</script>
+  </div>
+</footer>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cacb71ad59fa40ed80eed50ccecd41cc"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
