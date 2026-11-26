@@ -1,8 +1,8 @@
 {
-  "version": "0.8.1",
-  "code": 801,
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.8.1/FilesBolt-0.8.1.apk",
-  "size": 11043149,
-  "sha256": "42531f1838327fd2b356ffa176fce36a0ca4db9412e22788c30241feda43a66d",
-  "notes": "Pause your Pro plan instead of cancelling, and see the price and date before turning renewal back on.\nEarly users get a gift: Pro free until 1 June 2027."
+  "version": "0.8.4",
+  "code": 804,
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.8.4/FilesBolt-0.8.4.apk",
+  "size": 10994101,
+  "sha256": "5bd6b3f79e42695440d96a8754fa4cac0926286697e20f9f59af047184d6f0ef",
+  "notes": "The gift email button now opens FilesBolt with your code filled in. Creating an account is smoother."
 }
