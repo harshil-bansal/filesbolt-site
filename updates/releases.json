@@ -1,5 +1,10 @@
 [
  {
+  "version": "0.4.54",
+  "date": "2026-11-26",
+  "notes": "Pause your Pro plan instead of cancelling, a nicer Resize images window, title bars that match dark mode, and a faster first open.\nEarly users get a gift: Pro free until 1 June 2027."
+ },
+ {
   "version": "0.4.43",
   "date": "2026-11-26",
   "notes": "The glass look now works on Windows 10 too, and stays clear in dark mode.\nIf Windows' transparency effects are off, Settings shows how to turn them on."

@@ -1,7 +1,7 @@
 {
-  "version": "0.4.43",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.43/FilesBolt-Setup-0.4.43.exe",
-  "size": 62505464,
-  "sha256": "a4d37aaaaa1487073d9b1711c9cd6aa672c69e5e2ee94036e4006bd1bb4c80a4",
-  "notes": "The glass look now works on Windows 10 too, and stays clear in dark mode.\nIf Windows' transparency effects are off, Settings shows how to turn them on."
+  "version": "0.4.54",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.54/FilesBolt-Setup-0.4.54.exe",
+  "size": 62540715,
+  "sha256": "8d689955be7ad5555d4c05c837ebce00c1f76fc8fd56650b2862eadbb829f85d",
+  "notes": "Pause your Pro plan instead of cancelling, a nicer Resize images window, title bars that match dark mode, and a faster first open.\nEarly users get a gift: Pro free until 1 June 2027."
 }
