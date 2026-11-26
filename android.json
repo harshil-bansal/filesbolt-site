@@ -1,8 +1,8 @@
 {
-  "version": "0.7.8",
-  "code": 708,
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.7.8/FilesBolt-0.7.8.apk",
-  "size": 9897560,
-  "sha256": "609110146226041b031e6e0cddbcd8e9755a91ce909fd11f96067f51e8ce7198",
-  "notes": "Safer passwords: FilesBolt now warns you if a password has appeared in a known data breach.\nFixed choosing a new password with \"Forgot password\"."
+  "version": "0.8.1",
+  "code": 801,
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/android-v0.8.1/FilesBolt-0.8.1.apk",
+  "size": 11043149,
+  "sha256": "42531f1838327fd2b356ffa176fce36a0ca4db9412e22788c30241feda43a66d",
+  "notes": "Pause your Pro plan instead of cancelling, and see the price and date before turning renewal back on.\nEarly users get a gift: Pro free until 1 June 2027."
 }
