@@ -101,7 +101,7 @@ def main():
     open("index.html", "w", encoding="utf-8").write(index)
 
     # --- Sitemap
-    pages = [("", mod), ("updates/", mod), ("about/", None), ("contact/", None), ("privacy.html", None), ("terms.html", None), ("refunds.html", None)]
+    pages = [("", mod), ("updates/", mod), ("about/", None), ("pricing/", None), ("contact/", None), ("privacy.html", None), ("terms.html", None), ("refunds.html", None)]
     try:
         from build_tool_pages import PAGES as TOOL_PAGES, HI as HI_PAGES, ES as ES_PAGES
         pages += [(f"{k}/", None) for k in TOOL_PAGES] + [(f"hi/{k}/", None) for k in HI_PAGES] + [(f"es/{k}/", None) for k in ES_PAGES]
