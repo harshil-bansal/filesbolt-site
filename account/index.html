@@ -146,6 +146,26 @@
       <a class="ac-btn amber" id="aUpgrade" href="#" hidden>Upgrade to Pro</a>
       <p class="ac-err" id="aErr" role="alert"></p>
     </section>
+    <section class="ac-card ac-wide" id="subCard" hidden>
+      <h2>Your subscription</h2>
+      <p id="subLine"></p>
+      <div id="subActions" class="ac-row" style="justify-content:flex-start;gap:22px"></div>
+      <form id="fSub" hidden novalidate style="margin-top:14px;border-top:1px solid var(--rule);padding-top:12px">
+        <p id="subAsk" style="font-weight:600"></p>
+        <div id="subMonths" hidden>
+          <label for="subN">Pause for</label>
+          <select id="subN" style="font:inherit;padding:8px 10px;border:1px solid var(--rule);border-radius:10px">
+            <option value="1">1 month</option><option value="2">2 months</option><option value="3">3 months</option></select>
+        </div>
+        <p class="ac-small" id="subCodeText"></p>
+        <label for="subCode">6-digit code from the email</label><input type="text" id="subCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+        <label for="subApp" id="subAppL" hidden>6-digit code from your authenticator app</label><input type="text" id="subApp" inputmode="numeric" maxlength="6" hidden>
+        <button class="ac-btn" type="submit" id="subGo">Confirm</button>
+        <div class="ac-row"><button class="ac-link" type="button" id="subKeep">Keep my plan as it is</button><button class="ac-link" type="button" id="subResend">Send a new code</button></div>
+      </form>
+      <p class="ac-err" id="subErr" role="alert"></p><p class="ac-ok" id="subOk" role="status" hidden></p>
+      <details style="margin-top:14px" id="payBox" hidden><summary style="cursor:pointer">Payment history</summary><ul id="payList" style="margin:8px 0 0;padding-left:20px"></ul></details>
+    </section>
     <section class="ac-card ac-wide">
       <h2>Redeem a code</h2>
       <p class="ac-small">Got a gift or coupon code? Enter it here. It works in all your FilesBolt apps.</p>
@@ -199,7 +219,13 @@
       otp_expired: "That code is wrong or has expired.",
       mfa_verification_failed: "That code isn't right. Check your authenticator app and try again.",
       account_deleted: "This account was deleted, so this email can't be used again.",
-      account_disabled: "This account is turned off. Contact support for help."
+      account_disabled: "This account is turned off. Contact support for help.",
+      reauth_required: "That code is wrong or has expired. Send a new code and try again.",
+      cant_pause: "This plan can't be paused. You can cancel renewal instead.",
+      cant_resume: "This plan can't be turned back on here. Contact support and we'll help.",
+      payments_not_ready: "Checkout isn't available right now. Please try again later.",
+      payment_error: "We couldn't reach the payment service. Please try again in a minute.",
+      signed_out: "Please sign in again."
     };
     function Err(msg, code) { var e = new Error(msg); e.code = code || ""; return e; }
     function call(method, path, body, tok) {
@@ -211,7 +237,7 @@
           return r.text().then(function (t) {
             var j = null; try { j = t ? JSON.parse(t) : null; } catch (e) {}
             if (!r.ok) {
-              var code = (j && (j.error_code || j.code)) || String(r.status), m = (j && (j.msg || j.message || j.error_description)) || "";
+              var code = (j && (j.error_code || j.code || (typeof j.error === "string" ? j.error : ""))) || String(r.status), m = (j && (j.msg || j.message || j.error_description)) || "";
               if (FRIENDLY[m]) code = m;
               throw Err(FRIENDLY[code] || m || "Something went wrong. Please try again.", code);
             }
@@ -286,11 +312,108 @@
         var p = planText(st);
         $("aPlan").textContent = p.title; $("aPlanNote").textContent = p.note;
         $("aUpgrade").hidden = p.pro;
+        lastStatus = st;
         show("vAccount");
+        loadSub(st);
       }).catch(function (e) {
         if (e.code === "signed_out" || e.code === "401" || e.code === "403" || e.code === "account_deleted") { store.set("fb_rt", null); access = null; show("vSignin"); return; }
         show("vSignin"); $("siErr").textContent = e.message;
       });
+    }
+
+    // --- Subscription: next charge, cancel / pause (need a fresh emailed code), turn renewal back on
+    var lastStatus = null, subAction = null, subFactor = null;
+    function money(a, c) {
+      try { return new Intl.NumberFormat(undefined, { style: "currency", currency: String(c || "usd").toUpperCase() }).format((a || 0) / 100); }
+      catch (e) { return ((a || 0) / 100).toFixed(2) + " " + String(c || "").toUpperCase(); }
+    }
+    function link(text, fn) { var b = document.createElement("button"); b.type = "button"; b.className = "ac-link"; b.textContent = text; b.onclick = fn; return b; }
+    function loadSub(st) {
+      $("subOk").hidden = true; $("subErr").textContent = ""; $("fSub").hidden = true;
+      rpc("my_payments").then(function (pays) {
+        pays = pays || [];
+        $("payBox").hidden = !pays.length;
+        $("payList").innerHTML = "";
+        pays.forEach(function (x) {
+          var li = document.createElement("li");
+          li.textContent = nice(x.at) + ": " + money(x.amount, x.currency) + (x.period ? " (" + x.period + ")" : "");
+          $("payList").appendChild(li);
+        });
+        if (!pays.length) { $("subCard").hidden = true; return; }
+        $("subCard").hidden = false;
+        var acts = $("subActions"); acts.innerHTML = "";
+        var now = Date.now(), ends = st.plan_ends_at ? Date.parse(st.plan_ends_at) : 0;
+        var paused = st.paused_until && Date.parse(st.paused_until) > now, active = ends > now;
+        if (!active) { $("subLine").textContent = "No active subscription. Your last plan ended on " + nice(st.plan_ends_at) + "."; return; }
+        if (paused) {
+          $("subLine").textContent = "Paused. Pro stays on until " + nice(st.plan_ends_at) + ", then billing restarts by itself on " + nice(st.paused_until) + ".";
+          acts.appendChild(link("Resume now", resume));
+        } else if (st.renews === false) {
+          $("subLine").textContent = "Renewal is off. Pro stays on until " + nice(st.plan_ends_at) + ", then your plan goes back to free.";
+          acts.appendChild(link("Turn renewal back on", resume));
+        } else {
+          $("subLine").textContent = "Renews automatically. Pro until " + nice(st.plan_ends_at) + ".";
+          acts.appendChild(link("Cancel renewal", function () { askSub("cancel"); }));
+          acts.appendChild(link("Pause for 1-3 months", function () { askSub("pause"); }));
+        }
+        token().then(function (t) { return call("POST", "/functions/v1/checkout", { action: "info" }, t); }).then(function (i) {
+          if (i && i.renews_on && !paused && st.renews !== false)
+            $("subLine").textContent = "Renews on " + nice(i.renews_on) + " for " + money(i.amount, i.currency) + (i.tax === "inclusive" ? " (tax included)." : " plus tax.");
+        }).catch(function () {});
+      }).catch(function () { $("subCard").hidden = true; });
+    }
+    function askSub(action) {
+      subAction = action; $("subErr").textContent = ""; $("subOk").hidden = true;
+      $("subAsk").textContent = action === "cancel"
+        ? "Cancel renewal? You keep Pro until " + nice(lastStatus.plan_ends_at) + ". You won't be charged again."
+        : "Pause your plan? You keep Pro until " + nice(lastStatus.plan_ends_at) + ", then no charges for the months you choose. Billing restarts by itself.";
+      $("subMonths").hidden = action !== "pause";
+      $("subGo").textContent = action === "cancel" ? "Cancel renewal" : "Pause my plan";
+      $("subCode").value = ""; $("subApp").value = "";
+      $("fSub").hidden = false;
+      sendSubCode();
+      token().then(factorOf).then(function (f) { subFactor = f; $("subApp").hidden = $("subAppL").hidden = !f; }).catch(function () {});
+    }
+    function sendSubCode() {
+      var em = $("aEmail").textContent;
+      $("subCodeText").textContent = "For your security, we're emailing a 6-digit code to " + em + ".";
+      call("POST", "/auth/v1/otp", { email: em, create_user: false })
+        .then(function () { $("subCodeText").textContent = "We sent a 6-digit code to " + em + ". It works for 10 minutes."; })
+        .catch(function (e) { $("subErr").textContent = e.message; });
+    }
+    $("subResend").addEventListener("click", sendSubCode);
+    $("subKeep").addEventListener("click", function () { $("fSub").hidden = true; $("subErr").textContent = ""; });
+    $("fSub").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var c = $("subCode").value.trim(), app = $("subApp").value.trim(), b = $("subGo");
+      $("subErr").textContent = "";
+      if (!/^\d{6}$/.test(c)) return void ($("subErr").textContent = "Enter the 6-digit code from the email.");
+      if (subFactor && !/^\d{6}$/.test(app)) return void ($("subErr").textContent = "Enter the 6-digit code from your authenticator app.");
+      busy(b, true, "Saving…");
+      call("POST", "/auth/v1/verify", { type: "email", email: $("aEmail").textContent, token: c })
+        .then(function (s) { return subFactor ? secondStep(s.access_token, subFactor, app) : s; })
+        .then(function (s) {
+          keep(s);   // a fresh, fully checked session
+          return call("POST", "/functions/v1/checkout", { action: subAction, months: Number($("subN").value) }, s.access_token);
+        })
+        .then(function (r) {
+          if (r && r.error) throw Err(r.error === "cant_pause" ? "This plan can't be paused. You can cancel renewal instead." : "That didn't work. Please try again.");
+          $("fSub").hidden = true;
+          $("subOk").textContent = subAction === "cancel" ? "Renewal cancelled. You keep Pro until " + nice(lastStatus.plan_ends_at) + "."
+            : "Paused. Billing restarts by itself on " + nice(r.paused_until) + ".";
+          $("subOk").hidden = false;
+          return rpc("web_status").then(function (st) { lastStatus = st; var ok = $("subOk").textContent; loadSub(st); $("subOk").textContent = ok; $("subOk").hidden = false; });
+        })
+        .catch(function (e) { $("subErr").textContent = e.code === "403" ? "That code is wrong or has expired. Send a new code and try again." : e.message; })
+        .then(function () { busy(b, false); });
+    });
+    function resume() {
+      $("subErr").textContent = "";
+      token().then(function (t) { return call("POST", "/functions/v1/checkout", { action: "resume" }, t); })
+        .then(function (r) {
+          if (r && r.error) throw Err("This plan can't be turned back on here. Contact support and we'll help.");
+          return rpc("web_status").then(function (st) { lastStatus = st; loadSub(st); $("subOk").textContent = "Done. Your plan renews automatically again."; $("subOk").hidden = false; });
+        }).catch(fail($("subErr")));
     }
 
     // --- Continue with Google (PKCE; the verifier stays in this tab)
