@@ -1,7 +1,7 @@
 {
-  "version": "0.4.55",
-  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.55/FilesBolt-Setup-0.4.55.exe",
-  "size": 62540730,
-  "sha256": "fd21cf403e8d98db2576e58b6019975f2c74c059f9a49e667287bd77becac837",
-  "notes": "The gift email button now opens FilesBolt with your code filled in. Bug fixes and improvements."
+  "version": "0.4.59",
+  "url": "https://github.com/harshil-bansal/filesbolt-site/releases/download/v0.4.59/FilesBolt-Setup-0.4.59.exe",
+  "size": 60994857,
+  "sha256": "9a73c9ae245e1066c3a5c58150a1d8df88d634c36bbb5c4ecf47db6f3773d7bc",
+  "notes": "Sign in with Google, and a new tool: Make PDF searchable (find and copy text in scanned PDFs). Forms and certificates now keep their filled-in text when you turn them into images or edit them. Bug fixes and improvements."
 }

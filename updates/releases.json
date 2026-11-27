@@ -1,5 +1,10 @@
 [
  {
+  "version": "0.4.59",
+  "date": "2026-11-27",
+  "notes": "Sign in with Google, and a new tool: Make PDF searchable (find and copy text in scanned PDFs). Forms and certificates now keep their filled-in text when you turn them into images or edit them. Bug fixes and improvements."
+ },
+ {
   "version": "0.4.55",
   "date": "2026-11-26",
   "notes": "The gift email button now opens FilesBolt with your code filled in. Bug fixes and improvements."

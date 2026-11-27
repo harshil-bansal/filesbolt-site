@@ -4,7 +4,8 @@
 <link>https://filesbolt.com/updates/</link>
 <description>New features and fixes in each FilesBolt update.</description>
 <language>en</language>
-<lastBuildDate>Thu, 26 Nov 2026 12:00:00 +0000</lastBuildDate>
+<lastBuildDate>Fri, 27 Nov 2026 12:00:00 +0000</lastBuildDate>
+<item><title>FilesBolt 0.4.59</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.59</guid><pubDate>Fri, 27 Nov 2026 12:00:00 +0000</pubDate><description>Sign in with Google, and a new tool: Make PDF searchable (find and copy text in scanned PDFs). Forms and certificates now keep their filled-in text when you turn them into images or edit them. Bug fixes and improvements.</description></item>
 <item><title>FilesBolt 0.4.55</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.55</guid><pubDate>Thu, 26 Nov 2026 12:00:00 +0000</pubDate><description>The gift email button now opens FilesBolt with your code filled in. Bug fixes and improvements.</description></item>
 <item><title>FilesBolt 0.4.54</title><link>https://filesbolt.com/updates/</link><guid isPermaLink="false">filesbolt-0.4.54</guid><pubDate>Thu, 26 Nov 2026 12:00:00 +0000</pubDate><description>Pause your Pro plan instead of cancelling, a nicer Resize images window, title bars that match dark mode, and a faster first open.
 Early users get a gift: Pro free until 1 June 2027.</description></item>
