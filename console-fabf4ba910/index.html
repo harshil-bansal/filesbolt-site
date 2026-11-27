@@ -1195,7 +1195,11 @@ $("#accRows").addEventListener("click", e => {
         <label class="mlab" style="margin-top:14px">Free time</label>
         <div class="line">Ends in <input type="number" data-f="tdays" min="0" max="365" value="7" style="width:80px"> days
           <button class="btn" data-act="trial">Set</button></div>
-        <p class="note">Now: ${trialNow}. 0 ends it today.</p></div>
+        <p class="note">Now: ${trialNow}. 0 ends it today.</p>
+        <label class="mlab" style="margin-top:14px">Paid subscription</label>
+        <div class="line"><button class="btn" data-act="subcancel">Cancel renewal</button>
+          <button class="btn" data-act="subpay">Payments &amp; refunds</button></div>
+        <p class="note">Cancel stops future charges (card or UPI). They keep Pro until the paid time ends.</p></div>
       <div class="mbox"><h3>Emails</h3>
         <label class="chk"><input type="checkbox" data-f="m_tips" disabled> Tips, news and offers</label>
         <label class="chk"><input type="checkbox" data-f="m_monthly" disabled> Monthly summary</label>
@@ -1230,14 +1234,18 @@ $("#accRows").addEventListener("click", e => {
   row.addEventListener("click", async ev => {
     const btn = ev.target.closest("button[data-act]"); if (!btn) return;
     const act = btn.dataset.act;
-    if ((act === "delete" || act === "disable" || act === "email" || act === "mfa") && btn.dataset.armed !== "1") {
+    if (act === "subpay") { $("#payQ").value = a.email; location.hash = "#sec-payments"; loadPayments(); return; }
+    if ((act === "delete" || act === "disable" || act === "email" || act === "mfa" || act === "subcancel") && btn.dataset.armed !== "1") {
       if (act === "email" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f("newemail").value.trim())) { say("Enter a valid new email.", false); return; }
-      btn.dataset.armed = "1"; const old = btn.textContent; btn.textContent = act === "delete" ? "Click again to delete for good" : act === "email" ? "Click again to change" : act === "mfa" ? "Click again to turn it off" : "Click again to deactivate";
+      btn.dataset.armed = "1"; const old = btn.textContent; btn.textContent = act === "delete" ? "Click again to delete for good" : act === "email" ? "Click again to change" : act === "mfa" ? "Click again to turn it off" : act === "subcancel" ? "Click again to cancel renewal" : "Click again to deactivate";
       setTimeout(() => { if (btn.isConnected) { btn.dataset.armed = ""; btn.textContent = old; } }, 4000); return;
     }
     btn.disabled = true;
     try {
-      if (act === "lang") {
+      if (act === "subcancel") {
+        await billing({ action: "cancel", email: a.email });
+        say("Renewal cancelled. They keep Pro until the paid time ends and won't be charged again.", true);
+      } else if (act === "lang") {
         await rpc("admin_set_language", { e: a.email, code: f("lang").value });
         a.language = f("lang").value || null;
         say("Language saved.", true);
