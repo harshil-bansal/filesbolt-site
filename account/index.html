@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com https://aovtkaljtayxuxuzureh.supabase.co https://api.pwnedpasswords.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your account | FilesBolt</title>
+<meta name="description" content="Sign in to see your FilesBolt plan, redeem a code and manage your account.">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="FilesBolt home">
+      <img src="/img/logo.svg" alt="" width="32" height="32"><span>FilesBolt</span>
+    </a>
+    <nav aria-label="Main">
+      <a href="/#tools">Tools</a>
+      <a href="/updates/">What&#39;s new</a><a href="/#faq">Help</a>
+      <a href="/account/">Account</a>
+      <a class="btn btn-small" href="/#download">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main class="ac">
+  <style>
+    .ac { background: var(--mist); padding: 48px 16px 72px; min-height: 60vh; }
+    .ac-card { max-width: 460px; margin: 0 auto 16px; background: var(--paper); border: 1px solid var(--rule); border-radius: 16px; padding: 28px 28px 24px; }
+    .ac-wide { max-width: 620px; }
+    .ac h1 { font-size: 26px; line-height: 1.2; margin: 0 0 6px; color: var(--ink); }
+    .ac h2 { font-size: 18px; margin: 0 0 8px; color: var(--ink); }
+    .ac p { margin: 0 0 10px; }
+    .ac label { display: block; font-size: 14px; font-weight: 600; margin: 12px 0 4px; }
+    .ac input[type=email], .ac input[type=password], .ac input[type=text] { width: 100%; font: inherit; font-size: 16px; padding: 10px 12px;
+      border: 1px solid var(--rule); border-radius: 10px; background: #fff; color: var(--text); }
+    .ac input:focus { outline: 3px solid var(--select-line); outline-offset: 0; border-color: var(--select-line); }
+    .ac-btn { display: block; width: 100%; margin-top: 14px; padding: 11px 16px; border-radius: 10px; border: 0; background: var(--ink);
+      color: #fff; font: inherit; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; }
+    .ac-btn:disabled { opacity: .55; cursor: default; }
+    .ac-btn.alt { background: #fff; color: var(--ink); border: 1px solid var(--rule); }
+    .ac-btn.amber { background: var(--amber); color: var(--ink); }
+    .ac-btn:focus-visible, .ac-link:focus-visible { outline: 3px solid var(--select-line); outline-offset: 2px; }
+    .ac-g { display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .ac-link { background: none; border: 0; padding: 0; color: var(--ink); font: inherit; font-size: 15px; text-decoration: underline; cursor: pointer; }
+    .ac-row { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+    .ac-small { font-size: 14px; color: var(--muted); }
+    .ac-or { text-align: center; font-size: 14px; color: var(--muted); margin: 16px 0 0; }
+    .ac-err { color: #B3261E; font-size: 15px; min-height: 0; margin: 10px 0 0; }
+    .ac-ok { color: #1E7B34; font-size: 15px; margin: 10px 0 0; }
+    .ac-plan { font-size: 20px; font-weight: 700; color: var(--ink); }
+    .ac-check { display: flex; gap: 8px; align-items: center; margin-top: 12px; font-size: 15px; }
+    .ac-inline { display: flex; gap: 8px; }
+    .ac-inline input { flex: 1; }
+    .ac-inline .ac-btn { width: auto; margin-top: 0; white-space: nowrap; }
+    [hidden] { display: none !important; }
+  </style>
+
+  <!-- Sign in -->
+  <section class="ac-card" id="vSignin" hidden>
+    <h1>Sign in</h1>
+    <p class="ac-small">Your FilesBolt account: the same one you use in the app.</p>
+    <button class="ac-btn alt ac-g" type="button" id="gBtn"><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23FFC107' d='M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z'/%3E%3Cpath fill='%23FF3D00' d='M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z'/%3E%3Cpath fill='%234CAF50' d='M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z'/%3E%3Cpath fill='%231976D2' d='M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z'/%3E%3C/svg%3E" width="20" height="20" alt="">Continue with Google</button>
+    <p class="ac-small" style="margin-top:8px">New to FilesBolt? Continuing with Google creates your account. You confirm you're 18 or older and agree to the <a href="/terms.html">Terms</a> and <a href="/privacy.html">Privacy policy</a>.</p>
+    <p class="ac-or">or use your email</p>
+    <form id="fSignin" novalidate>
+      <label for="siEmail">Email</label><input type="email" id="siEmail" autocomplete="email" required>
+      <label for="siPw">Password</label><input type="password" id="siPw" autocomplete="current-password" required>
+      <button class="ac-btn" type="submit" id="siGo">Sign in</button>
+    </form>
+    <p class="ac-err" id="siErr" role="alert"></p>
+    <div class="ac-row"><button class="ac-link" type="button" id="toSignup">Create an account</button><button class="ac-link" type="button" id="toForgot">Forgot password?</button></div>
+  </section>
+
+  <!-- Create account -->
+  <section class="ac-card" id="vSignup" hidden>
+    <h1>Create your account</h1>
+    <p class="ac-small">FilesBolt is free during our launch, with every tool. No card needed.</p>
+    <form id="fSignup" novalidate>
+      <label for="suName">Your name</label><input type="text" id="suName" autocomplete="name" maxlength="80">
+      <label for="suEmail">Email</label><input type="email" id="suEmail" autocomplete="email">
+      <label for="suPw">Password (at least 8 characters)</label><input type="password" id="suPw" autocomplete="new-password">
+      <label class="ac-check"><input type="checkbox" id="suAdult"> I'm 18 or older</label>
+      <button class="ac-btn" type="submit" id="suGo">Create account</button>
+    </form>
+    <p class="ac-small" style="margin-top:10px">By creating an account you agree to the <a href="/terms.html">Terms</a> and <a href="/privacy.html">Privacy policy</a>. Under 18? You can still use FilesBolt without an account.</p>
+    <p class="ac-err" id="suErr" role="alert"></p>
+    <div class="ac-row"><button class="ac-link" type="button" id="toSignin1">I already have an account</button></div>
+  </section>
+
+  <!-- Forgot password -->
+  <section class="ac-card" id="vForgot" hidden>
+    <h1>Reset your password</h1>
+    <form id="fForgot" novalidate>
+      <p class="ac-small">We'll email you a 6-digit code.</p>
+      <label for="fgEmail">Email</label><input type="email" id="fgEmail" autocomplete="email">
+      <button class="ac-btn" type="submit" id="fgGo">Send code</button>
+    </form>
+    <form id="fReset" hidden novalidate>
+      <p id="fgText"></p>
+      <label for="fgCode">6-digit code</label><input type="text" id="fgCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+      <label for="fgPw">New password (at least 8 characters)</label><input type="password" id="fgPw" autocomplete="new-password">
+      <button class="ac-btn" type="submit" id="fgSet">Set new password</button>
+    </form>
+    <p class="ac-err" id="fgErr" role="alert"></p>
+    <div class="ac-row"><button class="ac-link" type="button" id="toSignin2">Back to sign in</button></div>
+  </section>
+
+  <!-- Email code (after sign-up) -->
+  <section class="ac-card" id="vCode" hidden>
+    <h1>Check your email</h1>
+    <p id="codeText">We sent you a 6-digit code.</p>
+    <form id="fCode" novalidate>
+      <label for="cCode">6-digit code</label><input type="text" id="cCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+      <button class="ac-btn" type="submit" id="cGo">Confirm</button>
+    </form>
+    <p class="ac-err" id="cErr" role="alert"></p>
+    <p class="ac-small" style="margin-top:10px">Can't find it? Check your Spam folder. The code works for 15 minutes.</p>
+  </section>
+
+  <!-- Two-step -->
+  <section class="ac-card" id="vMfa" hidden>
+    <h1>Two-step sign-in</h1>
+    <p>Open your authenticator app and enter the 6-digit code for FilesBolt.</p>
+    <form id="fMfa" novalidate>
+      <label for="mCode">6-digit code</label><input type="text" id="mCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+      <button class="ac-btn" type="submit" id="mGo">Continue</button>
+    </form>
+    <p class="ac-err" id="mErr" role="alert"></p>
+  </section>
+
+  <!-- Loading -->
+  <section class="ac-card" id="vLoading"><p class="ac-small" style="margin:0">Loading your account…</p></section>
+
+  <!-- Account -->
+  <div id="vAccount" hidden>
+    <section class="ac-card ac-wide">
+      <h1 id="aHello">Your account</h1>
+      <p class="ac-small" id="aEmail"></p>
+      <p class="ac-plan" id="aPlan" style="margin-top:14px"></p>
+      <p class="ac-small" id="aPlanNote"></p>
+      <a class="ac-btn amber" id="aUpgrade" href="#" hidden>Upgrade to Pro</a>
+      <p class="ac-err" id="aErr" role="alert"></p>
+    </section>
+    <section class="ac-card ac-wide">
+      <h2>Redeem a code</h2>
+      <p class="ac-small">Got a gift or coupon code? Enter it here. It works in all your FilesBolt apps.</p>
+      <form class="ac-inline" id="fRedeem" novalidate>
+        <input type="text" id="rCode" aria-label="Code" placeholder="e.g. EARLY2027" maxlength="40" autocapitalize="characters">
+        <button class="ac-btn" type="submit" id="rGo">Redeem</button>
+      </form>
+      <p class="ac-err" id="rErr" role="alert"></p><p class="ac-ok" id="rOk" role="status" hidden></p>
+    </section>
+    <section class="ac-card ac-wide">
+      <h2>Password</h2>
+      <button class="ac-link" type="button" id="pwOpen">Change password</button>
+      <form id="fPw" hidden novalidate>
+        <label for="pwCur">Current password</label><input type="password" id="pwCur" autocomplete="current-password">
+        <label for="pwNew">New password (at least 8 characters)</label><input type="password" id="pwNew" autocomplete="new-password">
+        <label for="pwApp" id="pwAppL" hidden>6-digit code from your authenticator app</label><input type="text" id="pwApp" inputmode="numeric" maxlength="6" hidden>
+        <button class="ac-btn" type="submit" id="pwGo">Change password</button>
+      </form>
+      <p class="ac-err" id="pwErr" role="alert"></p><p class="ac-ok" id="pwOk" role="status" hidden></p>
+    </section>
+    <section class="ac-card ac-wide">
+      <h2>Your data</h2>
+      <div class="ac-row" style="margin-top:4px">
+        <button class="ac-link" type="button" id="dlData">Download my data</button>
+        <a class="ac-link" href="/contact/">Contact support</a>
+        <a class="ac-link" href="/delete-account/">Delete my account</a>
+      </div>
+      <p class="ac-err" id="dErr" role="alert"></p>
+    </section>
+    <section class="ac-card ac-wide" style="background:transparent;border:0;padding:0 0 0 2px">
+      <button class="ac-link" type="button" id="signOut">Sign out</button>
+    </section>
+  </div>
+
+  <script>
+  (function () {
+    "use strict";
+    var U = "https://aovtkaljtayxuxuzureh.supabase.co", K = "sb_publishable_qK3cBBkyFVLg7FKiLfiYFQ_Q7Ss2Sf9";
+    var BACK = "https://filesbolt.com/account/";
+    var $ = function (id) { return document.getElementById(id); };
+    var access = null, accessExp = 0, mfaTok = null, mfaFactor = null, signupEmail = "";
+    var store = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+                  set: function (k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} } };
+
+    var FRIENDLY = {
+      invalid_credentials: "That email and password don't match. Check them, or use Forgot password.",
+      email_not_confirmed: "Your email isn't confirmed yet. We've sent you a new code.",
+      user_already_exists: "There's already an account with this email. Sign in instead.",
+      weak_password: "Choose a stronger password (at least 8 characters).",
+      over_email_send_rate_limit: "We just sent you an email. Please wait a minute and try again.",
+      otp_expired: "That code is wrong or has expired.",
+      mfa_verification_failed: "That code isn't right. Check your authenticator app and try again.",
+      account_deleted: "This account was deleted, so this email can't be used again.",
+      account_disabled: "This account is turned off. Contact support for help."
+    };
+    function Err(msg, code) { var e = new Error(msg); e.code = code || ""; return e; }
+    function call(method, path, body, tok) {
+      var h = { apikey: K, "Content-Type": "application/json" };
+      if (tok) h.Authorization = "Bearer " + tok;
+      return fetch(U + path, { method: method, headers: h, body: body == null ? undefined : JSON.stringify(body) })
+        .catch(function () { throw Err("No internet connection. Connect and try again.", "offline"); })
+        .then(function (r) {
+          return r.text().then(function (t) {
+            var j = null; try { j = t ? JSON.parse(t) : null; } catch (e) {}
+            if (!r.ok) {
+              var code = (j && (j.error_code || j.code)) || String(r.status), m = (j && (j.msg || j.message || j.error_description)) || "";
+              if (FRIENDLY[m]) code = m;
+              throw Err(FRIENDLY[code] || m || "Something went wrong. Please try again.", code);
+            }
+            return j;
+          });
+        });
+    }
+    function keep(s) {
+      if (!s || !s.access_token) throw Err("Sign-in failed. Please try again.");
+      access = s.access_token; accessExp = Date.now() + ((s.expires_in || 3600) - 60) * 1000;
+      store.set("fb_rt", s.refresh_token);
+    }
+    function token() {
+      if (access && Date.now() < accessExp) return Promise.resolve(access);
+      var rt = store.get("fb_rt");
+      if (!rt) return Promise.reject(Err("Please sign in.", "signed_out"));
+      return call("POST", "/auth/v1/token?grant_type=refresh_token", { refresh_token: rt }).then(function (s) { keep(s); return access; })
+        .catch(function (e) { if (e.code !== "offline") store.set("fb_rt", null); throw e; });
+    }
+    function rpc(fn, body) { return token().then(function (t) { return call("POST", "/rest/v1/rpc/" + fn, body || {}, t); }); }
+    function factorOf(tok) {
+      return call("GET", "/auth/v1/user", null, tok).then(function (u) {
+        var f = ((u && u.factors) || []).filter(function (x) { return x.status === "verified" && x.factor_type === "totp"; })[0];
+        return f ? f.id : null;
+      });
+    }
+    function secondStep(tok, factor, code) {
+      return call("POST", "/auth/v1/factors/" + factor + "/challenge", {}, tok).then(function (ch) {
+        return call("POST", "/auth/v1/factors/" + factor + "/verify", { challenge_id: ch.id, code: code.trim() }, tok);
+      });
+    }
+    function afterSession(s) {   // keep the session unless two-step is on
+      return factorOf(s.access_token).then(function (f) {
+        if (f) { mfaTok = s.access_token; mfaFactor = f; show("vMfa"); $("mCode").focus(); return; }
+        keep(s); return loadAccount();
+      });
+    }
+
+    var views = ["vSignin", "vSignup", "vForgot", "vCode", "vMfa", "vLoading", "vAccount"];
+    function show(v) { views.forEach(function (x) { $(x).hidden = x !== v; }); window.scrollTo(0, 0); }
+    function busy(btn, on, text) { btn.disabled = on; if (on) { btn.dataset.t = btn.textContent; btn.textContent = text; } else if (btn.dataset.t) btn.textContent = btn.dataset.t; }
+    function fail(el) { return function (e) { el.textContent = e.message || "Something went wrong. Please try again."; }; }
+    function nice(d) { try { return new Date(d).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" }); } catch (e) { return ""; } }
+
+    function planText(st) {
+      var now = Date.now(), p = st.plan || "free";
+      if (p !== "free" && p !== "trial") {
+        var end = st.plan_ends_at ? Date.parse(st.plan_ends_at) : null;
+        if (!end || end > now) {
+          var name = st.plan_name || "Pro", note = "";
+          if (st.paused_until && Date.parse(st.paused_until) > now) note = "Paused until " + nice(st.paused_until) + ".";
+          else if (end) note = (st.renews ? "Renews on " : "Pro until ") + nice(end) + ".";
+          return { title: name, note: note, pro: true };
+        }
+        p = "trial";
+      }
+      if (p === "trial" && st.trial_ends_at && Date.parse(st.trial_ends_at) > now) {
+        var days = Math.ceil((Date.parse(st.trial_ends_at) - now) / 864e5);
+        return days > 60 ? { title: "Free during our launch", note: "Every tool, no limits.", pro: false }
+                         : { title: "Free trial", note: days + (days === 1 ? " day" : " days") + " left.", pro: false };
+      }
+      var lim = st.monthly_limit > 0 ? st.monthly_limit : 10, used = st.jobs_used || 0;
+      return { title: "Free plan", note: Math.max(0, lim - used) + " of " + lim + " jobs left this month.", pro: false };
+    }
+
+    function loadAccount() {
+      show("vLoading");
+      return rpc("web_status").then(function (st) {
+        if (!st) throw Err("We couldn't find this account.", "no_profile");
+        $("aHello").textContent = st.name ? "Hi " + String(st.name).split(" ")[0] : "Your account";
+        $("aEmail").textContent = st.email || "";
+        var p = planText(st);
+        $("aPlan").textContent = p.title; $("aPlanNote").textContent = p.note;
+        $("aUpgrade").hidden = p.pro;
+        show("vAccount");
+      }).catch(function (e) {
+        if (e.code === "signed_out" || e.code === "401" || e.code === "403" || e.code === "account_deleted") { store.set("fb_rt", null); access = null; show("vSignin"); return; }
+        show("vSignin"); $("siErr").textContent = e.message;
+      });
+    }
+
+    // --- Continue with Google (PKCE; the verifier stays in this tab)
+    function b64url(buf) { return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+    $("gBtn").addEventListener("click", function () {
+      var v = b64url(crypto.getRandomValues(new Uint8Array(48)).buffer);
+      crypto.subtle.digest("SHA-256", new TextEncoder().encode(v)).then(function (h) {
+        try { sessionStorage.setItem("fb_pkce", v); } catch (e) {}
+        location.href = U + "/auth/v1/authorize?provider=google&redirect_to=" + encodeURIComponent(BACK) +
+          "&code_challenge=" + b64url(h) + "&code_challenge_method=s256";
+      });
+    });
+
+    $("fSignin").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var em = $("siEmail").value.trim().toLowerCase(), pw = $("siPw").value, b = $("siGo");
+      $("siErr").textContent = "";
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { $("siErr").textContent = "Enter a valid email address."; return; }
+      if (!pw) { $("siErr").textContent = "Enter your password."; return; }
+      busy(b, true, "Signing in…");
+      call("POST", "/auth/v1/token?grant_type=password", { email: em, password: pw })
+        .then(afterSession)
+        .catch(function (e) {
+          if (e.code === "email_not_confirmed") {
+            call("POST", "/auth/v1/resend", { type: "signup", email: em }).catch(function () {});
+            signupEmail = em; $("codeText").textContent = "We sent a 6-digit code to " + em + ". Enter it to continue."; show("vCode"); return;
+          }
+          $("siErr").textContent = e.message;
+        })
+        .then(function () { busy(b, false); });
+    });
+
+    $("fSignup").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var name = $("suName").value.trim(), em = $("suEmail").value.trim().toLowerCase(), pw = $("suPw").value, b = $("suGo");
+      $("suErr").textContent = "";
+      if (!name) return void ($("suErr").textContent = "Enter your name.");
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return void ($("suErr").textContent = "Enter a valid email address.");
+      if (pw.length < 8) return void ($("suErr").textContent = "Use at least 8 characters for your password.");
+      if (!$("suAdult").checked) return void ($("suErr").textContent = "Accounts are for people 18 or older. You can still use FilesBolt without an account.");
+      busy(b, true, "Creating account…");
+      call("POST", "/auth/v1/signup", { email: em, password: pw, data: { full_name: name.split(/\s+/).join(" ").slice(0, 80) } })
+        .catch(function (e) { if (e.code !== "over_email_send_rate_limit") throw e; })
+        .then(function () { signupEmail = em; $("codeText").textContent = "We sent a 6-digit code to " + em + ". Enter it to continue."; show("vCode"); $("cCode").focus(); })
+        .catch(fail($("suErr")))
+        .then(function () { busy(b, false); });
+    });
+
+    $("fCode").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var c = $("cCode").value.trim(), b = $("cGo");
+      $("cErr").textContent = "";
+      if (!/^\d{6}$/.test(c)) return void ($("cErr").textContent = "Enter the 6-digit code from the email.");
+      busy(b, true, "Checking…");
+      call("POST", "/auth/v1/verify", { type: "signup", email: signupEmail, token: c })
+        .then(function (s) { keep(s); return loadAccount(); })
+        .catch(fail($("cErr"))).then(function () { busy(b, false); });
+    });
+
+    $("fMfa").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var c = $("mCode").value.trim(), b = $("mGo");
+      $("mErr").textContent = "";
+      if (!/^\d{6}$/.test(c)) return void ($("mErr").textContent = "Enter the 6-digit code from your authenticator app.");
+      busy(b, true, "Checking…");
+      secondStep(mfaTok, mfaFactor, c).then(function (s) { mfaTok = null; keep(s); return loadAccount(); })
+        .catch(fail($("mErr"))).then(function () { busy(b, false); });
+    });
+
+    $("aUpgrade").addEventListener("click", function (ev) {
+      ev.preventDefault();
+      var b = $("aUpgrade"); $("aErr").textContent = "";
+      b.textContent = "Opening checkout…";
+      var tz = ""; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) {}
+      token().then(function (t) {
+        return call("POST", "/functions/v1/checkout", { region: "intl", country: /^Asia\/(Kolkata|Calcutta)$/.test(tz) ? "IN" : "" }, t);
+      }).then(function (r) {
+        if (r && r.url && /^https:\/\/(checkout\.stripe\.com|rzp\.io|[a-z0-9.-]*razorpay\.com)\//.test(r.url)) location.href = r.url;
+        else throw Err("Checkout isn't available right now. Please try again later.");
+      }).catch(function (e) { $("aErr").textContent = e.message; b.textContent = "Upgrade to Pro"; });
+    });
+
+    $("fRedeem").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var code = $("rCode").value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, ""), b = $("rGo");
+      $("rErr").textContent = ""; $("rOk").hidden = true;
+      if (!code) return void ($("rErr").textContent = "Enter a code.");
+      busy(b, true, "Redeeming…");
+      rpc("redeem_coupon", { code: code }).then(function (r) {
+        if (r && r.ok === false) throw Err(r.message || "That code didn't work.");
+        $("rOk").textContent = (r && r.message) || "Done! Your plan is updated."; $("rOk").hidden = false; $("rCode").value = "";
+        return rpc("web_status").then(function (st) { var p = planText(st); $("aPlan").textContent = p.title; $("aPlanNote").textContent = p.note; $("aUpgrade").hidden = p.pro; });
+      }).catch(fail($("rErr"))).then(function () { busy(b, false); });
+    });
+
+    $("pwOpen").addEventListener("click", function () {
+      $("fPw").hidden = false; $("pwOpen").hidden = true; $("pwCur").focus();
+      token().then(factorOf).then(function (f) { $("pwApp").hidden = $("pwAppL").hidden = !f; }).catch(function () {});
+    });
+    $("fPw").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var cur = $("pwCur").value, nw = $("pwNew").value, app = $("pwApp").value.trim(), b = $("pwGo");
+      $("pwErr").textContent = ""; $("pwOk").hidden = true;
+      if (!cur) return void ($("pwErr").textContent = "Enter your current password.");
+      if (nw.length < 8) return void ($("pwErr").textContent = "Use at least 8 characters for your new password.");
+      if (!$("pwApp").hidden && !/^\d{6}$/.test(app)) return void ($("pwErr").textContent = "Enter the 6-digit code from your authenticator app.");
+      busy(b, true, "Changing…");
+      var email = $("aEmail").textContent;
+      call("POST", "/auth/v1/token?grant_type=password", { email: email, password: cur })
+        .catch(function (e) { if (e.code === "invalid_credentials") throw Err("Your current password isn't right."); throw e; })
+        .then(function (s) {
+          var tok = s.access_token;
+          return factorOf(tok).then(function (f) { return f ? secondStep(tok, f, app).then(function (s2) { return s2.access_token; }) : tok; })
+            .then(function (t2) {
+              return call("PUT", "/auth/v1/user", { password: nw }, t2).then(function () {
+                return call("POST", "/auth/v1/logout?scope=local", {}, t2).catch(function () {});
+              });
+            });
+        })
+        .then(function () { $("pwOk").textContent = "Your password has been changed. Use the new one next time you sign in."; $("pwOk").hidden = false; $("fPw").hidden = true; $("fPw").reset(); })
+        .catch(fail($("pwErr"))).then(function () { busy(b, false); });
+    });
+
+    $("dlData").addEventListener("click", function () {
+      $("dErr").textContent = "";
+      rpc("my_data_export").then(function (d) {
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(d, null, 2)], { type: "application/json" }));
+        a.download = "FilesBolt-my-data.json"; document.body.appendChild(a); a.click(); a.remove();
+      }).catch(fail($("dErr")));
+    });
+
+    $("signOut").addEventListener("click", function () {
+      var t = access;
+      store.set("fb_rt", null); access = null;
+      if (t) call("POST", "/auth/v1/logout?scope=local", {}, t).catch(function () {});
+      $("fSignin").reset(); show("vSignin");
+    });
+    $("toSignup").addEventListener("click", function () { show("vSignup"); $("suName").focus(); });
+    $("toSignin1").addEventListener("click", function () { show("vSignin"); });
+    $("toSignin2").addEventListener("click", function () { show("vSignin"); });
+    $("toForgot").addEventListener("click", function () {
+      $("fgEmail").value = $("siEmail").value; $("fForgot").hidden = false; $("fReset").hidden = true; $("fgErr").textContent = "";
+      show("vForgot"); $("fgEmail").focus();
+    });
+    var fgEmail = "";
+    $("fForgot").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var em = $("fgEmail").value.trim().toLowerCase(), b = $("fgGo");
+      $("fgErr").textContent = "";
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return void ($("fgErr").textContent = "Enter a valid email address.");
+      busy(b, true, "Sending…");
+      call("POST", "/auth/v1/recover", { email: em })
+        .catch(function (e) { if (e.code !== "over_email_send_rate_limit") throw e; })
+        .then(function () {
+          fgEmail = em; $("fgText").textContent = "If there's an account for " + em + ", we sent it a 6-digit code. Check Spam too.";
+          $("fForgot").hidden = true; $("fReset").hidden = false; $("fgCode").focus();
+        }).catch(fail($("fgErr"))).then(function () { busy(b, false); });
+    });
+    $("fReset").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var c = $("fgCode").value.trim(), pw = $("fgPw").value, b = $("fgSet");
+      $("fgErr").textContent = "";
+      if (!/^\d{6}$/.test(c)) return void ($("fgErr").textContent = "Enter the 6-digit code from the email.");
+      if (pw.length < 8) return void ($("fgErr").textContent = "Use at least 8 characters for your new password.");
+      busy(b, true, "Saving…");
+      call("POST", "/auth/v1/verify", { type: "recovery", email: fgEmail, token: c })
+        .then(function (s) { return call("PUT", "/auth/v1/user", { password: pw }, s.access_token).then(function () { return afterSession(s); }); })
+        .catch(fail($("fgErr"))).then(function () { busy(b, false); });
+    });
+
+    // --- start: back from Google, or an existing session, or the sign-in form
+    var q = new URLSearchParams(location.search), h = new URLSearchParams(location.hash.slice(1));
+    var code = q.get("code"), err = q.get("error_description") || h.get("error_description");
+    if (code || err || q.get("error")) try { history.replaceState(null, "", location.pathname); } catch (e) {}
+    if (code) {
+      var v = null; try { v = sessionStorage.getItem("fb_pkce"); sessionStorage.removeItem("fb_pkce"); } catch (e) {}
+      if (!v) { show("vSignin"); $("siErr").textContent = "That sign-in link has expired. Click Continue with Google again."; return; }
+      call("POST", "/auth/v1/token?grant_type=pkce", { auth_code: code, code_verifier: v })
+        .then(afterSession)
+        .catch(function (e) { show("vSignin"); $("siErr").textContent = e.message; });
+    } else if (err) {
+      show("vSignin");
+      $("siErr").textContent = /deleted/i.test(err) ? "This account was deleted, so this email can't be used to sign up again." : String(err).replace(/\+/g, " ");
+    } else if (store.get("fb_rt")) {
+      loadAccount();
+    } else {
+      show(location.hash === "#create" ? "vSignup" : "vSignin");
+    }
+  })();
+  </script>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span class="brand small"><img src="/img/logo.svg" alt="" width="20" height="20">FilesBolt</span>
+    <nav aria-label="Footer"><a href="/pricing/">Pricing</a><a href="/terms.html">Terms</a><a href="/refunds.html">Refunds</a><a href="/privacy.html">Privacy policy</a><a href="/#faq">Help</a><a href="/contact/">Contact us</a></nav>
+    <span class="copy">© 2026 FilesBolt · <span id="co">Lumisha LLC</span></span><script>try{if(/^Asia\/(Kolkata|Calcutta)$/.test(Intl.DateTimeFormat().resolvedOptions().timeZone))document.getElementById("co").textContent="Lumisha India Private Limited"}catch(e){}</script>
+  </div>
+</footer>
+</body>
+</html>
