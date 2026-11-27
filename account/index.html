@@ -489,7 +489,8 @@
       b.textContent = "Opening checkout…";
       var tz = ""; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) {}
       token().then(function (t) {
-        return call("POST", "/functions/v1/checkout", { region: "intl", country: /^Asia\/(Kolkata|Calcutta)$/.test(tz) ? "IN" : "" }, t);
+        var india = /^Asia\/(Kolkata|Calcutta)$/.test(tz);
+        return call("POST", "/functions/v1/checkout", india ? { region: "in" } : { region: "intl", country: "" }, t);
       }).then(function (r) {
         if (r && r.url && /^https:\/\/(checkout\.stripe\.com|rzp\.io|[a-z0-9.-]*razorpay\.com)\//.test(r.url)) location.href = r.url;
         else throw Err("Checkout isn't available right now. Please try again later.");
