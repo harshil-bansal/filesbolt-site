@@ -6,7 +6,7 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Signed in | FilesBolt</title>
+<title>Continue in FilesBolt | FilesBolt</title>
 <meta name="description" content="Finish signing in to FilesBolt.">
 <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="/img/logo.svg">
@@ -26,40 +26,58 @@
   </div>
 </header>
 
-<main class="doc">
-  <div class="wrap narrow" style="text-align:center">
-    <h1 id="sTitle">Opening FilesBolt…</h1>
-    <p id="sText">Your browser may ask to open FilesBolt. Allow it, and you'll be signed in there.</p>
-    <p style="margin-top:18px"><a class="btn" id="sOpen" href="#" style="background:#121417;color:#fff">Open FilesBolt</a></p>
-    <p class="muted" id="sNote" style="margin-top:14px">When FilesBolt says you're signed in, you can close this tab.</p>
+<main class="sg">
+  <style>
+    .sg { background: var(--mist); padding: 56px 16px 72px; }
+    .sg-card { max-width: 440px; margin: 0 auto; background: var(--paper); border: 1px solid var(--rule); border-radius: 16px;
+               padding: 32px 30px 26px; text-align: center; box-shadow: 0 1px 2px rgba(18,20,23,.06); }
+    .sg-logo { width: 56px; height: 56px; border-radius: 14px; display: block; margin: 0 auto 18px; }
+    .sg h1 { font-size: 26px; line-height: 1.2; margin: 0 0 8px; color: var(--ink); }
+    .sg p { margin: 0 0 6px; }
+    .sg ol { text-align: left; margin: 18px 0 22px; padding: 0 0 0 20px; color: var(--text); }
+    .sg ol li { margin: 0 0 6px; }
+    .sg-btn { display: block; width: 100%; padding: 12px 16px; border-radius: 10px; background: var(--ink); color: #fff;
+              font-weight: 600; text-decoration: none; border: 0; font-size: 16px; }
+    .sg-btn:hover { background: #2B3038; }
+    .sg-btn:focus-visible { outline: 3px solid var(--select-line); outline-offset: 2px; }
+    .sg-small { font-size: 14px; color: var(--muted); margin-top: 16px !important; }
+    .sg-err { color: #B3261E; }
+  </style>
+  <div class="sg-card">
+    <img class="sg-logo" src="/img/logo.svg" alt="">
+    <h1 id="sTitle">Continue in FilesBolt</h1>
+    <p id="sText">Google confirmed it's you. One more step:</p>
+    <ol id="sSteps">
+      <li>If your browser asks, choose <strong>Open FilesBolt</strong>.</li>
+      <li>FilesBolt signs you in. Then you can close this tab.</li>
+    </ol>
+    <a class="sg-btn" id="sOpen" href="#">Open FilesBolt</a>
+    <p class="sg-small" id="sNote">Nothing happened? Make sure FilesBolt is installed, then click the button again.</p>
     <script>
     (function () {
       var q = new URLSearchParams(location.search), h = new URLSearchParams(location.hash.slice(1));
       var code = q.get("code") || h.get("code"), err = q.get("error_description") || h.get("error_description") || q.get("error") || h.get("error");
       try { history.replaceState(null, "", location.pathname); } catch (e) {}   // don't leave the one-time code in the address bar or history
-      var open = document.getElementById("sOpen");
-      if (!code) {
+      var open = document.getElementById("sOpen"), android = /Android/i.test(navigator.userAgent);
+      function appLink(query) {
+        return android ? "intent://auth-callback?" + query + "#Intent;scheme=filesbolt;package=com.filesbolt.app;end"
+                       : "filesbolt://auth-callback?" + query;
+      }
+      var link;
+      if (code) {
+        link = appLink("code=" + encodeURIComponent(code));
+      } else {
         var msg = err ? String(err).replace(/\+/g, " ") : "Sign-in was cancelled.";
         if (/deleted/i.test(msg)) msg = "This account was deleted, so this email can't be used to sign up again.";
         document.getElementById("sTitle").textContent = "Sign-in didn't finish";
-        document.getElementById("sText").textContent = msg;
-        document.getElementById("sNote").textContent = "FilesBolt will show this too. You can close this tab and try again there.";
-        var back = "filesbolt://auth-callback?error_description=" + encodeURIComponent(msg);
-        if (/Android/i.test(navigator.userAgent)) {
-          back = "intent://auth-callback?error_description=" + encodeURIComponent(msg) + "#Intent;scheme=filesbolt;package=com.filesbolt.app;end";
-        }
+        var t = document.getElementById("sText"); t.textContent = msg; t.className = "sg-err";
+        document.getElementById("sSteps").innerHTML = "<li>Go back to FilesBolt.</li><li>Try Continue with Google again, or use your email.</li>";
+        document.getElementById("sNote").textContent = "You can close this tab.";
         open.textContent = "Back to FilesBolt";
-        open.href = back;
-        setTimeout(function () { location.href = back; }, 150);
-        return;
-      }
-      var link = "filesbolt://auth-callback?code=" + encodeURIComponent(code);
-      if (/Android/i.test(navigator.userAgent)) {
-        link = "intent://auth-callback?code=" + encodeURIComponent(code) + "#Intent;scheme=filesbolt;package=com.filesbolt.app;end";
+        link = appLink("error_description=" + encodeURIComponent(msg));
       }
       open.href = link;
-      open.addEventListener("click", function () { document.getElementById("sTitle").textContent = "Signed in"; });
-      setTimeout(function () { location.href = link; document.getElementById("sTitle").textContent = "Signed in"; }, 150);
+      setTimeout(function () { location.href = link; }, 200);
     })();
     </script>
   </div>
