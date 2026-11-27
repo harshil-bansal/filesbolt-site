@@ -39,11 +39,18 @@
       try { history.replaceState(null, "", location.pathname); } catch (e) {}   // don't leave the one-time code in the address bar or history
       var open = document.getElementById("sOpen");
       if (!code) {
+        var msg = err ? String(err).replace(/\+/g, " ") : "Sign-in was cancelled.";
+        if (/deleted/i.test(msg)) msg = "This account was deleted, so this email can't be used to sign up again.";
         document.getElementById("sTitle").textContent = "Sign-in didn't finish";
-        document.getElementById("sText").textContent = err ? String(err).replace(/\+/g, " ") : "Go back to FilesBolt and try again.";
-        if (/deleted/i.test(err || "")) document.getElementById("sText").textContent = "This account was deleted, so this email can't be used to sign up again.";
-        open.style.display = "none";
-        document.getElementById("sNote").textContent = "You can close this tab.";
+        document.getElementById("sText").textContent = msg;
+        document.getElementById("sNote").textContent = "FilesBolt will show this too. You can close this tab and try again there.";
+        var back = "filesbolt://auth-callback?error_description=" + encodeURIComponent(msg);
+        if (/Android/i.test(navigator.userAgent)) {
+          back = "intent://auth-callback?error_description=" + encodeURIComponent(msg) + "#Intent;scheme=filesbolt;package=com.filesbolt.app;end";
+        }
+        open.textContent = "Back to FilesBolt";
+        open.href = back;
+        setTimeout(function () { location.href = back; }, 150);
         return;
       }
       var link = "filesbolt://auth-callback?code=" + encodeURIComponent(code);
