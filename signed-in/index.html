@@ -42,7 +42,7 @@
         document.getElementById("sTitle").textContent = "Sign-in didn't finish";
         document.getElementById("sText").textContent = err ? String(err).replace(/\+/g, " ") : "Go back to FilesBolt and try again.";
         if (/deleted/i.test(err || "")) document.getElementById("sText").textContent = "This account was deleted, so this email can't be used to sign up again.";
-        open.hidden = true;
+        open.style.display = "none";
         document.getElementById("sNote").textContent = "You can close this tab.";
         return;
       }
