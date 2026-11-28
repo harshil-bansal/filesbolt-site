@@ -1376,8 +1376,16 @@ async function loadPayments() {
       <tr class="payx" data-for="${p.id}" hidden><td colspan="6"></td></tr>`).join("")
       : '<tr><td colspan="6" class="muted">No payments yet.</td></tr>';
     m.textContent = ""; m.className = "msg";
+    // fetch missing receipt links quietly (once per payment per visit), then show them
+    const missing = payments.filter(p => !p.receipt_url && !receiptTried.has(p.id));
+    if (missing.length) {
+      missing.forEach(p => receiptTried.add(p.id));
+      const got = await Promise.all(missing.map(p => billing({ action: "sync", payment_id: p.id }).then(() => true, () => false)));
+      if (got.some(Boolean)) loadPayments();
+    }
   } catch (err) { m.className = "msg bad"; m.textContent = err.message; }
 }
+const receiptTried = new Set();
 const billing = body => call("/functions/v1/admin-billing", body);
 /* ---------- discount codes (money off when paying) ---------- */
 const dLabel = c => {
