@@ -476,7 +476,7 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
   <section class="panel below adm-page" id="sec-payments">
     <h2>Payments</h2>
     <p class="lead" style="margin-bottom:0">Payments for FilesBolt Pro: cards worldwide through Stripe, and UPI or cards in India through Razorpay.
-      Receipts and invoices are Stripe's own documents (Razorpay payments have none here; see the Razorpay dashboard).
+      Receipts are Stripe's or Razorpay's own pages (Invoice PDF is for card payments only).
       UPI plans can be cancelled but not paused. A full refund ends Pro straight away and stops renewal; a partial refund leaves the plan as it is.
       Every refund and change is written to Activity.</p>
     <form class="row" id="payFind" style="margin-top:12px; max-width:560px">
@@ -1368,7 +1368,7 @@ async function loadPayments() {
       <td>${payState(p)}</td>
       <td>${planNow(p)}</td>
       <td class="acts">
-        ${p.receipt_url ? `<a class="btnlink" href="${esc(p.receipt_url)}" target="_blank" rel="noopener">Receipt</a>` : p.provider === "razorpay" ? "" : `<button data-pay="sync">Get receipt</button>`}
+        ${p.receipt_url ? `<a class="btnlink" href="${esc(p.receipt_url)}" target="_blank" rel="noopener">Receipt</a>` : `<button data-pay="sync">Get receipt</button>`}
         ${p.invoice_pdf ? `<a class="btnlink" href="${esc(p.invoice_pdf)}" target="_blank" rel="noopener">Invoice PDF</a>` : ""}
         ${p.status !== "refunded" ? `<button data-pay="refund">Refund…</button>` : ""}
         ${p.subscription ? `<button data-pay="manage">Renewal…</button>` : ""}
