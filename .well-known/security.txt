@@ -1,0 +1,5 @@
+Contact: mailto:security@filesbolt.com
+Expires: 2027-11-28T00:00:00.000Z
+Preferred-Languages: en, hi
+Canonical: https://filesbolt.com/.well-known/security.txt
+Policy: https://filesbolt.com/contact/
