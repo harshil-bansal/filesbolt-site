@@ -144,6 +144,15 @@
       <p class="ac-plan" id="aPlan" style="margin-top:14px"></p>
       <p class="ac-small" id="aPlanNote"></p>
       <a class="ac-btn amber" id="aUpgrade" href="#" hidden>Upgrade to Pro</a>
+      <div id="aDisc" hidden style="margin-top:12px">
+        <a href="#" id="aDiscOpen" class="ac-small">Have a discount code?</a>
+        <div id="aDiscBox" hidden>
+          <label for="aDiscCode">Discount code</label>
+          <div class="ac-row" style="gap:8px"><input type="text" id="aDiscCode" maxlength="30" autocomplete="off" style="text-transform:uppercase;flex:1">
+            <button type="button" class="ac-btn" id="aDiscApply" style="margin:0">Apply</button></div>
+          <p class="ac-small" id="aDiscNote"></p>
+        </div>
+      </div>
       <p class="ac-err" id="aErr" role="alert"></p>
     </section>
     <section class="ac-card ac-wide" id="subCard" hidden>
@@ -225,7 +234,12 @@
       cant_resume: "This plan can't be turned back on here. Contact support and we'll help.",
       payments_not_ready: "Checkout isn't available right now. Please try again later.",
       payment_error: "We couldn't reach the payment service. Please try again in a minute.",
-      signed_out: "Please sign in again."
+      signed_out: "Please sign in again.",
+      code_invalid: "That discount code isn't valid.",
+      code_expired: "That discount code has ended.",
+      code_used_up: "That discount code has been used up.",
+      code_already_used: "You've already used this discount code.",
+      code_new_customers: "That discount code is only for new customers."
     };
     function Err(msg, code) { var e = new Error(msg); e.code = code || ""; return e; }
     function call(method, path, body, tok) {
@@ -311,7 +325,7 @@
         $("aEmail").textContent = st.email || "";
         var p = planText(st);
         $("aPlan").textContent = p.title; $("aPlanNote").textContent = p.note;
-        $("aUpgrade").hidden = p.pro;
+        $("aUpgrade").hidden = p.pro; showDisc(!p.pro);
         lastStatus = st;
         show("vAccount");
         loadSub(st);
@@ -483,14 +497,36 @@
         .catch(fail($("mErr"))).then(function () { busy(b, false); });
     });
 
+    function inIndia() { var tz = ""; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) {} return /^Asia\/(Kolkata|Calcutta)$/.test(tz); }
+    var discCode = "";
+    function showDisc(on) {
+      $("aDisc").hidden = !on;
+      // card payments: Stripe's payment page has its own code box
+      $("aDiscOpen").textContent = inIndia() ? "Have a discount code?" : "Have a discount code? You can enter it on the payment page.";
+    }
+    $("aDiscOpen").addEventListener("click", function (ev) {
+      ev.preventDefault();
+      if (inIndia()) { $("aDiscBox").hidden = false; $("aDiscOpen").hidden = true; $("aDiscCode").focus(); }
+    });
+    $("aDiscApply").addEventListener("click", function () {
+      var c = $("aDiscCode").value.trim().toUpperCase(), b = $("aDiscApply");
+      $("aErr").textContent = ""; $("aDiscNote").textContent = ""; discCode = "";
+      if (!c) return;
+      busy(b, true, "Checking…");
+      token().then(function (t) { return call("POST", "/functions/v1/checkout", { action: "discount_check", code: c }, t); })
+        .then(function (r) { discCode = c; $("aDiscNote").textContent = "Applied: " + r.text + ". Click Upgrade to Pro to pay."; })
+        .catch(function (e) { $("aErr").textContent = e.message; })
+        .then(function () { busy(b, false); });
+    });
     $("aUpgrade").addEventListener("click", function (ev) {
       ev.preventDefault();
       var b = $("aUpgrade"); $("aErr").textContent = "";
       b.textContent = "Opening checkout…";
-      var tz = ""; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) {}
       token().then(function (t) {
-        var india = /^Asia\/(Kolkata|Calcutta)$/.test(tz);
-        return call("POST", "/functions/v1/checkout", india ? { region: "in" } : { region: "intl", country: "" }, t);
+        var india = inIndia();
+        var body = india ? { region: "in" } : { region: "intl", country: "" };
+        if (india && discCode) body.code = discCode;
+        return call("POST", "/functions/v1/checkout", body, t);
       }).then(function (r) {
         if (r && r.url && /^https:\/\/(checkout\.stripe\.com|rzp\.io|[a-z0-9.-]*razorpay\.com)\//.test(r.url)) location.href = r.url;
         else throw Err("Checkout isn't available right now. Please try again later.");
@@ -506,7 +542,7 @@
       rpc("redeem_coupon", { code: code }).then(function (r) {
         if (r && r.ok === false) throw Err(r.message || "That code didn't work.");
         $("rOk").textContent = (r && r.message) || "Done! Your plan is updated."; $("rOk").hidden = false; $("rCode").value = "";
-        return rpc("web_status").then(function (st) { var p = planText(st); $("aPlan").textContent = p.title; $("aPlanNote").textContent = p.note; $("aUpgrade").hidden = p.pro; });
+        return rpc("web_status").then(function (st) { var p = planText(st); $("aPlan").textContent = p.title; $("aPlanNote").textContent = p.note; $("aUpgrade").hidden = p.pro; showDisc(!p.pro); });
       }).catch(fail($("rErr"))).then(function () { busy(b, false); });
     });
 

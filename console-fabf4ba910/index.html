@@ -416,6 +416,49 @@ tr.manage td { background: #FAFAFB; padding: 16px 18px 18px; }
       </div>
     </section>
   </div>
+
+  <h1 style="margin-top:34px">Discount codes</h1>
+  <p class="lead">Money off Pro when someone pays. Card customers type the code on the payment page; customers in India
+    (UPI) type it on their account page before paying.</p>
+  <div class="grid">
+    <form class="panel" id="dForm" autocomplete="off">
+      <h2 style="margin:0">New discount code</h2>
+      <label for="dCode">Code <span class="help">— what customers type (letters, numbers, - or _)</span></label>
+      <div class="row">
+        <input type="text" id="dCode" maxlength="30" placeholder="WELCOME50" style="text-transform:uppercase">
+        <button type="button" class="btn shrink" id="dGen">Generate</button>
+      </div>
+      <span class="lbl">Discount</span>
+      <label class="choice"><input type="radio" name="dKind" value="percent" checked>
+        <span class="grow">Percent off</span><input type="number" id="dPct" min="1" max="100" value="50" style="width:80px"> %</label>
+      <label class="choice"><input type="radio" name="dKind" value="amount">
+        <span class="grow">Amount off</span>US$ <input type="number" id="dUsd" min="0" step="0.01" placeholder="1.00" style="width:80px">
+        &nbsp;Rs <input type="number" id="dInr" min="0" step="1" placeholder="20" style="width:80px"></label>
+      <p class="help" style="margin:2px 0 0">For an amount off, fill US$ (card) and Rs (India). A code with only one of them works only there.</p>
+      <span class="lbl">How long</span>
+      <label class="choice"><input type="radio" name="dDur" value="once" checked><span class="grow">First payment only</span></label>
+      <label class="choice"><input type="radio" name="dDur" value="repeating">
+        <span class="grow">First</span><input type="number" id="dMonths" min="1" max="36" value="3" style="width:70px"> months</label>
+      <label class="choice"><input type="radio" name="dDur" value="forever"><span class="grow">Every payment (forever)</span></label>
+      <div class="row" style="align-items:end">
+        <div><label for="dMax">Total uses <span class="help">— blank for no limit</span></label><input type="number" id="dMax" min="1" placeholder="No limit"></div>
+        <div><label for="dEnd">Last day <span class="help">(optional)</span></label><input type="date" id="dEnd"></div>
+      </div>
+      <label class="chk"><input type="checkbox" id="dFirst"> New customers only (never paid before)</label>
+      <label for="dNote">Note <span class="help">— only you see this</span></label>
+      <textarea id="dNote" maxlength="200" placeholder="e.g. Win-back email, December"></textarea>
+      <div class="actions"><button class="btn primary" id="dSave">Create discount code</button></div>
+      <div class="msg" id="dMsg" role="status"></div>
+    </form>
+    <section class="panel">
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Code</th><th>Discount</th><th>Used</th><th>Valid</th><th>Status</th><th></th></tr></thead>
+          <tbody id="dRows"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
   </div>
 
   <section class="panel below adm-page" id="sec-accounts">
@@ -825,7 +868,7 @@ async function show() {
     $("#mfaSetup").hidden = !setupOnly;
     if (setupOnly) return;
     await whoAmI(); showSection(location.hash.slice(1) || "sec-overview");
-    await Promise.all([load(), stats(), dashboard(), deletedList(), errors(), tickets(), accounts(), loadPlans(), loadPayments(), activity(), usage(), emails()]);
+    await Promise.all([load(), stats(), dashboard(), deletedList(), errors(), tickets(), accounts(), loadPlans(), loadPayments(), loadDiscounts(), activity(), usage(), emails()]);
   }
   else $("#em").focus();
 }
@@ -1336,6 +1379,64 @@ async function loadPayments() {
   } catch (err) { m.className = "msg bad"; m.textContent = err.message; }
 }
 const billing = body => call("/functions/v1/admin-billing", body);
+/* ---------- discount codes (money off when paying) ---------- */
+const dLabel = c => {
+  const off = c.kind === "percent" ? `${Number(c.percent_off)}% off`
+    : [c.amount_off_usd ? `US$${(c.amount_off_usd / 100).toFixed(2)}` : "", c.amount_off_inr ? `Rs ${c.amount_off_inr / 100}` : ""].filter(Boolean).join(" / ") + " off";
+  const how = c.duration === "once" ? "first payment" : c.duration === "forever" ? "every payment" : `first ${c.months} months`;
+  return `${off}<br><small>${how}${c.first_time_only ? ", new customers" : ""}</small>`;
+};
+async function loadDiscounts() {
+  try {
+    const r = await billing({ action: "discount_list" });
+    const list = r.codes || [];
+    $("#dRows").innerHTML = list.length ? list.map(c => {
+      const expired = c.expires_at && new Date(c.expires_at) < new Date();
+      const used = (c.uses_card || 0) + (c.uses_upi || 0);
+      return `<tr data-code="${esc(c.code)}"><td><b>${esc(c.code)}</b>${c.note ? `<br><small>${esc(c.note)}</small>` : ""}</td>
+        <td>${dLabel(c)}</td>
+        <td>${used}${c.max_uses ? " of " + c.max_uses : ""}<br><small>card ${c.uses_card || 0}, UPI ${c.uses_upi || 0}</small></td>
+        <td class="nw">${c.expires_at ? "until " + esc(fmt(c.expires_at)) : "no end date"}</td>
+        <td>${!c.active ? '<span class="state ended">Off</span>' : expired ? '<span class="state ended">Ended</span>' : '<span class="state live">On</span>'}</td>
+        <td class="acts"><button data-d="${c.active ? "off" : "on"}">${c.active ? "Turn off" : "Turn on"}</button></td></tr>`;
+    }).join("") : '<tr><td colspan="6" class="muted">No discount codes yet.</td></tr>';
+  } catch (err) { $("#dRows").innerHTML = `<tr><td colspan="6" class="bad">${esc(err.message)}</td></tr>`; }
+}
+$("#dGen").addEventListener("click", () => {
+  const a = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c = "";
+  const r = crypto.getRandomValues(new Uint32Array(8)); r.forEach(x => c += a[x % a.length]);
+  $("#dCode").value = c;
+});
+$("#dForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const m = $("#dMsg"), b = $("#dSave");
+  const kind = document.querySelector('input[name="dKind"]:checked').value;
+  const duration = document.querySelector('input[name="dDur"]:checked').value;
+  const d = { code: $("#dCode").value.trim().toUpperCase(), kind, duration,
+    percent_off: kind === "percent" ? Number($("#dPct").value) : null,
+    amount_off_usd: kind === "amount" && $("#dUsd").value ? Number($("#dUsd").value) : null,
+    amount_off_inr: kind === "amount" && $("#dInr").value ? Number($("#dInr").value) : null,
+    months: duration === "repeating" ? Number($("#dMonths").value) : null,
+    max_uses: $("#dMax").value ? Number($("#dMax").value) : null,
+    expires_at: $("#dEnd").value ? dayEnd($("#dEnd").value) : null,
+    first_time_only: $("#dFirst").checked, note: $("#dNote").value.trim() };
+  b.disabled = true; m.className = "msg"; m.textContent = "Creating…";
+  try {
+    await billing({ action: "discount_create", d });
+    m.className = "msg ok"; m.textContent = `Created ${d.code}. It works on the payment page right away.`;
+    $("#dCode").value = ""; $("#dNote").value = "";
+    await loadDiscounts();
+  } catch (err) { m.className = "msg bad"; m.textContent = err.message; }
+  b.disabled = false;
+});
+$("#dRows").addEventListener("click", async e => {
+  const btn = e.target.closest("button[data-d]"); if (!btn) return;
+  const code = btn.closest("tr").dataset.code;
+  btn.disabled = true;
+  try { await billing({ action: btn.dataset.d === "off" ? "discount_off" : "discount_on", code }); await loadDiscounts(); }
+  catch (err) { $("#dMsg").className = "msg bad"; $("#dMsg").textContent = err.message; btn.disabled = false; }
+});
+
 $("#payFind").addEventListener("submit", e => { e.preventDefault(); loadPayments(); });
 $("#payRows").addEventListener("click", async e => {
   const b = e.target.closest("button[data-pay], button[data-go]"); if (!b) return;
