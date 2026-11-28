@@ -58,7 +58,7 @@
         }
         if (!e || !t) { m.textContent = "Open this page from the link at the bottom of a FilesBolt email, or change your choices in the app: Settings > Account."; return; }
         call("email_prefs_by_token", { e: e, t: t }).then(function (r) {
-          if (!r || !r.ok) { m.textContent = "That link didn't work. Email support@filesbolt.com and we'll change your choices for you."; return; }
+          if (!r || !r.ok) { m.textContent = "That link didn't work. Contact us at filesbolt.com/contact and we'll change your choices for you."; return; }
           m.textContent = "Choose which emails " + e + " gets.";
           box.tips.checked = r.tips; box.monthly.checked = r.monthly; box.trial.checked = r.trial;
           f.hidden = false;

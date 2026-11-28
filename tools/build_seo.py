@@ -118,7 +118,7 @@ def main():
             "photos and Excel files on your own PC, from the right-click menu or its own window. Files are never uploaded.")
     summary = {"name": "FilesBolt", "url": SITE + "/", "description": desc, "category": "Desktop file utility (PDF, images, Excel)",
                "platform": ["Windows 10", "Windows 11"], "price": "Free during launch", "latestVersion": latest["version"],
-               "updated": mod, "download": SITE + "/#download", "contact": SITE + "/contact/", "email": "support@filesbolt.com",
+               "updated": mod, "download": SITE + "/#download", "contact": SITE + "/contact/",
                "languages": ["English", "Spanish", "French", "German", "Hindi"]}
     service = {"name": "FilesBolt", "url": SITE + "/", "type": "SoftwareApplication", "offline": True, "uploadsFiles": False,
                "capabilities": {

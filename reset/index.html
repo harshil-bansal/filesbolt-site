@@ -61,7 +61,7 @@
         }
         if (!t) { m.textContent = "Open this page from the link in your FilesBolt email. Or use \u201cForgot password?\u201d in the app."; return; }
         call("reset_link_status", { t: t }).then(function (r) {
-          if (!r || !r.ok) { m.textContent = "This link has expired or was already used. Use \u201cForgot password?\u201d in FilesBolt, or ask support@filesbolt.com for a new link."; return; }
+          if (!r || !r.ok) { m.textContent = "This link has expired or was already used. Use \u201cForgot password?\u201d in FilesBolt, or contact us at filesbolt.com/contact."; return; }
           m.textContent = "Choose a new password for " + r.email + "."; f.hidden = false; document.getElementById("rP1").focus();
         }).catch(function () { m.textContent = "We couldn't reach the server. Check your connection and open the link again."; });
         document.getElementById("rShow").addEventListener("change", function (e) {
